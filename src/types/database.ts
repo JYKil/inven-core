@@ -1207,6 +1207,19 @@ export type Database = {
     }
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      execute_goods_receipt: {
+        Args: {
+          p_company_id: string
+          p_created_by?: string
+          p_lines?: Json
+          p_notes?: string
+          p_po_id?: string
+          p_receipt_date?: string
+          p_receipt_number: string
+          p_warehouse_id?: string
+        }
+        Returns: string
+      }
       get_my_company_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
     }
