@@ -32,34 +32,16 @@ export default function OnboardingPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('인증 정보를 찾을 수 없습니다.')
 
-      // 회사 생성
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          name: companyName,
-          business_number: businessNumber || null,
-        })
-        .select()
-        .single()
+      // 회사 + 프로필 원자적 생성 (RPC)
+      const { error: rpcError } = await (supabase.rpc as any)('create_company_with_profile', {
+        p_user_id: user.id,
+        p_company_name: companyName,
+        p_business_number: businessNumber || null,
+        p_display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || '',
+        p_email: user.email ?? '',
+      })
 
-      if (companyError) throw companyError
-
-      // 프로필 생성 (company_admin)
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          company_id: company.id,
-          role: 'company_admin',
-          display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || '',
-          email: user.email ?? '',
-        })
-
-      if (profileError) {
-        // 프로필 생성 실패 시 고아 회사 정리
-        await supabase.from('companies').delete().eq('id', company.id)
-        throw profileError
-      }
+      if (rpcError) throw rpcError
 
       // JWT 갱신 (custom claims hook 반영)
       await supabase.auth.refreshSession()

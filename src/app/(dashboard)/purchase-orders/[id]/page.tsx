@@ -28,7 +28,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
 
   const handleConfirm = async () => {
     try {
-      await updateStatus.mutateAsync({ id, status: 'confirmed' })
+      await updateStatus.mutateAsync({ id, status: 'confirmed', expectedStatus: 'draft' })
       toast.success('발주서 확정 완료')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '상태 변경 실패')
@@ -38,7 +38,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
   const handleCancel = async () => {
     if (!confirm('이 발주서를 취소하시겠습니까?')) return
     try {
-      await updateStatus.mutateAsync({ id, status: 'cancelled' })
+      await updateStatus.mutateAsync({ id, status: 'cancelled', expectedStatus: po?.status ?? 'draft' })
       toast.success('발주서 취소 완료')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '상태 변경 실패')

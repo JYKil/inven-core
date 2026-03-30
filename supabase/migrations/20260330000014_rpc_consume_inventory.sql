@@ -60,10 +60,10 @@ BEGIN
       p_item_id, p_warehouse_id, v_remaining;
   END IF;
 
-  -- inventory_summary 갱신
+  -- inventory_summary 갱신 (부동소수점 오차 대비 음수 방지)
   UPDATE inventory_summary
-  SET total_qty = total_qty - p_qty,
-      total_value = total_value - v_total_cost,
+  SET total_qty = GREATEST(0, total_qty - p_qty),
+      total_value = GREATEST(0, total_value - v_total_cost),
       updated_at = now()
   WHERE company_id = p_company_id
     AND item_id = p_item_id

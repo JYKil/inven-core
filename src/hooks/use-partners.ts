@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
+import { escapeFilterValue } from '@/lib/utils'
 
 type Partner = Database['public']['Tables']['partners']['Row']
 type PartnerInsert = Database['public']['Tables']['partners']['Insert']
@@ -27,7 +28,8 @@ export function usePartners(filters: PartnerFilters = {}) {
       if (!filters.includeInactive) query = query.eq('is_active', true)
       if (filters.partnerType) query = query.eq('partner_type', filters.partnerType)
       if (filters.search) {
-        query = query.or(`name.ilike.%${filters.search}%,business_number.ilike.%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.or(`name.ilike.%${s}%,business_number.ilike.%${s}%`)
       }
 
       const page = filters.page ?? 1

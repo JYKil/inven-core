@@ -38,6 +38,13 @@
 - [x] 조립 상세 바로가기 버튼 — "재고 현황 확인" + "동일 품목 재조립" 링크 추가 (URL 파라미터로 품목 자동선택)
 - [x] 코드 리뷰 반영 — execute_assembly RPC p_quantity/BOM 라인 가드 (이미 적용), queryKeys 팩토리 패턴 (완료), bg-red-50 → DESIGN.md 색상 교체 (완료)
 
+### 코드 리뷰 P1+P2 수정 ✅
+- [x] P1: 검색 필터 인젝션 방지 — escapeFilterValue 유틸 + 모든 훅 적용 (7개 파일)
+- [x] P1: PO 상태 전환 race condition — atomic WHERE (expectedStatus 조건 추가)
+- [x] P1: 사이드바 admin 쿼리 — useEffect → TanStack Query 캐시 (5분 staleTime)
+- [x] P2: 온보딩 회사+프로필 생성 — RPC 원자화 (create_company_with_profile)
+- [x] P2: inventory_summary 음수 방지 — GREATEST(0, ...) 적용
+
 ### 슬라이스 3 마무리 (DB push 필요)
 - [ ] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
 - [ ] `supabase gen types typescript` — RPC 함수 타입 반영

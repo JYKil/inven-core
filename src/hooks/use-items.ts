@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
+import { escapeFilterValue } from '@/lib/utils'
 
 type Item = Database['public']['Tables']['items']['Row']
 type ItemInsert = Database['public']['Tables']['items']['Insert']
@@ -30,7 +31,8 @@ export function useItems(filters: ItemFilters = {}) {
       if (filters.category) query = query.eq('category', filters.category)
       if (filters.itemType) query = query.eq('item_type', filters.itemType)
       if (filters.search) {
-        query = query.or(`name.ilike.%${filters.search}%,code.ilike.%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.or(`name.ilike.%${s}%,code.ilike.%${s}%`)
       }
 
       const page = filters.page ?? 1
@@ -75,7 +77,8 @@ export function useItemSearch(search: string) {
         .order('code')
         .limit(50)
       if (search) {
-        query = query.or(`name.ilike.%${search}%,code.ilike.%${search}%`)
+        const s = escapeFilterValue(search)
+        query = query.or(`name.ilike.%${s}%,code.ilike.%${s}%`)
       }
       const { data, error } = await query
       if (error) throw error

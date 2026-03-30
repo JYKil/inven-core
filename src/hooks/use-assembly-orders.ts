@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { AssemblyOrderCreate } from '@/lib/validations/assembly'
+import { escapeFilterValue } from '@/lib/utils'
 
 export type AssemblyFilters = ListFilters & {
   status?: string
@@ -26,7 +27,8 @@ export function useAssemblyOrders(filters: AssemblyFilters = {}) {
 
       if (filters.status) query = query.eq('status', filters.status)
       if (filters.search) {
-        query = query.ilike('order_number', `%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.ilike('order_number', `%${s}%`)
       }
 
       const page = filters.page ?? 1

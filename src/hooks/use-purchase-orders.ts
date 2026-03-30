@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
+import { escapeFilterValue } from '@/lib/utils'
 
 type PO = Database['public']['Tables']['purchase_orders']['Row']
 type POInsert = Database['public']['Tables']['purchase_orders']['Insert']
@@ -24,7 +25,8 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
 
       if (filters.status) query = query.eq('status', filters.status)
       if (filters.search) {
-        query = query.or(`po_number.ilike.%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.or(`po_number.ilike.%${s}%`)
       }
 
       const page = filters.page ?? 1
@@ -128,11 +130,12 @@ export function useUpdatePurchaseOrderStatus() {
   const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status, expectedStatus }: { id: string; status: string; expectedStatus: string }) => {
       const { data, error } = await supabase
         .from('purchase_orders')
         .update({ status })
         .eq('id', id)
+        .eq('status', expectedStatus)
         .select()
         .single()
       if (error) throw error

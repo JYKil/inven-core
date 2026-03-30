@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
+import { escapeFilterValue } from '@/lib/utils'
 
 export type GrFilters = ListFilters & {
   poId?: string
@@ -24,7 +25,8 @@ export function useGoodsReceipts(filters: GrFilters = {}) {
 
       if (filters.poId) query = query.eq('po_id', filters.poId)
       if (filters.search) {
-        query = query.ilike('receipt_number', `%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.ilike('receipt_number', `%${s}%`)
       }
 
       const page = filters.page ?? 1

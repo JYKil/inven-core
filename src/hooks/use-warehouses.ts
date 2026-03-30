@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
+import { escapeFilterValue } from '@/lib/utils'
 
 type Warehouse = Database['public']['Tables']['warehouses']['Row']
 type WarehouseInsert = Database['public']['Tables']['warehouses']['Insert']
@@ -25,7 +26,8 @@ export function useWarehouses(filters: WarehouseFilters = {}) {
 
       if (!filters.includeInactive) query = query.eq('is_active', true)
       if (filters.search) {
-        query = query.or(`name.ilike.%${filters.search}%,code.ilike.%${filters.search}%`)
+        const s = escapeFilterValue(filters.search)
+        query = query.or(`name.ilike.%${s}%,code.ilike.%${s}%`)
       }
 
       const page = filters.page ?? 1
