@@ -13,7 +13,8 @@
 - [x] 디자인 문서 승인 (office-hours) - 수직 슬라이스 5+1단계
 - [x] `/plan-eng-review` 완료 — 8개 이슈 해결, 외부 의견 8건 중 6건 수용
 - [x] UI/UX 설계 완료 (phase-04-ui.md) — 네비게이션, 화면별 명세, 상태 커버리지, 보고서 3종
-- [x] `/plan-design-review` 완료 — 1/10 → 7/10, 7개 디자인 결정 확정
+- [x] `/plan-design-review` 1차 완료 — 1/10 → 7/10, 7개 디자인 결정 확정
+- [x] `/plan-design-review` 2차 완료 — 7/10 → 9/10, 7개 차원 리뷰 (사이드바 통일, 상태 커버리지, 토스트 규칙, 모바일 네비, 다크 모드 CSS, 온보딩 스타일, 완료 복귀 흐름)
 - [x] Supabase 클라우드 프로젝트 생성 (ref: oftpwwxvwlszspnfvckh, 리전: Tokyo)
 - [x] Supabase CLI 설치 + 로컬 프로젝트 link 완료
 - [x] Next.js 15 프로젝트 초기화 (TypeScript + Tailwind + App Router + src/ 구조)
