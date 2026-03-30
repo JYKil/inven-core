@@ -18,13 +18,13 @@
 - [x] Supabase CLI 설치 + 로컬 프로젝트 link 완료
 - [x] Next.js 15 프로젝트 초기화 (TypeScript + Tailwind + App Router + src/ 구조)
 - [x] `/design-consultation` 완료 — 디자인 시스템 확정 → .planning/DESIGN.md 생성
+- [x] shadcn/ui + Supabase + Zustand + TanStack Query + RHF + Zod 설치 완료
 
 ## 진행 중인 작업
 - 없음
 
 ## 다음 할 일
-1. shadcn/ui 설치 + Supabase 클라이언트 패키지 설치
-2. 슬라이스 1 구현 시작: 기초 마스터 (companies, profiles, partners, warehouses, items, bom)
+1. 슬라이스 1 구현 시작: 기초 마스터 (companies, profiles, partners, warehouses, items, bom)
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
