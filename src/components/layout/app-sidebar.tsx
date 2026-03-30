@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -21,6 +21,7 @@ import {
   UserCog,
   Shield,
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import {
   Sidebar,
@@ -104,24 +105,27 @@ const adminGroup = {
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const supabase = createClient()
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      supabase
+  const { data: profile } = useQuery({
+    queryKey: ['profile', 'me'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single()
-        .then(({ data }) => {
-          if (data?.role === 'super_admin') setIsSuperAdmin(true)
-        })
-    })
-  }, [])
+      return data
+    },
+    staleTime: 5 * 60 * 1000, // 5분 캐시
+  })
 
-  const groups = isSuperAdmin ? [...navGroups, adminGroup] : navGroups
+  const groups = useMemo(
+    () => profile?.role === 'super_admin' ? [...navGroups, adminGroup] : navGroups,
+    [profile?.role],
+  )
 
   return (
     <Sidebar collapsible="icon">

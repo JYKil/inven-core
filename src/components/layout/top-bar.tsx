@@ -5,13 +5,10 @@ import { useRouter } from 'next/navigation'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu'
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover'
 import { User, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -62,26 +59,29 @@ export function TopBar() {
       <Separator orientation="vertical" className="h-4" />
       <div className="flex-1" />
       {profile && (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none">
+        <Popover>
+          <PopoverTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none">
             <User className="h-4 w-4" />
             <span>{profile.displayName}</span>
             <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
               {roleLabels[profile.role] || profile.role}
             </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" sideOffset={4}>
-            <DropdownMenuLabel className="font-normal">
+          </PopoverTrigger>
+          <PopoverContent align="end" side="bottom" sideOffset={4} className="w-56 p-2">
+            <div className="px-2 py-1.5">
               <div className="text-sm font-medium">{profile.displayName}</div>
               <div className="text-xs text-muted-foreground">{profile.email}</div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
+            </div>
+            <div className="h-px bg-border my-1" />
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
+            >
+              <LogOut className="h-4 w-4" />
               로그아웃
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </button>
+          </PopoverContent>
+        </Popover>
       )}
     </header>
   )
