@@ -59,11 +59,11 @@ export default function AdminCompaniesPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('companies').insert({
-        name,
-        business_number: businessNumber || null,
-        address: address || null,
-        phone: phone || null,
+      const { error } = await supabase.rpc('admin_create_company', {
+        p_name: name,
+        p_business_number: businessNumber || null,
+        p_address: address || null,
+        p_phone: phone || null,
       })
       if (error) throw error
     },
