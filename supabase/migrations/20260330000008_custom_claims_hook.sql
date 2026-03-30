@@ -20,7 +20,8 @@ BEGIN
 
   -- app_metadata에 company_id, role 주입
   IF user_role IS NOT NULL THEN
-    claims := jsonb_set(claims, '{app_metadata,company_id}', to_jsonb(user_company_id));
+    -- company_id가 NULL이면 JSON null로 안전하게 처리 (to_jsonb(NULL) → SQL NULL → jsonb_set 전체 파괴 방지)
+    claims := jsonb_set(claims, '{app_metadata,company_id}', COALESCE(to_jsonb(user_company_id), 'null'::jsonb));
     claims := jsonb_set(claims, '{app_metadata,role}', to_jsonb(user_role));
   ELSE
     -- 프로필 없으면 기본값
