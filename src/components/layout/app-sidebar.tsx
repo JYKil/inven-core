@@ -122,8 +122,9 @@ export function AppSidebar() {
     staleTime: 5 * 60 * 1000, // 5분 캐시
   })
 
+  // super_admin은 관리 메뉴만 표시 (일반 업무 메뉴 불필요)
   const groups = useMemo(
-    () => profile?.role === 'super_admin' ? [...navGroups, adminGroup] : navGroups,
+    () => profile?.role === 'super_admin' ? [adminGroup] : navGroups,
     [profile?.role],
   )
 

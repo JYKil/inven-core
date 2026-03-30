@@ -25,6 +25,7 @@ inven-code
 - 모든 작업을 시작하기 전에 `.planning/CHECKPOINT.md`와 `.planning/TODOS.md`를 먼저 읽고 현재 상태를 파악할 것
 - 작업 완료 후에는 반드시 CHECKPOINT.md와 TODOS.md를 업데이트할 것
 - 새로운 결정 사항이 생기면 CHECKPOINT.md의 "주요 결정 사항"에 추가할 것
+- 오류 수정 시에도 반드시 원인 분석 → 수정 계획 수립 → 실행 순서로 진행할 것 (바로 코드 수정하지 말 것)
 
 ## 코딩 컨벤션
 

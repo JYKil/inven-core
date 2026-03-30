@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 3 완료 + 코드 리뷰 P1/P2 수정 완료 → DB push + 타입 재생성
+- **단계**: 슬라이스 3 완료 + 코드 리뷰 P1/P2 수정 완료 + super_admin UI 개선 → DB push + 타입 재생성
 - **마지막 업데이트**: 2026-03-30
 
 ## 완료된 작업
@@ -30,6 +30,8 @@
   - [x] 미들웨어 — 미인증→/login, 프로필 없음→/onboarding 리다이렉트
   - [x] super_admin 전용 UI — 회사 관리(/admin/companies) + 전체 사용자 관리(/admin/users)
   - [x] admin 권한 가드 — server layout에서 role 확인, 비권한자 리다이렉트
+  - [x] super_admin 사이드바 — 관리 메뉴만 표시 (일반 업무 메뉴 제거)
+  - [x] 회사 관리자 초대 — API Route + 회사별 사용자 목록/관리자 추가 다이얼로그
 - [x] **슬라이스 1: 기초 마스터 CRUD**
   - [x] Zod 스키마 7개 (partner, warehouse, item, bom, purchase-order, goods-receipt, po-payment)
   - [x] TanStack Query 키 팩토리 + 도메인별 훅 8개
