@@ -25,23 +25,18 @@
 
 ---
 
-## P1 — 슬라이스 3: 조립 (다음 구현)
+## P1 — 슬라이스 3: 조립 ✅
 
-### consume_inventory RPC
-DB function으로 FIFO 로트 소비 로직 구현. phase-02-db.md에 의사코드 있음.
-마이그레이션 파일로 추가 후 `supabase db push`.
+- [x] consume_inventory RPC (FIFO 로트 소비)
+- [x] execute_assembly RPC (BOM 기반 조립 실행)
+- [x] Zod 스키마 + Query 키
+- [x] TanStack Query 훅 + API Route
+- [x] 조립 목록/생성/상세 UI
 
-### 조립 지시 CRUD
-- assembly_orders 생성/목록/상세
-- 재료 가용성 사전확인 테이블 (필요수량 vs 현재고)
-- 조립 실행 → consume_inventory + 결과물 lot 생성
-- 조립 완료 화면 (원가 미리보기)
-
-### 담당 디렉토리
-- `src/app/(dashboard)/assembly-orders/`
-- `src/hooks/use-assembly-orders.ts`
-- `src/lib/validations/assembly.ts`
-- `supabase/migrations/` (consume_inventory RPC)
+### 슬라이스 3 마무리 (DB push 필요)
+- [ ] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
+- [ ] `supabase gen types typescript` — RPC 함수 타입 반영
+- [ ] API Route의 `(supabase.rpc as any)` 타입 단언 제거
 
 ---
 

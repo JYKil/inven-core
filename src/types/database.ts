@@ -1206,7 +1206,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_inventory: {
+        Args: {
+          p_company_id: string
+          p_item_id: string
+          p_qty: number
+          p_transaction_id: string
+          p_warehouse_id: string
+        }
+        Returns: number
+      }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      execute_assembly: {
+        Args: {
+          p_assembly_date: string
+          p_bom_header_id: string
+          p_company_id: string
+          p_created_by: string
+          p_order_number: string
+          p_product_item_id: string
+          p_quantity: number
+          p_warehouse_id: string
+        }
+        Returns: string
+      }
       execute_goods_receipt: {
         Args: {
           p_company_id: string

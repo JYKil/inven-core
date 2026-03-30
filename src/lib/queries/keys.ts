@@ -49,6 +49,14 @@ export const queryKeys = {
     summary: (filters: ListFilters = {}) => [...queryKeys.inventory.all, 'summary', filters] as const,
     lots: (itemId: string, warehouseId?: string) => [...queryKeys.inventory.all, 'lots', itemId, warehouseId] as const,
   },
+  assemblyOrders: {
+    all: ['assemblyOrders'] as const,
+    list: (filters: ListFilters = {}) => [...queryKeys.assemblyOrders.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.assemblyOrders.all, 'detail', id] as const,
+    items: () => [...queryKeys.assemblyOrders.all, 'items'] as const,
+    materialAvailability: (bomHeaderId: string, warehouseId: string, quantity: number) =>
+      [...queryKeys.assemblyOrders.all, 'materialAvailability', bomHeaderId, warehouseId, quantity] as const,
+  },
   dashboard: {
     all: ['dashboard'] as const,
     summary: () => [...queryKeys.dashboard.all, 'summary'] as const,

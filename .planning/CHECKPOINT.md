@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 1+2 구현 완료 → 슬라이스 3(조립) 시작 가능
+- **단계**: 슬라이스 3(조립) 구현 완료 → DB push + 타입 재생성 필요
 - **마지막 업데이트**: 2026-03-30
 
 ## 완료된 작업
@@ -47,10 +47,20 @@
   - [x] 재고 현황 — 품목별/창고별 뷰 토글, 로트 드릴다운
   - [x] 지급관리(po-payments) — 목록 + PO 상세 내 인라인 등록
 
+- [x] **슬라이스 3: 조립(Assembly)**
+  - [x] consume_inventory RPC (FIFO 로트 소비, 데드락 방지)
+  - [x] execute_assembly RPC (BOM 기반 조립 실행, 재료 소비 + 결과물 로트 생성)
+  - [x] Zod 스키마 (assemblyOrderCreateSchema) + Query 키
+  - [x] TanStack Query 훅 (목록/상세/재료가용성/조립실행)
+  - [x] API Route: POST /api/assembly-orders
+  - [x] 조립 목록 (검색+상태필터+페이지네이션)
+  - [x] 조립 생성 (BOM 선택, 재료 가용성 사전확인 테이블, 조립 실행)
+  - [x] 조립 상세 (원가 정보, 재료 소비 내역)
+
 ## 다음 할 일
-1. 슬라이스 3: 조립(assembly) — BOM 기반 조립 실행, consume_inventory RPC, 재료 가용성 확인
-4. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
-5. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
+1. DB push + 타입 재생성: `supabase db push` → `supabase gen types typescript` → API Route `(supabase.rpc as any)` 타입 단언 제거
+2. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
+3. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
