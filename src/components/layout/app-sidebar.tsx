@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -18,7 +19,9 @@ import {
   Settings,
   Building2,
   UserCog,
+  Shield,
 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import {
   Sidebar,
   SidebarContent,
@@ -90,8 +93,35 @@ const navGroups = [
   },
 ]
 
+// super_admin 전용 메뉴
+const adminGroup = {
+  label: '관리',
+  items: [
+    { title: '회사 관리', href: '/admin/companies', icon: Building2 },
+    { title: '전체 사용자', href: '/admin/users', icon: Shield },
+  ],
+}
+
 export function AppSidebar() {
   const pathname = usePathname()
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.role === 'super_admin') setIsSuperAdmin(true)
+        })
+    })
+  }, [])
+
+  const groups = isSuperAdmin ? [...navGroups, adminGroup] : navGroups
 
   return (
     <Sidebar collapsible="icon">
@@ -104,7 +134,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((group) => (
+        {groups.map((group) => (
           <SidebarGroup key={group.label || 'home'}>
             {group.label && (
               <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
