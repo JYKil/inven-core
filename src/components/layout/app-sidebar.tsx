@@ -114,10 +114,15 @@ export function AppSidebar() {
       if (!user) return null
       const { data } = await supabase
         .from('profiles')
-        .select('role')
+        .select('display_name, email, role')
         .eq('id', user.id)
         .single()
-      return data
+      if (!data) return null
+      return {
+        displayName: data.display_name || data.email,
+        email: data.email,
+        role: data.role,
+      }
     },
     staleTime: 5 * 60 * 1000, // 5분 캐시
   })

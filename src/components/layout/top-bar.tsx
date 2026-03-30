@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -20,35 +20,31 @@ const roleLabels: Record<string, string> = {
 
 export function TopBar() {
   const router = useRouter()
-  const [profile, setProfile] = useState<{
-    displayName: string
-    email: string
-    role: string
-  } | null>(null)
+  const queryClient = useQueryClient()
+  const supabase = createClient()
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      supabase
+  const { data: profile } = useQuery({
+    queryKey: ['profile', 'me'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data } = await supabase
         .from('profiles')
         .select('display_name, email, role')
         .eq('id', user.id)
         .single()
-        .then(({ data }) => {
-          if (data) {
-            setProfile({
-              displayName: data.display_name || data.email,
-              email: data.email,
-              role: data.role,
-            })
-          }
-        })
-    })
-  }, [])
+      if (!data) return null
+      return {
+        displayName: data.display_name || data.email,
+        email: data.email,
+        role: data.role,
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5분 캐시
+  })
 
   const handleLogout = async () => {
-    const supabase = createClient()
+    queryClient.clear() // 캐시 초기화 — 다음 로그인 시 이전 사용자 데이터 방지
     await supabase.auth.signOut()
     router.push('/login')
   }
