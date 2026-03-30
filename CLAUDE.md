@@ -21,6 +21,11 @@ inven-code
 - 사용 가능한 스킬: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn
 - gstack 스킬이 동작하지 않으면 `cd .claude/skills/gstack && ./setup` 을 실행하여 바이너리를 빌드하고 스킬을 등록할 것
 
+## 작업 규칙
+- 모든 작업을 시작하기 전에 `.planning/CHECKPOINT.md`와 `.planning/TODOS.md`를 먼저 읽고 현재 상태를 파악할 것
+- 작업 완료 후에는 반드시 CHECKPOINT.md와 TODOS.md를 업데이트할 것
+- 새로운 결정 사항이 생기면 CHECKPOINT.md의 "주요 결정 사항"에 추가할 것
+
 ## 코딩 컨벤션
 
 ## Planning Context Management
