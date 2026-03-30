@@ -1,5 +1,4 @@
--- super_admin 전용: 회사 생성 RPC (프로필 생성 없이 회사만 생성)
--- 관리자 페이지에서 사용 — RLS 우회를 위해 SECURITY DEFINER 사용
+-- admin_create_company: JWT 의존 제거, profiles 테이블 직접 조회로 변경
 
 CREATE OR REPLACE FUNCTION admin_create_company(
   p_name text,
