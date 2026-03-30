@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 프로젝트 초기화 완료, 슬라이스 1 준비
+- **단계**: 사전 작업 완료 → 슬라이스 1+2 병렬 구현 시작 가능
 - **마지막 업데이트**: 2026-03-30
 
 ## 완료된 작업
@@ -21,10 +21,18 @@
 - [x] shadcn/ui + Supabase + Zustand + TanStack Query + RHF + Zod 설치 완료
 
 ## 진행 중인 작업
-- 없음
+- [ ] 사전 작업 (아래 6개 항목)
+  1. [x] DB 마이그레이션 생성 (22개 테이블 전체) — 8개 파일, 클라우드 적용 완료
+  2. [x] RLS 정책 + Custom Claims Hook — 22개 테이블 RLS + 헬퍼함수 + Hook 함수 적용
+  3. [x] Supabase 클라이언트 설정 — 환경변수, 클라이언트/서버/미들웨어 헬퍼, API 유틸, DB 타입 생성
+  4. [x] 공통 shadcn 컴포넌트 설치 — 22개 (table, input, dialog, select, badge, card, tabs, sidebar 등)
+  5. [x] TanStack Query + Zustand 프로바이더 설정 — Providers 래퍼, Zustand UI 스토어, 폰트 설정
+  6. [x] 공통 레이아웃 + 사이드바 구현 — 대시보드 레이아웃, 사이드바 네비게이션, TopBar
 
-## 다음 할 일
-1. 슬라이스 1 구현 시작: 기초 마스터 (companies, profiles, partners, warehouses, items, bom)
+## 다음 할 일 (사전 작업 완료 후)
+터미널 2개로 슬라이스 1+2 병렬 구현. 상세 내용은 TODOS.md 참조.
+1. **터미널 A — 슬라이스 1**: 기초 마스터 CRUD (partners, warehouses, items, bom)
+2. **터미널 B — 슬라이스 2**: 입고 + 재고 (PO, 입고 RPC, inventory, po_payments)
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
@@ -32,7 +40,7 @@
 - 핵심 비즈니스 로직: PostgreSQL function + supabase.rpc() 패턴
 - 멀티테넌시: company_id + RLS 격리
 - API 방식: Hybrid (단순 CRUD → Supabase 직접, 복잡한 로직 → API Route)
-- 구현 전략: 수직 슬라이스 (기능 단위로 DB+API+UI 함께)
+- 구현 전략: 수직 슬라이스 (기능 단위로 DB+API+UI 함께), 슬라이스 1+2 병렬 진행
 - 1단계 BOM 먼저, 2단계 BOM은 슬라이스 5에서
 - LIFO/가중평균은 슬라이스 6(선택)으로 연기
 - RLS: Custom Claims Hook (JWT에 company_id, profiles 서브쿼리 제거)
