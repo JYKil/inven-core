@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 3(조립) 구현 완료 → DB push + 타입 재생성 필요
+- **단계**: 슬라이스 3 디자인 리뷰 반영 완료 → DB push + 타입 재생성
 - **마지막 업데이트**: 2026-03-30
 
 ## 완료된 작업
@@ -58,9 +58,10 @@
   - [x] 조립 상세 (원가 정보, 재료 소비 내역)
 
 ## 다음 할 일
-1. DB push + 타입 재생성: `supabase db push` → `supabase gen types typescript` → API Route `(supabase.rpc as any)` 타입 단언 제거
-2. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
-3. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
+1. ~~슬라이스 3 디자인 리뷰 반영~~ → 완료
+2. DB push + 타입 재생성: `supabase db push` → `supabase gen types typescript` → API Route `(supabase.rpc as any)` 타입 단언 제거
+3. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
+4. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)

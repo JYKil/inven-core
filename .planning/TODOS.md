@@ -33,6 +33,11 @@
 - [x] TanStack Query 훅 + API Route
 - [x] 조립 목록/생성/상세 UI
 
+### 슬라이스 3 디자인 리뷰 반영 ✅
+- [x] 예상 원가 미리보기 — useMaterialAvailability 훅 확장, FIFO 로트 단가 조회 + 재료별/총/단위 예상 원가 표시
+- [x] 조립 상세 바로가기 버튼 — "재고 현황 확인" + "동일 품목 재조립" 링크 추가 (URL 파라미터로 품목 자동선택)
+- [x] 코드 리뷰 반영 — execute_assembly RPC p_quantity/BOM 라인 가드 (이미 적용), queryKeys 팩토리 패턴 (완료), bg-red-50 → DESIGN.md 색상 교체 (완료)
+
 ### 슬라이스 3 마무리 (DB push 필요)
 - [ ] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
 - [ ] `supabase gen types typescript` — RPC 함수 타입 반영
