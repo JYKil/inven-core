@@ -26,11 +26,6 @@ export function useInventorySummary(filters: InventoryFilters = {}) {
         .order('item_id')
 
       if (filters.warehouseId) query = query.eq('warehouse_id', filters.warehouseId)
-      if (filters.search) {
-        // inventory_summary에서 직접 검색 불가하므로 item 테이블은 별도 처리
-        // Supabase는 joined table에 대해 직접 필터 불가 — RPC나 view 필요
-        // 임시: 전체 조회 후 클라이언트 필터
-      }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 50
@@ -39,7 +34,19 @@ export function useInventorySummary(filters: InventoryFilters = {}) {
 
       const { data, error, count } = await query
       if (error) throw error
-      return { data: data ?? [], count: count ?? 0, page, pageSize }
+
+      // Supabase는 joined table 필터 미지원 → 클라이언트 필터
+      let filtered = data ?? []
+      if (filters.search) {
+        const term = filters.search.toLowerCase()
+        filtered = filtered.filter((row: any) => {
+          const item = row.item
+          if (!item) return false
+          return item.code?.toLowerCase().includes(term) || item.name?.toLowerCase().includes(term)
+        })
+      }
+
+      return { data: filtered, count: filters.search ? filtered.length : (count ?? 0), page, pageSize }
     },
   })
 }

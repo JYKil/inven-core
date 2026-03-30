@@ -46,11 +46,18 @@ export async function middleware(request: NextRequest) {
 
   // 인증됨 + 온보딩 미완료 확인 (프로필 없으면 온보딩으로)
   if (pathname !== '/onboarding') {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id')
       .eq('id', user.id)
       .single()
+
+    // DB 에러 시 프로필 없음으로 오판하지 않고 그대로 통과
+    if (profileError && profileError.code !== 'PGRST116') {
+      // PGRST116 = "not found" (0 rows) → 온보딩 필요
+      // 그 외 에러(네트워크 등) → 차단하지 않고 통과
+      return supabaseResponse
+    }
 
     if (!profile) {
       const onboardingUrl = request.nextUrl.clone()

@@ -100,33 +100,37 @@ export function useCreateBom() {
   })
 }
 
-// BOM 라인 업데이트 (전체 교체)
+// BOM 라인 업데이트 (RPC로 단일 트랜잭션 보장)
 export function useUpdateBomLines() {
   const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ bomHeaderId, lines }: { bomHeaderId: string; lines: BomLineInput[] }) => {
-      // 기존 라인 삭제 (CASCADE)
-      const { error: delErr } = await supabase
-        .from('bom_lines')
-        .delete()
-        .eq('bom_header_id', bomHeaderId)
-      if (delErr) throw delErr
+    mutationFn: async ({ bomHeaderId, itemId, lines }: { bomHeaderId: string; itemId: string; lines: BomLineInput[] }) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('인증이 필요합니다')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      // 새 라인 삽입
-      const newLines = lines.map((line, idx) => ({
-        bom_header_id: bomHeaderId,
+      const linesPayload = lines.map((line, idx) => ({
         material_item_id: line.material_item_id,
         quantity: line.quantity,
         sort_order: line.sort_order ?? idx,
       }))
-      const { error: insErr } = await supabase
-        .from('bom_lines')
-        .insert(newLines)
-      if (insErr) throw insErr
+
+      const { error } = await supabase.rpc('update_bom_lines', {
+        p_bom_header_id: bomHeaderId,
+        p_company_id: profile.company_id,
+        p_lines: JSON.stringify(linesPayload),
+      })
+      if (error) throw error
+      return { itemId }
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.bom.all })
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: queryKeys.bom.byItem(variables.itemId) })
     },
   })
 }

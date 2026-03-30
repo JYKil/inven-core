@@ -1222,6 +1222,10 @@ export type Database = {
       }
       get_my_company_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
+      update_bom_lines: {
+        Args: { p_bom_header_id: string; p_company_id: string; p_lines: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

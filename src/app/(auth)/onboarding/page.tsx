@@ -52,10 +52,14 @@ export default function OnboardingPage() {
           company_id: company.id,
           role: 'company_admin',
           display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || '',
-          email: user.email!,
+          email: user.email ?? '',
         })
 
-      if (profileError) throw profileError
+      if (profileError) {
+        // 프로필 생성 실패 시 고아 회사 정리
+        await supabase.from('companies').delete().eq('id', company.id)
+        throw profileError
+      }
 
       // JWT 갱신 (custom claims hook 반영)
       await supabase.auth.refreshSession()
@@ -99,7 +103,7 @@ export default function OnboardingPage() {
           company_id: company.id,
           role: 'normal',
           display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || '',
-          email: user.email!,
+          email: user.email ?? '',
         })
 
       if (profileError) throw profileError

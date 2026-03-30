@@ -15,14 +15,15 @@ export async function GET(request: Request) {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('id')
           .eq('id', user.id)
           .single()
 
-        // 프로필 없으면 온보딩으로, 있으면 대시보드로
-        if (!profile) {
+        // PGRST116 = not found → 온보딩 필요
+        // 그 외 DB 에러 → 대시보드로 보내고 미들웨어에서 재확인
+        if (!profile && (!profileError || profileError.code === 'PGRST116')) {
           return NextResponse.redirect(`${origin}/onboarding`)
         }
       }

@@ -6,7 +6,7 @@ export const partnerCreateSchema = z.object({
   business_number: z.string().optional(),
   contact_name: z.string().optional(),
   phone: z.string().optional(),
-  email: z.string().email('유효한 이메일을 입력해주세요').optional().or(z.literal('')),
+  email: z.string().email('유효한 이메일을 입력해주세요').optional().or(z.literal('').transform(() => undefined)),
   address: z.string().optional(),
   notes: z.string().optional(),
 })
