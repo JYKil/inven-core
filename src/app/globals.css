@@ -95,7 +95,7 @@
 
   /* DESIGN.md 시맨틱 색상 (커스텀) */
   --success: #2B7A6F;
-  --warning: #C4901A;
+  --warning: #926B12;             /* AA 4.73:1 on surface (기존 #C4901A는 2.79:1) */
   --info: #4A7B94;
   --text-secondary: #6B6158;
   --text-muted: #726A63;
