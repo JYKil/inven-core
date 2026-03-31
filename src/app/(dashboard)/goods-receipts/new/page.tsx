@@ -175,7 +175,7 @@ function NewGoodsReceiptContent() {
                     className="h-9"
                   />
                   {itemSearch && itemResults && itemResults.length > 0 && (
-                    <div className="absolute z-10 top-full mt-1 w-full bg-white border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
+                    <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
                       {itemResults.map((item) => (
                         <button
                           key={item.id}

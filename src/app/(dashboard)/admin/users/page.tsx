@@ -311,7 +311,7 @@ export default function AdminUsersPage() {
 
       {/* 편집 다이얼로그 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-white border-border">
+        <DialogContent className="bg-popover border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               {editingUser?.role === 'pending' ? '사용자 승인' : '사용자 수정'}

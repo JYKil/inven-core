@@ -356,7 +356,7 @@ export default function AdminCompaniesPage() {
 
       {/* 회사 생성/수정 다이얼로그 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-white border-border">
+        <DialogContent className="bg-popover border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               {editing ? '회사 수정' : '회사 추가'}
@@ -434,7 +434,7 @@ export default function AdminCompaniesPage() {
 
       {/* 회사 사용자 목록 다이얼로그 */}
       <Dialog open={adminsDialogOpen} onOpenChange={setAdminsDialogOpen}>
-        <DialogContent className="bg-white border-border max-w-lg">
+        <DialogContent className="bg-popover border-border max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               {adminsCompany?.name} — 사용자
@@ -511,7 +511,7 @@ export default function AdminCompaniesPage() {
 
       {/* 관리자 초대 다이얼로그 */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-        <DialogContent className="bg-white border-border">
+        <DialogContent className="bg-popover border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               관리자 추가 — {inviteCompany?.name}
