@@ -20,7 +20,7 @@ export const POST = withApiHandler(async (request: Request) => {
     p_receipt_date: input.receipt_date,
     p_notes: input.notes ?? undefined,
     p_created_by: user.id,
-    p_lines: JSON.stringify(input.lines),
+    p_lines: input.lines,
   })
 
   if (error) throw mapSupabaseError(error)
