@@ -172,7 +172,7 @@ function SummaryCard({ label, value, sub, icon: Icon, href }: {
         <Icon className="h-4 w-4 text-muted-foreground" />
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
-      <p className="font-heading text-[36px] font-bold tracking-[-0.02em] leading-tight">{value}</p>
+      <p className="font-heading text-xl sm:text-2xl lg:text-[36px] font-bold tracking-[-0.02em] leading-tight">{value}</p>
       {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   )
