@@ -30,12 +30,12 @@ export function formatPercent(value: number | null | undefined): string {
   return `${value.toFixed(1)}%`
 }
 
-// 날짜 포맷
+// 날짜 포맷 (YYYY-MM-DD)
 export function formatDate(value: string | null | undefined): string {
   if (!value) return '-'
-  return new Date(value).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
+  const d = new Date(value)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
