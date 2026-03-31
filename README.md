@@ -39,4 +39,4 @@ inven-core/
 - [DB 설계](.planning/phase-02-db.md) — 22개 테이블, FIFO 로트 추적
 - [API 설계](.planning/phase-03-api.md) — Hybrid 패턴, 65개 엔드포인트
 - [UI/UX 설계](.planning/phase-04-ui.md) — 화면별 명세, 보고서 3종
-- [디자인 프리뷰](.planning/design-preview.html) — UI 디자인 시안 미리보기
+- [디자인 프리뷰](https://jykil.github.io/inven-core/.planning/design-preview.html) — UI 디자인 시안 미리보기
