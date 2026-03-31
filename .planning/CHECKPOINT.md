@@ -167,8 +167,20 @@
     - [x] retry 정책 명시 — mutation retry: 0 명시 (side effect 중복 방지)
     - [x] 테스트 커버리지 보강 — 118개 → 150개 (+32개: formatUnitPrice, formatPercent, formatDate, formatQty 엣지 케이스)
 
+26. **전체 QA (2차)** → 완료 (2026-03-31)
+    - [x] 19개 페이지 탐색, 3건 이슈 발견
+    - [x] ISSUE-002: 모바일 대시보드 재발주 테이블 헤더 줄바꿈 → overflow-x-auto + whitespace-nowrap
+    - [x] ISSUE-003: 단가 포맷 후행 0 제거 (₩360,000.0000 → ₩360,000)
+    - [x] ISSUE-001: Base UI Select hydration mismatch → Portal 마운트 가드 적용
+    - 헬스 스코어: 94.3, 테스트 151개 통과
+
+27. **대시보드 테이블 레이아웃 + Select hydration 수정** → 완료 (2026-03-31)
+    - [x] 대시보드 KPI 카드 4개 → 업무 현황 테이블 전환 (DESIGN.MD grid-disciplined 스펙)
+    - [x] 이익 행 추가 (매출 - 매출원가)
+    - [x] Base UI Select hydration mismatch — Portal 마운트 후 렌더링으로 해결
+
 ### 남은 작업
-1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 + INFORMATIONAL 반영
+1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 + INFORMATIONAL + 2차 QA + 대시보드 테이블 + Select 수정 반영
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항

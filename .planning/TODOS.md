@@ -228,7 +228,7 @@
 ## 디자인 리뷰 Deferred (2026-03-31)
 
 - [x] **HIGH**: CTA 버튼 대비 → AA 충족. primary #D4642A→#BF5520, hover→#A84A1B (대비 4.7:1)
-- [ ] **HIGH**: 대시보드 첫 화면 카드 그리드 → 테이블 우선 레이아웃 전환 (DESIGN.MD grid-disciplined 스펙)
+- [x] **HIGH**: 대시보드 첫 화면 카드 그리드 → 테이블 우선 레이아웃 전환 (DESIGN.MD grid-disciplined 스펙)
 - [x] **MEDIUM**: CRUD 폼 label htmlFor/id 연결 — 6개 폼 페이지 (items/PO/SO/GR/assembly/transfer)
 - [x] **MEDIUM**: 테이블 코드+품목명 좌측 sticky — items, warehouses, inventory, 보고서 3종
 - [x] **MEDIUM**: 사이드바 hover 확장 → click 토글에서 hover 플로팅 패널로 변경 (DESIGN.MD L77 스펙)

@@ -61,44 +61,68 @@ export default function DashboardContent() {
         </section>
       )}
 
-      {/* 처리 대기 + 이번 달 요약 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {summaryLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="border border-border rounded-lg p-4">
-              <Skeleton className="h-4 w-20 mb-2" />
-              <Skeleton className="h-7 w-16" />
-            </div>
-          ))
-        ) : summary ? (
-          <>
-            <SummaryCard
-              label="발주서 (임시)"
-              value={String(summary.pending.draft_po_count)}
-              icon={ClipboardList}
-              href="/purchase-orders"
-            />
-            <SummaryCard
-              label="판매주문 (미출고)"
-              value={String(summary.pending.draft_so_count + summary.pending.confirmed_so_count)}
-              icon={ShoppingCart}
-              href="/sales-orders"
-            />
-            <SummaryCard
-              label="이번 달 매입"
-              value={formatAmount(summary.monthly_purchase.total_amount)}
-              sub={`${summary.monthly_purchase.order_count}건`}
-              icon={TrendingUp}
-            />
-            <SummaryCard
-              label="이번 달 매출"
-              value={formatAmount(summary.monthly_sales.total_amount)}
-              sub={`${summary.monthly_sales.order_count}건`}
-              icon={TrendingUp}
-            />
-          </>
-        ) : null}
-      </div>
+      {/* 업무 현황 — 테이블 레이아웃 */}
+      <section>
+        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">업무 현황</h2>
+        <div className="border border-border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-background/50 border-b border-border">
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">구분</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">항목</th>
+                <th className="text-right px-4 py-2 font-medium text-muted-foreground">값</th>
+                <th className="px-4 py-2 w-20"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {summaryLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-2"><Skeleton className="h-4 w-24" /></td>
+                    <td className="px-4 py-2 text-right"><Skeleton className="h-4 w-20 ml-auto" /></td>
+                    <td className="px-4 py-2"></td>
+                  </tr>
+                ))
+              ) : summary ? (
+                <>
+                  <SummaryRow
+                    category="처리 대기"
+                    icon={ClipboardList}
+                    label="발주서 (임시)"
+                    value={`${summary.pending.draft_po_count}건`}
+                    href="/purchase-orders"
+                  />
+                  <SummaryRow
+                    icon={ShoppingCart}
+                    label="판매주문 (미출고)"
+                    value={`${summary.pending.draft_so_count + summary.pending.confirmed_so_count}건`}
+                    href="/sales-orders"
+                  />
+                  <SummaryRow
+                    category="이번 달"
+                    icon={TrendingUp}
+                    label="매입"
+                    value={formatAmount(summary.monthly_purchase.total_amount)}
+                    sub={`${summary.monthly_purchase.order_count}건`}
+                  />
+                  <SummaryRow
+                    icon={TrendingUp}
+                    label="매출"
+                    value={formatAmount(summary.monthly_sales.total_amount)}
+                    sub={`${summary.monthly_sales.order_count}건`}
+                  />
+                  <SummaryRow
+                    label="이익"
+                    value={formatAmount(summary.monthly_sales.total_amount - summary.monthly_sales.total_cogs)}
+                    className="bg-background/30"
+                  />
+                </>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {/* 재발주 알림 */}
       <section>
@@ -161,23 +185,44 @@ export default function DashboardContent() {
   )
 }
 
-function SummaryCard({ label, value, sub, icon: Icon, href }: {
-  label: string; value: string; sub?: string
-  icon: React.ComponentType<{ className?: string }>
+function SummaryRow({ category, icon: Icon, label, value, sub, href, className }: {
+  category?: string
+  icon?: React.ComponentType<{ className?: string }>
+  label: string
+  value: string
+  sub?: string
   href?: string
+  className?: string
 }) {
-  const content = (
-    <div className={`border border-border rounded-lg p-4 ${href ? 'hover:bg-card/60 transition-colors cursor-pointer' : ''}`}>
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-        <p className="text-xs text-muted-foreground">{label}</p>
-      </div>
-      <p className="font-heading text-xl sm:text-2xl lg:text-[36px] font-bold tracking-[-0.02em] leading-tight">{value}</p>
-      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
-    </div>
+  return (
+    <tr className={`border-b border-border last:border-0 ${className ?? ''}`}>
+      <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">
+        {category ?? ''}
+      </td>
+      <td className="px-4 py-2">
+        <span className="flex items-center gap-2">
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+          <span>{label}</span>
+        </span>
+      </td>
+      <td className="px-4 py-2 font-data text-right font-medium whitespace-nowrap">
+        {value}
+        {sub && <span className="text-xs text-muted-foreground ml-1.5">({sub})</span>}
+      </td>
+      <td className="px-4 py-2 text-right">
+        {href && (
+          <Button
+            variant="ghost"
+            size="sm"
+            render={<Link href={href} />}
+            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+          >
+            보기 <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+        )}
+      </td>
+    </tr>
   )
-  if (href) return <Link href={href}>{content}</Link>
-  return content
 }
 
 function OnboardingItem({ icon: Icon, title, count, href }: {
