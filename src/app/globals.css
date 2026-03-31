@@ -41,6 +41,13 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-primary-hover: var(--primary-hover);
+  --color-surface-elevated: var(--surface-elevated);
   /* DESIGN.md: sm=3px, md=6px, lg=8px, xl=10px */
   --radius-sm: 3px;
   --radius-md: 6px;
@@ -52,72 +59,93 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.55 0.15 45); /* #D4642A 주황 액센트 기반 포커스 링 */
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* DESIGN.md 색상 시스템 — 따뜻한 오프화이트 + 산업용 주황 */
+  --background: #F5F0EB;          /* 따뜻한 오프화이트 */
+  --foreground: #1A1714;          /* 먹색 검정 */
+  --card: #FEFCF9;                /* 카드/패널 배경 */
+  --card-foreground: #1A1714;
+  --popover: #FFFFFF;             /* 모달/드롭다운 최상위 */
+  --popover-foreground: #1A1714;
+  --primary: #D4642A;             /* 산업용 주황 액센트 */
+  --primary-foreground: #FEFCF9;
+  --secondary: #2B7A6F;           /* 짙은 틸 (성공/완료) */
+  --secondary-foreground: #FEFCF9;
+  --muted: #F5F0EB;
+  --muted-foreground: #9C9189;    /* 비활성 텍스트 */
+  --accent: #F5F0EB;
+  --accent-foreground: #1A1714;
+  --destructive: #B83A2A;         /* 적갈색 에러 */
+  --border: #E0D8CF;              /* 따뜻한 회색 테두리 */
+  --input: #E0D8CF;
+  --ring: #D4642A;                /* 포커스 링 = 주황 액센트 */
+  --chart-1: #D4642A;
+  --chart-2: #2B7A6F;
+  --chart-3: #4A7B94;
+  --chart-4: #C4901A;
+  --chart-5: #8B6B4A;
+  --radius: 0.5rem;
+  --sidebar: #FEFCF9;
+  --sidebar-foreground: #1A1714;
+  --sidebar-primary: #D4642A;
+  --sidebar-primary-foreground: #FEFCF9;
+  --sidebar-accent: #F5F0EB;
+  --sidebar-accent-foreground: #1A1714;
+  --sidebar-border: #E0D8CF;
+  --sidebar-ring: #D4642A;
+
+  /* DESIGN.md 시맨틱 색상 (커스텀) */
+  --success: #2B7A6F;
+  --warning: #C4901A;
+  --info: #4A7B94;
+  --text-secondary: #6B6158;
+  --text-muted: #9C9189;
+  --text-disabled: #C4BBB2;
+  --surface-elevated: #FFFFFF;
+  --primary-hover: #BF5520;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* DESIGN.md 다크모드 */
+  --background: #141210;
+  --foreground: #E8E0D6;
+  --card: #1E1B18;
+  --card-foreground: #E8E0D6;
+  --popover: #282420;
+  --popover-foreground: #E8E0D6;
+  --primary: #E8773F;             /* 밝게 조정된 주황 */
+  --primary-foreground: #141210;
+  --secondary: #3DA396;
+  --secondary-foreground: #141210;
+  --muted: #1E1B18;
+  --muted-foreground: #706860;
+  --accent: #1E1B18;
+  --accent-foreground: #E8E0D6;
+  --destructive: #D4503A;
+  --border: #3A3530;
+  --input: #3A3530;
+  --ring: #E8773F;
+  --chart-1: #E8773F;
+  --chart-2: #3DA396;
+  --chart-3: #5A9BB4;
+  --chart-4: #D4A02A;
+  --chart-5: #9B7B5A;
+  --sidebar: #1E1B18;
+  --sidebar-foreground: #E8E0D6;
+  --sidebar-primary: #E8773F;
+  --sidebar-primary-foreground: #141210;
+  --sidebar-accent: #282420;
+  --sidebar-accent-foreground: #E8E0D6;
+  --sidebar-border: #3A3530;
+  --sidebar-ring: #E8773F;
+
+  --success: #3DA396;
+  --warning: #D4A02A;
+  --info: #5A9BB4;
+  --text-secondary: #A09688;
+  --text-muted: #706860;
+  --text-disabled: #504840;
+  --surface-elevated: #282420;
+  --primary-hover: #F08850;
 }
 
 @layer base {
