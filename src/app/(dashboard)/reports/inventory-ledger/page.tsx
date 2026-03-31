@@ -29,7 +29,9 @@ function getDefaultDates() {
 }
 
 const txTypeLabels: Record<string, string> = {
+  purchase_in: '매입입고',
   goods_receipt: '입고',
+  sale_out: '매출출고',
   shipment: '출고',
   assembly_consume: '조립소비',
   assembly_produce: '조립생산',
