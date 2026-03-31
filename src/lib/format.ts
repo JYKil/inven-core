@@ -12,10 +12,10 @@ export function formatQty(value: number | null | undefined, unit = 'EA'): string
   return value.toLocaleString('ko-KR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })
 }
 
-// 단가 포맷: 소수4자리 + ₩
+// 단가 포맷: 최대 소수4자리 (후행 0 제거) + ₩
 export function formatUnitPrice(value: number | null | undefined): string {
   if (value == null) return '-'
-  return `₩${value.toLocaleString('ko-KR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`
+  return `₩${value.toLocaleString('ko-KR', { minimumFractionDigits: 0, maximumFractionDigits: 4 })}`
 }
 
 // 금액 포맷: 소수2자리 + ₩

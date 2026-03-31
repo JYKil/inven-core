@@ -34,12 +34,16 @@ describe('formatQty', () => {
 })
 
 describe('formatUnitPrice', () => {
-  it('단가에 ₩ 접두사와 소수4자리 표시', () => {
-    expect(formatUnitPrice(1500)).toBe('₩1,500.0000')
+  it('정수 단가는 후행 0 없이 표시', () => {
+    expect(formatUnitPrice(1500)).toBe('₩1,500')
   })
 
-  it('소수점 있는 단가 표시', () => {
+  it('소수점 있는 단가는 최대 4자리까지 표시', () => {
     expect(formatUnitPrice(12.3456)).toBe('₩12.3456')
+  })
+
+  it('소수 2자리 단가는 2자리까지만 표시', () => {
+    expect(formatUnitPrice(100.55)).toBe('₩100.55')
   })
 
   it('null이면 - 반환', () => {
@@ -50,8 +54,8 @@ describe('formatUnitPrice', () => {
     expect(formatUnitPrice(undefined)).toBe('-')
   })
 
-  it('0은 ₩0.0000', () => {
-    expect(formatUnitPrice(0)).toBe('₩0.0000')
+  it('0은 ₩0', () => {
+    expect(formatUnitPrice(0)).toBe('₩0')
   })
 })
 
