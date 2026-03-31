@@ -65,7 +65,7 @@ export default function DashboardContent() {
       <section>
         <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">업무 현황</h2>
         <div className="border border-border rounded-lg overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[480px] text-sm">
             <thead>
               <tr className="bg-background/50 border-b border-border">
                 <th className="text-left px-4 py-2 font-medium text-muted-foreground">구분</th>
@@ -199,7 +199,7 @@ function SummaryRow({ category, icon: Icon, label, value, sub, href, className }
       <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">
         {category ?? ''}
       </td>
-      <td className="px-4 py-2">
+      <td className="px-4 py-2 whitespace-nowrap">
         <span className="flex items-center gap-2">
           {Icon && <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
           <span>{label}</span>
