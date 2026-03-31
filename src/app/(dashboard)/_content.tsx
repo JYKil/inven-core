@@ -169,7 +169,7 @@ export default function DashboardContent() {
                         variant="outline"
                         size="sm"
                         render={<Link href="/purchase-orders/new" />}
-                        className="h-7 text-xs"
+                        className="h-7 text-xs relative before:absolute before:-inset-2 before:content-['']"
                       >
                         발주 생성
                       </Button>
