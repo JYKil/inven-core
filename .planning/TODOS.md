@@ -85,10 +85,17 @@
 - [x] `supabase db push` — execute_shipment 마이그레이션 클라우드 적용
 - [x] `supabase gen types typescript` — RPC 함수 타입 반영
 - [x] Next.js 빌드 확인 통과
-- [ ] ComingSoon 제거 — sales-orders/page.tsx 실제 UI로 교체
+- [x] ComingSoon 제거 — sales-orders/page.tsx 실제 UI로 교체 (슬라이스 4 구현 시 완료됨)
 
 ### 디자인 리뷰 ✅
 - [x] `/design-review` 완료
+
+### QA — 슬라이스 4 ✅
+- [x] 품목 등록 min_stock_qty valueAsNumber 누락 수정 (ISSUE-002) — 조용한 제출 실패
+- [x] Supabase 에러 메시지 미표시 수정 (ISSUE-001) — extractErrorMessage 유틸, 11파일 19개 catch
+- [x] Vitest + Testing Library 테스트 프레임워크 부트스트랩
+- [x] 빈 테이블 스켈레톤 깜빡임 (ISSUE-003, Low) — keepPreviousData 적용 (10개 훅)
+- 헬스 스코어: 80.8 → 89
 
 ---
 
@@ -107,27 +114,36 @@
 - [x] Query 키 팩토리 — warehouseTransfers, reports, dashboard
 - [x] TypeScript 타입 체크 통과 (RPC 타입 단언 포함, db push 후 제거 예정)
 
-### UI 구현 (남은 작업)
-- [ ] 창고 이동 목록/생성/상세 페이지
-- [ ] 보고서: 재고 수불부 (필터 + 테이블 + CSV 내보내기)
-- [ ] 보고서: 창고별 재고 (필터 + 테이블 + CSV 내보내기)
-- [ ] 보고서: 매출 보고서 (필터 + 테이블 + CSV 내보내기)
-- [ ] 대시보드 (재발주 알람 + 처리 대기 + 매입/매출 요약 + 온보딩 위젯)
+### UI 구현 ✅
+- [x] 창고 이동 목록/생성/상세 페이지
+- [x] 보고서: 재고 수불부 (필터 + 테이블 + CSV 내보내기)
+- [x] 보고서: 창고별 재고 (필터 + 테이블 + CSV 내보내기)
+- [x] 보고서: 매출 보고서 (필터 + 테이블 + CSV 내보내기)
+- [x] 대시보드 (재발주 알람 + 처리 대기 + 매입/매출 요약 + 온보딩 위젯)
+- [x] CSV 내보내기 유틸리티 (src/lib/csv.ts) — UTF-8 BOM + 엑셀 호환
 
-### 마무리
+### 마무리 ✅
 - [x] `supabase db push` — 3개 RPC 마이그레이션 클라우드 적용 (execute_transfer, reports, dashboard)
 - [x] `supabase gen types typescript` — RPC 함수 타입 반영
 - [x] `(supabase.rpc as any)` 타입 단언 제거 + nullable→undefined 수정
 - [x] TypeScript 타입 체크 통과
-- [ ] ComingSoon 제거 — 창고이동/보고서 페이지 실제 UI로 교체
+- [x] ComingSoon 제거 — 창고이동/보고서 페이지 실제 UI로 교체
+- [x] Next.js 빌드 통과
 
 ---
 
 ## P2.5 — 슬라이스 5 완료 후
 
-### 다크 모드 토글 UI
-CSS 변수는 라이트+다크 양쪽 설정 완료 상태. 토글 UI(설정 화면 또는 TopBar)를 추가하여 사용자가 전환 가능하게 구현.
-DESIGN.md에 다크 모드 컬러 토큰 정의 완료.
+### settings 페이지 구현 ✅
+- [x] 회사 설정 — 기본 정보 수정(회사명/사업자번호/주소/연락처), 원가 방식 표시, 초대 코드 표시
+- [x] 사용자 관리 — 같은 회사 사용자 목록, 검색, 역할 변경, 활성/비활성 토글, 승인 대기 표시
+- [x] 사용자 초대 API — company_admin 전용 POST /api/settings/invite-user (역할 선택 가능)
+- [x] 권한 분리 — company_admin은 편집 가능, normal은 읽기 전용
+- [x] 기존 빌드 에러 수정 — warehouse-transfers/route.ts p_notes null→undefined
+
+### 다크 모드 토글 UI ✅
+- [x] ThemeProvider (next-themes) → providers.tsx 추가
+- [x] TopBar 테마 토글 버튼 (Sun/Moon 아이콘, localStorage 자동 저장)
 
 ### 롤백/정정 트랜잭션
 입고 취소, 조립 취소, 출고 정정 등 역방향 트랜잭션 RPC 함수 설계 및 구현.
