@@ -37,6 +37,7 @@ export const queryKeys = {
   goodsReceipts: {
     all: ['goodsReceipts'] as const,
     list: (filters: ListFilters = {}) => [...queryKeys.goodsReceipts.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.goodsReceipts.all, 'detail', id] as const,
     byPo: (poId: string) => [...queryKeys.goodsReceipts.all, 'byPo', poId] as const,
   },
   poPayments: {

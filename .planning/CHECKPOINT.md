@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 5 완료 (QA 헬스 79→100, 디자인 6.5→8.3) / 롤백 RPC 설계 완료
+- **단계**: 롤백/취소 기능 완료 (SQL 6개 + API 4개 + UI 4종) / 보고서 RPC 수정 남음
 - **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
@@ -105,13 +105,19 @@
 
 19. ~~슬라이스 5 디자인 리뷰~~ → 완료 (6.5→8.3, 4 FINDING 수정, 1 deferred)
 
+19. ~~롤백/정정 RPC 구현~~ → 완료
+    - [x] DB 마이그레이션 (cancelled_at, cancel_reason — 4개 테이블)
+    - [x] restore_lot_consumptions 공통 유틸 함수
+    - [x] cancel_shipment / cancel_goods_receipt / cancel_transfer / cancel_assembly RPC 4종
+    - [x] API Route 4종
+    - [x] CancelDialog 공통 컴포넌트 + 뮤테이션 훅 4종
+    - [x] 상세 페이지 4종에 취소 버튼 + 취소 상태 표시
+    - [x] 입고 상세 페이지 신규 생성 (goods-receipts/[id])
+    - [x] DB push + 타입 재생성 + TypeScript/Next.js 빌드 통과
+
 ### 남은 작업
-1. **롤백/정정 RPC 구현** — 설계 완료, 코드 작성 대기
-   - DB 마이그레이션 (cancelled_at, cancel_reason 컬럼)
-   - RPC 구현 (cancel_shipment → cancel_goods_receipt → cancel_transfer → cancel_assembly)
-   - API Route 4종 + UI (취소 버튼 + AlertDialog)
-   - 보고서 RPC 수정 (cancel 타입 집계)
-2. **Vercel 재배포** — QA + 디자인 리뷰 수정사항 반영
+1. **보고서 RPC 수정** — cancel 타입 트랜잭션 집계 반영
+2. **Vercel 재배포** — 롤백 기능 + QA/디자인 수정사항 반영
 3. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항

@@ -69,6 +69,36 @@ export function useWarehouseTransfer(id: string) {
   })
 }
 
+// 창고 이동 취소 — API Route 호출 (cancel_transfer RPC)
+export function useCancelTransfer() {
+  const supabase = createClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('인증이 필요합니다')
+
+      const res = await fetch(`/api/warehouse-transfers/${id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ reason }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message ?? '이동 취소 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.warehouseTransfers.all })
+      qc.invalidateQueries({ queryKey: queryKeys.inventory.all })
+    },
+  })
+}
+
 // 창고 이동 실행 — API Route 호출 (execute_transfer RPC)
 export function useExecuteTransfer() {
   const supabase = createClient()

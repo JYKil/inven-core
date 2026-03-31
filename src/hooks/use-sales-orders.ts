@@ -153,6 +153,36 @@ export function useUpdateSalesOrderStatus() {
   })
 }
 
+// 출고 취소 — API Route 호출 (cancel_shipment RPC)
+export function useCancelShipment() {
+  const supabase = createClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('인증이 필요합니다')
+
+      const res = await fetch(`/api/sales-orders/${id}/cancel-shipment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ reason }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message ?? '출고 취소 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.salesOrders.all })
+      qc.invalidateQueries({ queryKey: queryKeys.inventory.all })
+    },
+  })
+}
+
 // 출고 실행 — API Route 호출 (execute_shipment RPC)
 export function useExecuteShipment() {
   const supabase = createClient()

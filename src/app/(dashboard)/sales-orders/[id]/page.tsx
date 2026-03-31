@@ -160,6 +160,18 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
               <dd>{so.notes}</dd>
             </div>
           )}
+          {(so as any).cancelled_shipment_at && (
+            <div className="col-span-4 border-t border-border pt-3 mt-1">
+              <dt className="text-muted-foreground text-xs mb-1">출고 취소일</dt>
+              <dd className="font-data text-destructive">{formatDate((so as any).cancelled_shipment_at)}</dd>
+            </div>
+          )}
+          {(so as any).cancel_reason && (
+            <div className="col-span-4">
+              <dt className="text-muted-foreground text-xs mb-1">취소 사유</dt>
+              <dd className="text-destructive">{(so as any).cancel_reason}</dd>
+            </div>
+          )}
         </dl>
       </section>
 

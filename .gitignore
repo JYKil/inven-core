@@ -45,3 +45,10 @@ next-env.d.ts
 
 # gstack design review output
 .gstack-output/
+.gstack-report/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

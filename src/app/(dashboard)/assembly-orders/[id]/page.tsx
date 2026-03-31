@@ -2,6 +2,8 @@
 
 import { use } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { ArrowLeft, PackageSearch, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,7 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/common/page-header'
 import { StatusBadge } from '@/components/common/status-badge'
 import { formatDate, formatQty, formatAmount, formatUnitPrice } from '@/lib/format'
-import { useAssemblyOrder } from '@/hooks/use-assembly-orders'
+import { useAssemblyOrder, useCancelAssembly } from '@/hooks/use-assembly-orders'
+import { CancelDialog } from '@/components/common/cancel-dialog'
 
 export default function AssemblyOrderDetailPage({
   params,
@@ -20,6 +23,17 @@ export default function AssemblyOrderDetailPage({
 }) {
   const { id } = use(params)
   const { data: order, isLoading } = useAssemblyOrder(id)
+  const cancelAssembly = useCancelAssembly()
+
+  const handleCancelAssembly = async (reason: string) => {
+    try {
+      await cancelAssembly.mutateAsync({ id, reason: reason || undefined })
+      toast.success('조립 취소 완료 — 재료가 복원되었습니다')
+    } catch (err) {
+      toast.error(extractErrorMessage(err, '조립 취소 실패'))
+      throw err
+    }
+  }
 
   if (isLoading) {
     return (
@@ -52,6 +66,15 @@ export default function AssemblyOrderDetailPage({
     <div>
       <PageHeader title="조립 상세">
         <div className="flex gap-2">
+          {order.status === 'completed' && (
+            <CancelDialog
+              title="조립 취소"
+              description="조립을 취소하면 소비된 재료가 복원되고 결과물이 제거됩니다. 이 작업은 되돌릴 수 없습니다."
+              triggerLabel="조립 취소"
+              onConfirm={handleCancelAssembly}
+              isPending={cancelAssembly.isPending}
+            />
+          )}
           <Button variant="outline" render={<Link href="/assembly-orders" />}>
             <ArrowLeft className="h-4 w-4 mr-1" />
             목록으로
@@ -115,6 +138,18 @@ export default function AssemblyOrderDetailPage({
               <p className="text-xs text-text-secondary mb-1">생성일</p>
               <p className="text-sm font-data">{formatDate(order.created_at)}</p>
             </div>
+            {(order as any).cancelled_at && (
+              <div>
+                <p className="text-xs text-text-secondary mb-1">취소일</p>
+                <p className="text-sm font-data text-destructive">{formatDate((order as any).cancelled_at)}</p>
+              </div>
+            )}
+            {(order as any).cancel_reason && (
+              <div className="col-span-2 md:col-span-4">
+                <p className="text-xs text-text-secondary mb-1">취소 사유</p>
+                <p className="text-sm text-destructive">{(order as any).cancel_reason}</p>
+              </div>
+            )}
           </div>
         </section>
 

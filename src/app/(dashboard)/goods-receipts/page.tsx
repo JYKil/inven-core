@@ -73,7 +73,7 @@ export default function GoodsReceiptsPage() {
               </TableRow>
             ) : (
               data?.data.map((gr: any) => (
-                <TableRow key={gr.id}>
+                <TableRow key={gr.id} className="cursor-pointer hover:bg-muted/50" onClick={() => window.location.href = `/goods-receipts/${gr.id}`}>
                   <TableCell className="font-data font-medium">{gr.receipt_number}</TableCell>
                   <TableCell className="font-data text-text-secondary">
                     {gr.purchase_order?.po_number ?? '-'}

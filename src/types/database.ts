@@ -60,6 +60,8 @@ export type Database = {
         Row: {
           assembly_date: string
           bom_header_id: string
+          cancel_reason: string | null
+          cancelled_at: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -76,6 +78,8 @@ export type Database = {
         Insert: {
           assembly_date: string
           bom_header_id: string
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -92,6 +96,8 @@ export type Database = {
         Update: {
           assembly_date?: string
           bom_header_id?: string
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -314,6 +320,8 @@ export type Database = {
       }
       goods_receipts: {
         Row: {
+          cancel_reason: string | null
+          cancelled_at: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -327,6 +335,8 @@ export type Database = {
           warehouse_id: string
         }
         Insert: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -340,6 +350,8 @@ export type Database = {
           warehouse_id: string
         }
         Update: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -985,6 +997,8 @@ export type Database = {
       }
       sales_orders: {
         Row: {
+          cancel_reason: string | null
+          cancelled_shipment_at: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -998,6 +1012,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cancel_reason?: string | null
+          cancelled_shipment_at?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -1011,6 +1027,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cancel_reason?: string | null
+          cancelled_shipment_at?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -1088,6 +1106,8 @@ export type Database = {
       }
       warehouse_transfers: {
         Row: {
+          cancel_reason: string | null
+          cancelled_at: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -1100,6 +1120,8 @@ export type Database = {
           transfer_number: string
         }
         Insert: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -1112,6 +1134,8 @@ export type Database = {
           transfer_number: string
         }
         Update: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -1215,6 +1239,38 @@ export type Database = {
         }
         Returns: string
       }
+      cancel_assembly: {
+        Args: {
+          p_assembly_order_id: string
+          p_company_id: string
+          p_reason?: string
+        }
+        Returns: Json
+      }
+      cancel_goods_receipt: {
+        Args: {
+          p_company_id: string
+          p_goods_receipt_id: string
+          p_reason?: string
+        }
+        Returns: Json
+      }
+      cancel_shipment: {
+        Args: {
+          p_company_id: string
+          p_reason?: string
+          p_sales_order_id: string
+        }
+        Returns: Json
+      }
+      cancel_transfer: {
+        Args: {
+          p_company_id: string
+          p_reason?: string
+          p_warehouse_transfer_id: string
+        }
+        Returns: Json
+      }
       consume_inventory: {
         Args: {
           p_company_id: string
@@ -1311,6 +1367,14 @@ export type Database = {
       report_warehouse_stock: {
         Args: { p_company_id: string; p_warehouse_id?: string }
         Returns: Json
+      }
+      restore_lot_consumptions: {
+        Args: { p_company_id: string; p_transaction_id: string }
+        Returns: {
+          lot_id: string
+          restored_qty: number
+          unit_cost: number
+        }[]
       }
       update_bom_lines: {
         Args: { p_bom_header_id: string; p_company_id: string; p_lines: Json }

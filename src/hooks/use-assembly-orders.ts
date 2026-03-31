@@ -192,6 +192,36 @@ export function useAssemblyItems() {
 }
 
 // 조립 실행 — API Route 호출
+// 조립 취소 — API Route 호출 (cancel_assembly RPC)
+export function useCancelAssembly() {
+  const supabase = createClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('인증이 필요합니다')
+
+      const res = await fetch(`/api/assembly-orders/${id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ reason }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message ?? '조립 취소 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.assemblyOrders.all })
+      qc.invalidateQueries({ queryKey: queryKeys.inventory.all })
+    },
+  })
+}
+
 export function useExecuteAssembly() {
   const supabase = createClient()
   const qc = useQueryClient()

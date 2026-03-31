@@ -2,6 +2,8 @@
 
 import { use } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { Button } from '@/components/ui/button'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -10,11 +12,23 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/common/page-header'
 import { StatusBadge } from '@/components/common/status-badge'
 import { formatDate, formatQty, formatAmount } from '@/lib/format'
-import { useWarehouseTransfer } from '@/hooks/use-warehouse-transfers'
+import { useWarehouseTransfer, useCancelTransfer } from '@/hooks/use-warehouse-transfers'
+import { CancelDialog } from '@/components/common/cancel-dialog'
 
 export default function WarehouseTransferDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { data: transfer, isLoading } = useWarehouseTransfer(id)
+  const cancelTransfer = useCancelTransfer()
+
+  const handleCancelTransfer = async (reason: string) => {
+    try {
+      await cancelTransfer.mutateAsync({ id, reason: reason || undefined })
+      toast.success('이동 취소 완료 — 재고가 복원되었습니다')
+    } catch (err) {
+      toast.error(extractErrorMessage(err, '이동 취소 실패'))
+      throw err
+    }
+  }
 
   if (isLoading) {
     return (
@@ -33,7 +47,17 @@ export default function WarehouseTransferDetailPage({ params }: { params: Promis
 
   return (
     <div>
-      <PageHeader title={transfer.transfer_number} />
+      <PageHeader title={transfer.transfer_number}>
+        {transfer.status === 'completed' && (
+          <CancelDialog
+            title="이동 취소"
+            description="이동을 취소하면 출발지/도착지 재고가 원래대로 복원됩니다. 이 작업은 되돌릴 수 없습니다."
+            triggerLabel="이동 취소"
+            onConfirm={handleCancelTransfer}
+            isPending={cancelTransfer.isPending}
+          />
+        )}
+      </PageHeader>
 
       {/* 헤더 정보 */}
       <section className="pb-6 mb-6 border-b border-border">
@@ -58,6 +82,18 @@ export default function WarehouseTransferDetailPage({ params }: { params: Promis
             <div className="col-span-4">
               <dt className="text-muted-foreground text-xs mb-1">비고</dt>
               <dd>{transfer.notes}</dd>
+            </div>
+          )}
+          {(transfer as any).cancelled_at && (
+            <div className="col-span-4 border-t border-border pt-3 mt-1">
+              <dt className="text-muted-foreground text-xs mb-1">취소일</dt>
+              <dd className="font-data text-destructive">{formatDate((transfer as any).cancelled_at)}</dd>
+            </div>
+          )}
+          {(transfer as any).cancel_reason && (
+            <div className="col-span-4">
+              <dt className="text-muted-foreground text-xs mb-1">취소 사유</dt>
+              <dd className="text-destructive">{(transfer as any).cancel_reason}</dd>
             </div>
           )}
         </dl>

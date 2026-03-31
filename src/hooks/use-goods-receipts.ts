@@ -42,6 +42,32 @@ export function useGoodsReceipts(filters: GrFilters = {}) {
   })
 }
 
+// 입고 상세 (라인 포함)
+export function useGoodsReceipt(id: string) {
+  const supabase = createClient()
+  return useQuery({
+    queryKey: queryKeys.goodsReceipts.detail(id),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('goods_receipts')
+        .select(`
+          *,
+          warehouse:warehouses!goods_receipts_warehouse_id_fkey(id, code, name),
+          purchase_order:purchase_orders!goods_receipts_po_id_fkey(id, po_number),
+          goods_receipt_lines(
+            *,
+            item:items!goods_receipt_lines_item_id_fkey(id, code, name, unit)
+          )
+        `)
+        .eq('id', id)
+        .single()
+      if (error) throw error
+      return data
+    },
+    enabled: !!id,
+  })
+}
+
 // PO별 입고 이력
 export function useGoodsReceiptsByPo(poId: string) {
   const supabase = createClient()
@@ -64,6 +90,37 @@ export function useGoodsReceiptsByPo(poId: string) {
       return data ?? []
     },
     enabled: !!poId,
+  })
+}
+
+// 입고 취소 — API Route 호출 (cancel_goods_receipt RPC)
+export function useCancelGoodsReceipt() {
+  const supabase = createClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('인증이 필요합니다')
+
+      const res = await fetch(`/api/goods-receipts/${id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ reason }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message ?? '입고 취소 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.goodsReceipts.all })
+      qc.invalidateQueries({ queryKey: queryKeys.purchaseOrders.all })
+      qc.invalidateQueries({ queryKey: queryKeys.inventory.all })
+    },
   })
 }
 

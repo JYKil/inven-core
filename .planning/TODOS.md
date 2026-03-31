@@ -178,10 +178,19 @@
   - cancel_transfer (이동 취소) — 양방향 (출발지 복원 + 도착지 제거)
   - cancel_assembly (조립 취소) — 재료 복원 + 결과물 제거
   - restore_lot_consumptions 공통 유틸 함수
-- [ ] DB 마이그레이션 (cancelled_at, cancel_reason 컬럼)
-- [ ] RPC 구현 (순서: shipment → receipt → transfer → assembly)
-- [ ] API Route 4종
-- [ ] UI (취소 버튼 + AlertDialog + 취소 상태 표시)
+- [x] DB 마이그레이션 (cancelled_at, cancel_reason 컬럼) — 4개 테이블
+- [x] restore_lot_consumptions 공통 유틸 함수 구현
+- [x] RPC 구현 (cancel_shipment, cancel_goods_receipt, cancel_transfer, cancel_assembly)
+- [x] API Route 4종 구현
+- [x] DB push + 타입 재생성 + TypeScript/Next.js 빌드 통과
+- [x] UI (취소 버튼 + CancelDialog + 취소 상태 표시) — 4개 상세 페이지
+  - [x] CancelDialog 공통 컴포넌트 (사유 입력 + 경고 메시지)
+  - [x] 취소 뮤테이션 훅 4종 (useCancelShipment/GoodsReceipt/Transfer/Assembly)
+  - [x] 판매주문 상세 — 출고 취소 버튼 + 취소 정보 표시
+  - [x] 조립 상세 — 조립 취소 버튼 + 취소 정보 표시
+  - [x] 창고 이동 상세 — 이동 취소 버튼 + 취소 정보 표시
+  - [x] 입고 상세 페이지 신규 생성 — 입고 취소 버튼 + 라인 목록 + 목록 클릭 링크
+  - [x] goodsReceipts.detail 쿼리 키 + useGoodsReceipt 훅 추가
 - [ ] 보고서 RPC 수정 (cancel 타입 집계)
 
 ---
