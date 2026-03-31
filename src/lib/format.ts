@@ -18,10 +18,10 @@ export function formatUnitPrice(value: number | null | undefined): string {
   return `₩${value.toLocaleString('ko-KR', { minimumFractionDigits: 0, maximumFractionDigits: 4 })}`
 }
 
-// 금액 포맷: 소수2자리 + ₩
+// 금액 포맷: 정수 + ₩ (원화는 소수점 불필요)
 export function formatAmount(value: number | null | undefined): string {
   if (value == null) return '-'
-  return `₩${value.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return `₩${Math.round(value).toLocaleString('ko-KR')}`
 }
 
 // 비율 포맷: 소수1자리 + %

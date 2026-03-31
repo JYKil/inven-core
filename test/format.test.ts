@@ -60,16 +60,20 @@ describe('formatUnitPrice', () => {
 })
 
 describe('formatAmount', () => {
-  it('금액에 ₩ 접두사와 소수2자리 표시', () => {
-    expect(formatAmount(10000)).toBe('₩10,000.00')
+  it('금액에 ₩ 접두사와 정수 표시 (원화는 소수점 불필요)', () => {
+    expect(formatAmount(10000)).toBe('₩10,000')
   })
 
   it('null이면 - 반환', () => {
     expect(formatAmount(null)).toBe('-')
   })
 
-  it('0은 ₩0.00', () => {
-    expect(formatAmount(0)).toBe('₩0.00')
+  it('0은 ₩0', () => {
+    expect(formatAmount(0)).toBe('₩0')
+  })
+
+  it('소수점 값은 반올림', () => {
+    expect(formatAmount(10000.75)).toBe('₩10,001')
   })
 })
 
