@@ -213,6 +213,23 @@
 
 ---
 
+## P2.7 — 디자인 리뷰 2차 (2026-03-31)
+
+### 수정 완료
+- [x] FINDING-001 (High): 원화 금액 소수점 .00 제거 — formatAmount 정수 반올림
+- [x] FINDING-003 (Medium): 발주 생성 버튼 터치 타겟 확장 (before pseudo-element)
+- [x] FINDING-004 (High): 9개 리스트 페이지 모바일 테이블 overflow-hidden → overflow-x-auto
+- [x] FINDING-006 (High): warning 뱃지 대비 AA 충족 (#C4901A→#926B12, 2.79:1→4.73:1)
+- [x] FINDING-007 (Medium): 매출 보고서 메트릭 카드 → 테이블 변환
+
+### Deferred
+- [ ] 모바일 전용 레이아웃 미구현 (현재 데스크톱 축소)
+- [ ] 스페이싱 토큰 미완성 (임의 px 값 일부)
+- [ ] 테이블 행 onClick 시맨틱 개선 (tr → 링크)
+- 디자인 점수: B+, AI 슬롭: A
+
+---
+
 ## 배포 전 체크리스트
 
 - [x] `supabase db push` — execute_goods_receipt 마이그레이션 클라우드 적용
