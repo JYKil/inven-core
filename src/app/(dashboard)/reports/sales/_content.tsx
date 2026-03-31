@@ -99,17 +99,29 @@ export default function SalesReportContent() {
         </div>
       </div>
 
-      {/* 요약 카드 */}
+      {/* 요약 — 테이블 행 (카드 대신, DESIGN.md 원칙: 카드는 인터랙션일 때만) */}
       {data && data.totals && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <SummaryCard label="매출액" value={formatAmount(data.totals.total_revenue)} />
-          <SummaryCard label="매출원가" value={formatAmount(data.totals.total_cogs)} />
-          <SummaryCard
-            label="매출이익"
-            value={formatAmount(data.totals.total_profit)}
-            className={data.totals.total_profit >= 0 ? 'text-secondary' : 'text-destructive'}
-          />
-          <SummaryCard label="이익률" value={formatPercent(data.profit_margin)} />
+        <div className="border border-border rounded-lg overflow-hidden mb-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-background/50 border-b border-border">
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">매출액</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">매출원가</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">매출이익</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">이익률</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-4 py-3 font-data text-lg font-bold">{formatAmount(data.totals.total_revenue)}</td>
+                <td className="px-4 py-3 font-data text-lg font-bold">{formatAmount(data.totals.total_cogs)}</td>
+                <td className={`px-4 py-3 font-data text-lg font-bold ${data.totals.total_profit >= 0 ? 'text-secondary' : 'text-destructive'}`}>
+                  {formatAmount(data.totals.total_profit)}
+                </td>
+                <td className="px-4 py-3 font-data text-lg font-bold">{formatPercent(data.profit_margin)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -182,11 +194,3 @@ export default function SalesReportContent() {
   )
 }
 
-function SummaryCard({ label, value, className }: { label: string; value: string; className?: string }) {
-  return (
-    <div className="border border-border rounded-lg p-4">
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <p className={`font-heading text-[36px] font-bold tracking-[-0.02em] leading-tight ${className ?? ''}`}>{value}</p>
-    </div>
-  )
-}
