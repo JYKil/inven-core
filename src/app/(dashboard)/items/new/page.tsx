@@ -99,7 +99,7 @@ export default function NewItemPage() {
             </div>
             <div className="space-y-1.5">
               <Label>최소 재고 수량 (알람용)</Label>
-              <Input type="number" step="any" {...form.register('min_stock_qty')} />
+              <Input type="number" step="any" {...form.register('min_stock_qty', { valueAsNumber: true })} />
             </div>
             <div className="space-y-1.5">
               <Label>설명</Label>
