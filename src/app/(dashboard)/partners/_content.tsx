@@ -76,7 +76,7 @@ export default function PartnersContent() {
       </div>
 
       {/* 테이블 */}
-      <div className="border border-border rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">

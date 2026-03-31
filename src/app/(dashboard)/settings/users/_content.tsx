@@ -233,7 +233,7 @@ export default function UsersSettingsContent() {
       {isLoading ? (
         <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
       ) : (
-        <div className="border border-border rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">

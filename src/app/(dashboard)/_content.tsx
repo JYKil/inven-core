@@ -64,7 +64,7 @@ export default function DashboardContent() {
       {/* 업무 현황 — 테이블 레이아웃 */}
       <section>
         <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">업무 현황</h2>
-        <div className="border border-border rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-background/50 border-b border-border">
