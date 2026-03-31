@@ -55,6 +55,15 @@
 - [x] `supabase gen types typescript` — RPC 함수 타입 반영
 - [x] API Route의 `(supabase.rpc as any)` 타입 단언 제거
 
+### 디자인 리뷰 ✅
+- [x] `/design-review` 완료 — 5개 FINDING 수정 (사이드바 접힘 기본, TopBar 터치 타겟, 퀵 스타트 가이드, TopBar 배경색, 사이드바 섹션 레이블)
+
+### QA — 슬라이스 1~3 ✅
+- [x] Select 드롭다운 영문 value 표시 수정 (ISSUE-001/002) — Base UI items prop 추가, 13개 파일
+- [x] 미구현 페이지 404 → "준비 중" 안내 페이지 (ISSUE-003) — ComingSoon 컴포넌트 + 7개 placeholder
+- [x] 전체 페이지 탐색 + 빈 상태 + 유효성 검증 + 사이드바 토글 + 모바일 반응형 확인
+- 헬스 스코어: 69 → 85
+
 ---
 
 ## P1.5 — 슬라이스 4: 영업/출고
