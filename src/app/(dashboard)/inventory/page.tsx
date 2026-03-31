@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -31,6 +31,12 @@ export default function InventoryPage() {
   const { data: warehousesData } = useWarehouses({ pageSize: 100 })
   const warehouses = warehousesData?.data ?? []
 
+  const warehouseItems = useMemo(() => {
+    const map: Record<string, string> = { all: '전체 창고' }
+    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    return map
+  }, [warehouses])
+
   const handleSearch = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search, page: 1 }))
   }, [])
@@ -60,6 +66,7 @@ export default function InventoryPage() {
         <Select
           value={filters.warehouseId ?? 'all'}
           onValueChange={(v) => setFilters((p) => ({ ...p, warehouseId: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={warehouseItems}
         >
           <SelectTrigger className="w-[160px] h-9">
             <SelectValue placeholder="전체 창고" />

@@ -45,6 +45,7 @@ export default function AssemblyOrdersPage() {
         <Select
           value={filters.status ?? 'all'}
           onValueChange={(v) => setFilters((prev) => ({ ...prev, status: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={{ all: '전체 상태', draft: '임시저장', completed: '완료', cancelled: '취소' }}
         >
           <SelectTrigger className="w-36 h-9">
             <SelectValue placeholder="상태 필터" />

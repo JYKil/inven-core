@@ -61,6 +61,7 @@ export default function PartnersPage() {
         <Select
           value={filters.partnerType ?? 'all'}
           onValueChange={(v) => setFilters((prev) => ({ ...prev, partnerType: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={{ all: '전체 유형', supplier: '공급업체', customer: '고객', both: '공급+고객' }}
         >
           <SelectTrigger className="w-[140px] h-9">
             <SelectValue placeholder="전체 유형" />

@@ -69,6 +69,7 @@ export default function NewPartnerPage() {
                 <Select
                   value={form.watch('partner_type')}
                   onValueChange={(v) => v && form.setValue('partner_type', v as PartnerCreate['partner_type'])}
+                  items={{ supplier: '공급업체', customer: '고객', both: '공급+고객' }}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>

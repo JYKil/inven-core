@@ -47,6 +47,7 @@ export default function PurchaseOrdersPage() {
         <Select
           value={filters.status ?? 'all'}
           onValueChange={(v) => setFilters((prev) => ({ ...prev, status: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={{ all: '전체 상태', draft: '임시저장', confirmed: '확정', partially_received: '부분입고', received: '입고완료', cancelled: '취소' }}
         >
           <SelectTrigger className="w-[160px] h-9">
             <SelectValue placeholder="전체 상태" />

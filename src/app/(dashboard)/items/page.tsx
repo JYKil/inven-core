@@ -47,6 +47,7 @@ export default function ItemsPage() {
         <Select
           value={filters.itemType ?? 'all'}
           onValueChange={(v) => setFilters((prev) => ({ ...prev, itemType: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={{ all: '전체 유형', basic: '기초 품목', assembly: '조립 품목' }}
         >
           <SelectTrigger className="w-[140px] h-9">
             <SelectValue placeholder="전체 유형" />

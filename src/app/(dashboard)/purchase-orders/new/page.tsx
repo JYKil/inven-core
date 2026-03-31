@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,6 +31,12 @@ export default function NewPurchaseOrderPage() {
   // both 유형도 포함
   const { data: bothData } = usePartners({ partnerType: 'both', pageSize: 100 })
   const suppliers = [...(partnersData?.data ?? []), ...(bothData?.data ?? [])]
+
+  const supplierItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    suppliers.forEach((p) => { map[p.id] = p.name })
+    return map
+  }, [suppliers])
 
   const [itemSearch, setItemSearch] = useState('')
   const { data: itemResults } = useItemSearch(itemSearch)
@@ -102,6 +108,7 @@ export default function NewPurchaseOrderPage() {
                 <Select
                   value={form.watch('partner_id') || undefined}
                   onValueChange={(v) => v && form.setValue('partner_id', v)}
+                  items={supplierItemsMap}
                 >
                   <SelectTrigger><SelectValue placeholder="공급업체 선택" /></SelectTrigger>
                   <SelectContent>

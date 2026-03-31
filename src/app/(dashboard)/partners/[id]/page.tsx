@@ -129,6 +129,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
                   <Select
                     value={form.watch('partner_type') ?? 'both'}
                     onValueChange={(v) => v && form.setValue('partner_type', v as PartnerUpdate['partner_type'])}
+                    items={{ supplier: '공급업체', customer: '고객', both: '공급+고객' }}
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>

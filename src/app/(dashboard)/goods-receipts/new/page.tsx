@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,6 +42,12 @@ function NewGoodsReceiptContent() {
   const { data: po } = usePurchaseOrder(poId ?? '')
   const { data: warehousesData } = useWarehouses({ pageSize: 100 })
   const warehouses = warehousesData?.data ?? []
+
+  const warehouseItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    return map
+  }, [warehouses])
 
   const [itemSearch, setItemSearch] = useState('')
   const { data: itemResults } = useItemSearch(itemSearch)
@@ -127,6 +133,7 @@ function NewGoodsReceiptContent() {
                 <Select
                   value={form.watch('warehouse_id') || undefined}
                   onValueChange={(v) => v && form.setValue('warehouse_id', v)}
+                  items={warehouseItemsMap}
                 >
                   <SelectTrigger><SelectValue placeholder="창고 선택" /></SelectTrigger>
                   <SelectContent>

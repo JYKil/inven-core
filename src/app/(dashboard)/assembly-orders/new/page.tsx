@@ -68,6 +68,19 @@ function NewAssemblyContent() {
   const watchQuantity = form.watch('quantity')
   const watchWarehouseId = form.watch('warehouse_id')
 
+  // Select items 맵 (value → label)
+  const assemblyItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    ;(assemblyItems ?? []).forEach((i: any) => { map[i.id] = `${i.code} — ${i.name}` })
+    return map
+  }, [assemblyItems])
+
+  const warehouseItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    return map
+  }, [warehouses])
+
   // 선택된 품목의 BOM 목록
   const selectedItem = useMemo(
     () => (assemblyItems ?? []).find((i: any) => i.id === selectedItemId),
@@ -77,6 +90,12 @@ function NewAssemblyContent() {
     () => (selectedItem as any)?.bom_headers?.filter((b: any) => b.is_active) ?? [],
     [selectedItem],
   )
+
+  const bomItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    activeBoms.forEach((bom: any) => { map[bom.id] = `버전 ${bom.version}` })
+    return map
+  }, [activeBoms])
 
   // 재료 가용성 확인 + 예상 원가
   const { data: availabilityData, isLoading: availLoading } = useMaterialAvailability(
@@ -146,7 +165,7 @@ function NewAssemblyContent() {
                     조립 가능 품목이 없습니다. 품목에 BOM을 먼저 등록해주세요.
                   </p>
                 ) : (
-                  <Select value={selectedItemId || undefined} onValueChange={handleItemChange}>
+                  <Select value={selectedItemId || undefined} onValueChange={handleItemChange} items={assemblyItemsMap}>
                     <SelectTrigger><SelectValue placeholder="품목 선택" /></SelectTrigger>
                     <SelectContent>
                       {(assemblyItems ?? []).map((item: any) => (
@@ -167,6 +186,7 @@ function NewAssemblyContent() {
                   value={selectedBomId || undefined}
                   onValueChange={handleBomChange}
                   disabled={activeBoms.length === 0}
+                  items={bomItemsMap}
                 >
                   <SelectTrigger><SelectValue placeholder="BOM 선택" /></SelectTrigger>
                   <SelectContent>
@@ -186,6 +206,7 @@ function NewAssemblyContent() {
                 <Select
                   value={watchWarehouseId || undefined}
                   onValueChange={(v) => v && form.setValue('warehouse_id', v)}
+                  items={warehouseItemsMap}
                 >
                   <SelectTrigger><SelectValue placeholder="창고 선택" /></SelectTrigger>
                   <SelectContent>

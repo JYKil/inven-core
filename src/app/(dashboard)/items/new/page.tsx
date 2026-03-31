@@ -68,6 +68,7 @@ export default function NewItemPage() {
                 <Select
                   value={form.watch('item_type')}
                   onValueChange={(v) => v && form.setValue('item_type', v as ItemCreate['item_type'])}
+                  items={{ basic: '기초 품목', assembly: '조립 품목' }}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -81,6 +82,7 @@ export default function NewItemPage() {
                 <Select
                   value={form.watch('unit')}
                   onValueChange={(v) => v && form.setValue('unit', v)}
+                  items={Object.fromEntries(unitOptions.map((u) => [u, u]))}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -134,6 +134,12 @@ export default function AdminUsersPage() {
       qc.invalidateQueries({ queryKey: ['admin', 'users'] })
     },
   })
+
+  const companyItemsMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    companies.forEach((c) => { map[c.id] = c.name })
+    return map
+  }, [companies])
 
   const openEdit = (user: Profile) => {
     setEditingUser(user)
@@ -327,7 +333,7 @@ export default function AdminUsersPage() {
 
               <div className="space-y-1.5">
                 <Label className="text-[13px]">역할</Label>
-                <Select value={editRole} onValueChange={(v) => { if (v) setEditRole(v) }}>
+                <Select value={editRole} onValueChange={(v) => { if (v) setEditRole(v) }} items={{ company_admin: '회사관리자', normal: '일반', super_admin: '슈퍼관리자' }}>
                   <SelectTrigger className="h-9 text-[14px]">
                     <SelectValue />
                   </SelectTrigger>
@@ -350,6 +356,7 @@ export default function AdminUsersPage() {
                   <Select
                     value={editCompanyId || ''}
                     onValueChange={(v) => setEditCompanyId(v || null)}
+                    items={companyItemsMap}
                   >
                     <SelectTrigger className="h-9 text-[14px]">
                       <SelectValue placeholder="회사 선택" />
