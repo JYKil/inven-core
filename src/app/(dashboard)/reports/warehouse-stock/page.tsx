@@ -82,7 +82,7 @@ export default function WarehouseStockPage() {
       </div>
 
       {/* 테이블 */}
-      <div className="border border-border rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
