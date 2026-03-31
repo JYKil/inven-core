@@ -52,12 +52,12 @@ export function TopBar() {
 
   return (
     <header className="h-12 flex items-center gap-2 border-b border-border bg-surface px-4 shrink-0">
-      <SidebarTrigger className="-ml-1" />
+      <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
       <Separator orientation="vertical" className="h-4" />
       <div className="flex-1" />
       {profile && (
         <Popover>
-          <PopoverTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none">
+          <PopoverTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none min-h-[44px] px-2">
             <User className="h-4 w-4" />
             <span>{profile.displayName}</span>
             <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
