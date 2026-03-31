@@ -45,6 +45,11 @@
 - [x] P2: 온보딩 회사+프로필 생성 — RPC 원자화 (create_company_with_profile)
 - [x] P2: inventory_summary 음수 방지 — GREATEST(0, ...) 적용
 
+### 인증/권한 버그 수정 ✅
+- [x] custom_access_token_hook NULL 안전 처리 + supabase_auth_admin RLS 정책 추가
+- [x] admin_create_company RPC 역할 확인을 JWT → profiles 직접 조회로 변경
+- [x] 로그아웃 시 프로필 캐시 미초기화 수정 — TopBar useEffect→useQuery 통일 + queryClient.clear()
+
 ### 슬라이스 3 마무리 (DB push 필요)
 - [ ] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
 - [ ] `supabase gen types typescript` — RPC 함수 타입 반영

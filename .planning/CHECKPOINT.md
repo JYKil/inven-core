@@ -1,8 +1,8 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 3 완료 + 코드 리뷰 P1/P2 수정 완료 + super_admin UI 개선 → DB push + 타입 재생성
-- **마지막 업데이트**: 2026-03-30
+- **단계**: 슬라이스 3 완료 + 인증/권한 버그 수정 완료 → 슬라이스 3 DB push + 슬라이스 4(영업/출고) 진입 예정
+- **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
 - [x] .planning 디렉토리 구조 생성
@@ -32,6 +32,10 @@
   - [x] admin 권한 가드 — server layout에서 role 확인, 비권한자 리다이렉트
   - [x] super_admin 사이드바 — 관리 메뉴만 표시 (일반 업무 메뉴 제거)
   - [x] 회사 관리자 초대 — API Route + 회사별 사용자 목록/관리자 추가 다이얼로그
+- [x] **인증/권한 버그 수정 (2026-03-31)**
+  - [x] custom_access_token_hook NULL 안전 처리 + supabase_auth_admin RLS 정책 추가
+  - [x] admin_create_company RPC 역할 확인을 JWT → profiles 직접 조회로 변경
+  - [x] 로그아웃 시 TanStack Query 캐시 미초기화 → 사이드바 메뉴 오표시 수정 (TopBar useEffect→useQuery 통일)
 - [x] **슬라이스 1: 기초 마스터 CRUD**
   - [x] Zod 스키마 7개 (partner, warehouse, item, bom, purchase-order, goods-receipt, po-payment)
   - [x] TanStack Query 키 팩토리 + 도메인별 훅 8개
@@ -61,9 +65,10 @@
 
 ## 다음 할 일
 1. ~~슬라이스 3 디자인 리뷰 반영~~ → 완료
-2. DB push + 타입 재생성: `supabase db push` → `supabase gen types typescript` → API Route `(supabase.rpc as any)` 타입 단언 제거
-3. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
-4. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
+2. ~~인증/권한 버그 수정~~ → 완료 (custom_claims_hook NULL 안전 처리, admin RPC JWT→profiles 전환, 사이드바 캐시 초기화)
+3. DB push + 타입 재생성: `supabase db push` → `supabase gen types typescript` → API Route `(supabase.rpc as any)` 타입 단언 제거
+4. 슬라이스 4: 영업/출고(sales) — 판매 주문, 출고 처리
+5. 슬라이스 5: 창고 이동 + 보고서 + 대시보드
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
@@ -93,6 +98,7 @@
 - UI: 보고서 3종 (수불부, 창고별 재고, 매출)
 - base-ui Select: onValueChange에서 null 가능 — null guard 필수
 - base-ui Button: asChild 미지원 → render prop 사용
+- TopBar/사이드바: 프로필 데이터를 TanStack Query `['profile','me']` 캐시 공유, 로그아웃 시 queryClient.clear() 필수
 
 ## 블로커 / 미결 사항
 - ~~Supabase 프로젝트 생성 필요~~ → 완료 (클라우드, Tokyo 리전)
