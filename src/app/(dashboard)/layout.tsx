@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <AppSidebar />
       <SidebarInset>
         <TopBar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 px-6 py-12">
           {children}
         </main>
       </SidebarInset>

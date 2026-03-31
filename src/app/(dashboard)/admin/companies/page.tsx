@@ -261,13 +261,13 @@ export default function AdminCompaniesPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-[13px] font-medium text-text-secondary">회사명</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">사업자번호</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">연락처</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">원가방식</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">상태</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">초대 코드</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary w-[200px]">작업</TableHead>
+                <TableHead>회사명</TableHead>
+                <TableHead>사업자번호</TableHead>
+                <TableHead>연락처</TableHead>
+                <TableHead>원가방식</TableHead>
+                <TableHead>상태</TableHead>
+                <TableHead>초대 코드</TableHead>
+                <TableHead className="w-[200px]">작업</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -280,13 +280,13 @@ export default function AdminCompaniesPage() {
               ) : (
                 companies.map((company) => (
                   <TableRow key={company.id} className="h-[36px]">
-                    <TableCell className="text-[13px] text-foreground font-medium">
+                    <TableCell className="text-foreground font-medium">
                       {company.name}
                     </TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">
+                    <TableCell className="text-text-secondary">
                       {company.business_number || '-'}
                     </TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">
+                    <TableCell className="text-text-secondary">
                       {company.phone || '-'}
                     </TableCell>
                     <TableCell>
@@ -462,19 +462,19 @@ export default function AdminCompaniesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-background/50">
-                      <TableHead className="text-[13px] font-medium text-text-secondary">이름</TableHead>
-                      <TableHead className="text-[13px] font-medium text-text-secondary">이메일</TableHead>
-                      <TableHead className="text-[13px] font-medium text-text-secondary">역할</TableHead>
-                      <TableHead className="text-[13px] font-medium text-text-secondary">상태</TableHead>
+                      <TableHead>이름</TableHead>
+                      <TableHead>이메일</TableHead>
+                      <TableHead>역할</TableHead>
+                      <TableHead>상태</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {companyAdmins.map((admin) => (
                       <TableRow key={admin.id} className="h-[36px]">
-                        <TableCell className="text-[13px] text-foreground font-medium">
+                        <TableCell className="text-foreground font-medium">
                           {admin.display_name || '-'}
                         </TableCell>
-                        <TableCell className="text-[13px] text-text-secondary">
+                        <TableCell className="text-text-secondary">
                           {admin.email}
                         </TableCell>
                         <TableCell>

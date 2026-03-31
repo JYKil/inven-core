@@ -41,7 +41,7 @@
 - **Neutrals:**
   - Primary Text: #1A1714 (먹색 검정, 순흑 아님)
   - Secondary Text: #6B6158 (따뜻한 중간 톤)
-  - Muted Text: #9C9189 (비활성, 타임스탬프, 캡션)
+  - Muted Text: #726A63 (비활성, 타임스탬프, 캡션 — WCAG AA 4.7:1)
   - Disabled: #C4BBB2 (비활성 요소)
 - **Semantic:**
   - Success: #2B7A6F (입고 완료, 재고 정상)
@@ -56,7 +56,7 @@
   - Border: #3A3530
   - Primary Text: #E8E0D6
   - Secondary Text: #A09688
-  - Muted Text: #706860
+  - Muted Text: #8A8078 (WCAG AA 4.9:1)
   - Accent Primary: #E8773F (밝게 조정)
   - Accent Secondary: #3DA396
 

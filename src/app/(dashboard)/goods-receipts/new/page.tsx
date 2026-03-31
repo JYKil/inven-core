@@ -201,16 +201,16 @@ function NewGoodsReceiptContent() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-background/50">
-                        <TableHead className="text-xs">품목</TableHead>
-                        <TableHead className="text-xs w-32">수량</TableHead>
-                        <TableHead className="text-xs w-36">단가</TableHead>
-                        <TableHead className="text-xs w-10"></TableHead>
+                        <TableHead>품목</TableHead>
+                        <TableHead className="w-32">수량</TableHead>
+                        <TableHead className="w-36">단가</TableHead>
+                        <TableHead className="w-10"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {fields.map((field, idx) => (
-                        <TableRow key={field.id} className="h-9">
-                          <TableCell className="text-[13px]">
+                        <TableRow key={field.id}>
+                          <TableCell>
                             {itemNames[watchLines[idx]?.item_id] || watchLines[idx]?.item_id}
                           </TableCell>
                           <TableCell>

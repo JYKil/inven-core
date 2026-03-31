@@ -71,7 +71,7 @@
   --secondary: #2B7A6F;           /* 짙은 틸 (성공/완료) */
   --secondary-foreground: #FEFCF9;
   --muted: #F5F0EB;
-  --muted-foreground: #9C9189;    /* 비활성 텍스트 */
+  --muted-foreground: #726A63;    /* 비활성 텍스트 (WCAG AA 4.7:1) */
   --accent: #F5F0EB;
   --accent-foreground: #1A1714;
   --destructive: #B83A2A;         /* 적갈색 에러 */
@@ -98,7 +98,7 @@
   --warning: #C4901A;
   --info: #4A7B94;
   --text-secondary: #6B6158;
-  --text-muted: #9C9189;
+  --text-muted: #726A63;
   --text-disabled: #C4BBB2;
   --surface-elevated: #FFFFFF;
   --primary-hover: #BF5520;
@@ -117,7 +117,7 @@
   --secondary: #3DA396;
   --secondary-foreground: #141210;
   --muted: #1E1B18;
-  --muted-foreground: #706860;
+  --muted-foreground: #8A8078;    /* WCAG AA 4.9:1 vs #141210 */
   --accent: #1E1B18;
   --accent-foreground: #E8E0D6;
   --destructive: #D4503A;

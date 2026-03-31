@@ -64,13 +64,13 @@ export default function ItemsPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">품목명</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">유형</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">단위</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">카테고리</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">현재고</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary w-10"></TableHead>
+              <TableHead>코드</TableHead>
+              <TableHead>품목명</TableHead>
+              <TableHead>유형</TableHead>
+              <TableHead>단위</TableHead>
+              <TableHead>카테고리</TableHead>
+              <TableHead className="text-right">현재고</TableHead>
+              <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,12 +103,14 @@ export default function ItemsPage() {
                 return (
                   <TableRow
                     key={item.id}
-                    className="cursor-pointer hover:bg-background/30 h-9"
+                    className="cursor-pointer hover:bg-background/30"
+                    tabIndex={0}
                     onClick={() => router.push(`/items/${item.id}`)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/items/${item.id}`) }}
                   >
-                    <TableCell className="text-[13px] font-data font-medium">{item.code}</TableCell>
-                    <TableCell className="text-[13px] font-medium">{item.name}</TableCell>
-                    <TableCell className="text-[13px]">
+                    <TableCell className="font-data font-medium">{item.code}</TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>
                       {item.item_type === 'assembly' ? (
                         <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-[#4A7B94] text-info text-xs">
                           <Wrench className="h-3 w-3 mr-1" />조립
@@ -117,9 +119,9 @@ export default function ItemsPage() {
                         <span className="text-text-secondary">기초</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">{item.unit}</TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">{item.category || '-'}</TableCell>
-                    <TableCell className="text-[13px] font-data text-right">
+                    <TableCell className="text-text-secondary">{item.unit}</TableCell>
+                    <TableCell className="text-text-secondary">{item.category || '-'}</TableCell>
+                    <TableCell className="font-data text-right">
                       {formatQty(totalQty, item.unit)}
                     </TableCell>
                     <TableCell>

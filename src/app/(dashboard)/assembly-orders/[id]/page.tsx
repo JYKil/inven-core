@@ -4,7 +4,6 @@ import { use } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, PackageSearch, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
@@ -26,13 +25,11 @@ export default function AssemblyOrderDetailPage({
     return (
       <div>
         <PageHeader title="조립 상세" />
-        <Card className="border-border">
-          <CardContent className="pt-6 space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-6 w-full max-w-md" />
-            ))}
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-6 w-full max-w-md" />
+          ))}
+        </div>
       </div>
     )
   }
@@ -78,86 +75,81 @@ export default function AssemblyOrderDetailPage({
 
       <div className="space-y-6">
         {/* 헤더 정보 */}
-        <Card className="border-border">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <p className="text-xs text-text-secondary mb-1">조립번호</p>
-                <p className="text-sm font-data font-semibold">{order.order_number}</p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">상태</p>
-                <StatusBadge status={order.status} />
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">결과 품목</p>
-                <p className="text-sm">
-                  <span className="font-data">{productItem?.code}</span>
-                  <span className="text-text-secondary ml-1">{productItem?.name}</span>
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">수량</p>
-                <p className="text-sm font-data">
-                  {formatQty(Number(order.quantity), productItem?.unit)}
-                  <span className="text-text-secondary ml-1">{productItem?.unit}</span>
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">조립 창고</p>
-                <p className="text-sm">{warehouse?.name ?? '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">조립일</p>
-                <p className="text-sm font-data">{formatDate(order.assembly_date)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">BOM 버전</p>
-                <p className="text-sm font-data">v{bomHeader?.version ?? '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-text-secondary mb-1">생성일</p>
-                <p className="text-sm font-data">{formatDate(order.created_at)}</p>
-              </div>
+        <section className="pb-6 border-b border-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-xs text-text-secondary mb-1">조립번호</p>
+              <p className="text-sm font-data font-semibold">{order.order_number}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">상태</p>
+              <StatusBadge status={order.status} />
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">결과 품목</p>
+              <p className="text-sm">
+                <span className="font-data">{productItem?.code}</span>
+                <span className="text-text-secondary ml-1">{productItem?.name}</span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">수량</p>
+              <p className="text-sm font-data">
+                {formatQty(Number(order.quantity), productItem?.unit)}
+                <span className="text-text-secondary ml-1">{productItem?.unit}</span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">조립 창고</p>
+              <p className="text-sm">{warehouse?.name ?? '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">조립일</p>
+              <p className="text-sm font-data">{formatDate(order.assembly_date)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">BOM 버전</p>
+              <p className="text-sm font-data">v{bomHeader?.version ?? '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-text-secondary mb-1">생성일</p>
+              <p className="text-sm font-data">{formatDate(order.created_at)}</p>
+            </div>
+          </div>
+        </section>
 
         {/* 원가 정보 */}
         {order.total_cost != null && (
-          <Card className="border-border">
-            <CardContent className="pt-6">
-              <h2 className="font-heading font-semibold text-[15px] mb-3">원가 정보</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-xs text-text-secondary mb-1">총 원가</p>
-                  <p className="text-lg font-data font-semibold text-primary">
-                    {formatAmount(Number(order.total_cost))}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-text-secondary mb-1">단위 원가</p>
-                  <p className="text-lg font-data font-semibold">
-                    {formatUnitPrice(Number(order.unit_cost))}
-                  </p>
-                </div>
+          <section className="pb-6 border-b border-border">
+            <h2 className="font-heading font-semibold text-[15px] mb-3">원가 정보</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-text-secondary mb-1">총 원가</p>
+                <p className="text-lg font-data font-semibold text-primary">
+                  {formatAmount(Number(order.total_cost))}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-xs text-text-secondary mb-1">단위 원가</p>
+                <p className="text-lg font-data font-semibold">
+                  {formatUnitPrice(Number(order.unit_cost))}
+                </p>
+              </div>
+            </div>
+          </section>
         )}
 
         {/* 재료 소비 내역 */}
-        <Card className="border-border">
-          <CardContent className="pt-6">
-            <h2 className="font-heading font-semibold text-[15px] mb-3">재료 소비 내역</h2>
-            <div className="border border-border rounded-[8px] overflow-hidden">
+        <section>
+          <h2 className="font-heading font-semibold text-[15px] mb-3">재료 소비 내역</h2>
+          <div className="border border-border rounded-[8px] overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
-                    <TableHead className="text-xs font-medium text-text-secondary">재료 품목</TableHead>
-                    <TableHead className="text-xs font-medium text-text-secondary text-right">필요 수량</TableHead>
-                    <TableHead className="text-xs font-medium text-text-secondary text-right">소비 수량</TableHead>
-                    <TableHead className="text-xs font-medium text-text-secondary text-right">소비 원가</TableHead>
+                    <TableHead>재료 품목</TableHead>
+                    <TableHead className="text-right">필요 수량</TableHead>
+                    <TableHead className="text-right">소비 수량</TableHead>
+                    <TableHead className="text-right">소비 원가</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -169,18 +161,18 @@ export default function AssemblyOrderDetailPage({
                     </TableRow>
                   ) : (
                     lines.map((line: any) => (
-                      <TableRow key={line.id} className="h-9">
-                        <TableCell className="text-[13px]">
+                      <TableRow key={line.id}>
+                        <TableCell>
                           <span className="font-data">{line.material_item?.code}</span>
                           <span className="text-text-secondary ml-1">{line.material_item?.name}</span>
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           {formatQty(Number(line.required_qty), line.material_item?.unit)}
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           {formatQty(Number(line.consumed_qty), line.material_item?.unit)}
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           {formatAmount(Number(line.consumed_cost))}
                         </TableCell>
                       </TableRow>
@@ -188,9 +180,8 @@ export default function AssemblyOrderDetailPage({
                   )}
                 </TableBody>
               </Table>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     </div>
   )

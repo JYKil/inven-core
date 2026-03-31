@@ -212,12 +212,12 @@ export default function AdminUsersPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-[13px] font-medium text-text-secondary">이름</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">이메일</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">역할</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">소속 회사</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary">상태</TableHead>
-                <TableHead className="text-[13px] font-medium text-text-secondary w-[120px]">작업</TableHead>
+                <TableHead>이름</TableHead>
+                <TableHead>이메일</TableHead>
+                <TableHead>역할</TableHead>
+                <TableHead>소속 회사</TableHead>
+                <TableHead>상태</TableHead>
+                <TableHead className="w-[120px]">작업</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -230,10 +230,10 @@ export default function AdminUsersPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} className={`h-[36px] ${user.role === 'pending' ? 'border-l-[3px] border-l-warning' : ''}`}>
-                    <TableCell className="text-[13px] text-foreground font-medium">
+                    <TableCell className="text-foreground font-medium">
                       {user.display_name || '-'}
                     </TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">
+                    <TableCell className="text-text-secondary">
                       {user.email}
                     </TableCell>
                     <TableCell>
@@ -246,7 +246,7 @@ export default function AdminUsersPage() {
                         {roleLabels[user.role] || user.role}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-[13px] text-text-secondary">
+                    <TableCell className="text-text-secondary">
                       {user.companies?.name || '-'}
                     </TableCell>
                     <TableCell>

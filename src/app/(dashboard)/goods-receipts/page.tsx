@@ -45,11 +45,11 @@ export default function GoodsReceiptsPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">입고번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">입고창고</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">입고일</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
+              <TableHead>입고번호</TableHead>
+              <TableHead>PO번호</TableHead>
+              <TableHead>입고창고</TableHead>
+              <TableHead>입고일</TableHead>
+              <TableHead>상태</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -73,13 +73,13 @@ export default function GoodsReceiptsPage() {
               </TableRow>
             ) : (
               data?.data.map((gr: any) => (
-                <TableRow key={gr.id} className="h-9">
-                  <TableCell className="text-[13px] font-data font-medium">{gr.receipt_number}</TableCell>
-                  <TableCell className="text-[13px] font-data text-text-secondary">
+                <TableRow key={gr.id}>
+                  <TableCell className="font-data font-medium">{gr.receipt_number}</TableCell>
+                  <TableCell className="font-data text-text-secondary">
                     {gr.purchase_order?.po_number ?? '-'}
                   </TableCell>
-                  <TableCell className="text-[13px]">{gr.warehouse?.name ?? '-'}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(gr.receipt_date)}</TableCell>
+                  <TableCell>{gr.warehouse?.name ?? '-'}</TableCell>
+                  <TableCell className="font-data">{formatDate(gr.receipt_date)}</TableCell>
                   <TableCell><StatusBadge status={gr.status} /></TableCell>
                 </TableRow>
               ))

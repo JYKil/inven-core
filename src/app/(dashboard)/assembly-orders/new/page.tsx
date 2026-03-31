@@ -242,12 +242,12 @@ function NewAssemblyContent() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-background/50">
-                        <TableHead className="text-xs font-medium text-text-secondary">재료 품목</TableHead>
-                        <TableHead className="text-xs font-medium text-text-secondary text-right">필요 수량</TableHead>
-                        <TableHead className="text-xs font-medium text-text-secondary text-right">현재고</TableHead>
-                        <TableHead className="text-xs font-medium text-text-secondary text-center">가용 여부</TableHead>
-                        <TableHead className="text-xs font-medium text-text-secondary text-right">부족량</TableHead>
-                        <TableHead className="text-xs font-medium text-text-secondary text-right">예상 원가</TableHead>
+                        <TableHead>재료 품목</TableHead>
+                        <TableHead className="text-right">필요 수량</TableHead>
+                        <TableHead className="text-right">현재고</TableHead>
+                        <TableHead className="text-center">가용 여부</TableHead>
+                        <TableHead className="text-right">부족량</TableHead>
+                        <TableHead className="text-right">예상 원가</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -265,14 +265,14 @@ function NewAssemblyContent() {
                             key={m.materialItemId}
                             className={m.isAvailable ? '' : 'bg-destructive/5'}
                           >
-                            <TableCell className="text-[13px]">
+                            <TableCell>
                               <span className="font-data">{m.materialItem.code}</span>
                               <span className="text-text-secondary ml-1">{m.materialItem.name}</span>
                             </TableCell>
-                            <TableCell className="text-[13px] font-data text-right">
+                            <TableCell className="font-data text-right">
                               {formatQty(m.requiredQty, m.materialItem.unit)}
                             </TableCell>
-                            <TableCell className="text-[13px] font-data text-right">
+                            <TableCell className="font-data text-right">
                               {formatQty(m.currentStock, m.materialItem.unit)}
                             </TableCell>
                             <TableCell className="text-center">
@@ -282,12 +282,12 @@ function NewAssemblyContent() {
                                 <AlertTriangle className="h-4 w-4 text-destructive inline-block" />
                               )}
                             </TableCell>
-                            <TableCell className="text-[13px] font-data text-right">
+                            <TableCell className="font-data text-right">
                               {m.shortage > 0 ? (
                                 <span className="text-destructive">{formatQty(m.shortage, m.materialItem.unit)}</span>
                               ) : '-'}
                             </TableCell>
-                            <TableCell className="text-[13px] font-data text-right">
+                            <TableCell className="font-data text-right">
                               {m.isAvailable ? formatAmount(m.estimatedCost) : '-'}
                             </TableCell>
                           </TableRow>

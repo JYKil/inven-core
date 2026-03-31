@@ -45,10 +45,10 @@ export default function WarehousesPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">창고명</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">위치</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">연락처</TableHead>
+              <TableHead>코드</TableHead>
+              <TableHead>창고명</TableHead>
+              <TableHead>위치</TableHead>
+              <TableHead>연락처</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -74,13 +74,15 @@ export default function WarehousesPage() {
               data?.data.map((wh) => (
                 <TableRow
                   key={wh.id}
-                  className="cursor-pointer hover:bg-background/30 h-9"
+                  className="cursor-pointer hover:bg-background/30"
+                  tabIndex={0}
                   onClick={() => router.push(`/warehouses/${wh.id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/warehouses/${wh.id}`) }}
                 >
-                  <TableCell className="text-[13px] font-data font-medium">{wh.code}</TableCell>
-                  <TableCell className="text-[13px] font-medium">{wh.name}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{wh.location || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{wh.phone || '-'}</TableCell>
+                  <TableCell className="font-data font-medium">{wh.code}</TableCell>
+                  <TableCell className="font-medium">{wh.name}</TableCell>
+                  <TableCell className="text-text-secondary">{wh.location || '-'}</TableCell>
+                  <TableCell className="text-text-secondary">{wh.phone || '-'}</TableCell>
                 </TableRow>
               ))
             )}

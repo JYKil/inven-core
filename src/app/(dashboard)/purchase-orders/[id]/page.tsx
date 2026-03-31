@@ -7,7 +7,6 @@ import { PackageCheck, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -49,11 +48,9 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
     return (
       <div>
         <PageHeader title="발주서 상세" />
-        <Card className="border-border">
-          <CardContent className="pt-6 space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
+        </div>
       </div>
     )
   }
@@ -87,38 +84,36 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       </PageHeader>
 
       {/* PO 헤더 정보 */}
-      <Card className="border-border mb-4">
-        <CardContent className="pt-6">
-          <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">상태</dt>
-              <dd><StatusBadge status={po.status} /></dd>
+      <section className="pb-6 mb-6 border-b border-border">
+        <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">상태</dt>
+            <dd><StatusBadge status={po.status} /></dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">공급업체</dt>
+            <dd className="font-medium">{(po as any).partner?.name ?? '-'}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">발주일</dt>
+            <dd className="font-data">{formatDate(po.order_date)}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">예상입고일</dt>
+            <dd className="font-data">{formatDate(po.expected_date)}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">총 금액</dt>
+            <dd className="font-data font-medium">{formatAmount(po.total_amount)}</dd>
+          </div>
+          {po.notes && (
+            <div className="col-span-3">
+              <dt className="text-muted-foreground text-xs mb-1">비고</dt>
+              <dd>{po.notes}</dd>
             </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">공급업체</dt>
-              <dd className="font-medium">{(po as any).partner?.name ?? '-'}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">발주일</dt>
-              <dd className="font-data">{formatDate(po.order_date)}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">예상입고일</dt>
-              <dd className="font-data">{formatDate(po.expected_date)}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">총 금액</dt>
-              <dd className="font-data font-medium">{formatAmount(po.total_amount)}</dd>
-            </div>
-            {po.notes && (
-              <div className="col-span-3">
-                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
-                <dd>{po.notes}</dd>
-              </div>
-            )}
-          </dl>
-        </CardContent>
-      </Card>
+          )}
+        </dl>
+      </section>
 
       {/* 탭: 발주내역 | 입고이력 | 지급이력 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -129,18 +124,17 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         </TabsList>
 
         <TabsContent value="lines">
-          <Card className="border-border">
-            <CardContent className="pt-4">
+          <div className="pt-2">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
-                    <TableHead className="text-xs">코드</TableHead>
-                    <TableHead className="text-xs">품목명</TableHead>
-                    <TableHead className="text-xs text-right">발주수량</TableHead>
-                    <TableHead className="text-xs text-right">입고수량</TableHead>
-                    <TableHead className="text-xs text-right">입고율</TableHead>
-                    <TableHead className="text-xs text-right">단가</TableHead>
-                    <TableHead className="text-xs text-right">금액</TableHead>
+                    <TableHead>코드</TableHead>
+                    <TableHead>품목명</TableHead>
+                    <TableHead className="text-right">발주수량</TableHead>
+                    <TableHead className="text-right">입고수량</TableHead>
+                    <TableHead className="text-right">입고율</TableHead>
+                    <TableHead className="text-right">단가</TableHead>
+                    <TableHead className="text-right">금액</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -148,29 +142,28 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
                     const receiveRate = line.ordered_qty > 0
                       ? (line.received_qty / line.ordered_qty) * 100 : 0
                     return (
-                      <TableRow key={line.id} className="h-9">
-                        <TableCell className="text-[13px] font-data">{line.item?.code}</TableCell>
-                        <TableCell className="text-[13px]">{line.item?.name}</TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                      <TableRow key={line.id}>
+                        <TableCell className="font-data">{line.item?.code}</TableCell>
+                        <TableCell>{line.item?.name}</TableCell>
+                        <TableCell className="font-data text-right">
                           {formatQty(line.ordered_qty, line.item?.unit)}
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           {formatQty(line.received_qty, line.item?.unit)}
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           <span className={receiveRate >= 100 ? 'text-secondary' : receiveRate > 0 ? 'text-warning' : ''}>
                             {formatPercent(receiveRate)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(line.unit_price)}</TableCell>
-                        <TableCell className="text-[13px] font-data text-right">{formatAmount(line.line_amount)}</TableCell>
+                        <TableCell className="font-data text-right">{formatUnitPrice(line.unit_price)}</TableCell>
+                        <TableCell className="font-data text-right">{formatAmount(line.line_amount)}</TableCell>
                       </TableRow>
                     )
                   })}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="receipts">
@@ -192,14 +185,13 @@ function ReceiptsTab({ poId }: { poId: string }) {
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-border">
-      <CardContent className="pt-4">
-        {!receipts || receipts.length === 0 ? (
-          <p className="text-center py-8 text-sm text-muted-foreground">입고 이력이 없습니다</p>
-        ) : (
-          <div className="space-y-4">
-            {receipts.map((gr: any) => (
-              <div key={gr.id} className="border border-border rounded-[6px] p-4">
+    <div className="pt-2">
+      {!receipts || receipts.length === 0 ? (
+        <p className="text-center py-8 text-sm text-muted-foreground">입고 이력이 없습니다</p>
+      ) : (
+        <div className="space-y-4">
+          {receipts.map((gr: any) => (
+            <div key={gr.id} className="border border-border rounded-[6px] p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3 text-sm">
                     <span className="font-data font-medium">{gr.receipt_number}</span>
@@ -210,19 +202,19 @@ function ReceiptsTab({ poId }: { poId: string }) {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-background/50">
-                      <TableHead className="text-xs">품목</TableHead>
-                      <TableHead className="text-xs text-right">수량</TableHead>
-                      <TableHead className="text-xs text-right">단가</TableHead>
+                      <TableHead>품목</TableHead>
+                      <TableHead className="text-right">수량</TableHead>
+                      <TableHead className="text-right">단가</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {gr.goods_receipt_lines?.map((line: any) => (
                       <TableRow key={line.id} className="h-8">
-                        <TableCell className="text-[13px]">{line.item?.name}</TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell>{line.item?.name}</TableCell>
+                        <TableCell className="font-data text-right">
                           {formatQty(line.quantity, line.item?.unit)}
                         </TableCell>
-                        <TableCell className="text-[13px] font-data text-right">
+                        <TableCell className="font-data text-right">
                           {formatUnitPrice(line.unit_price)}
                         </TableCell>
                       </TableRow>
@@ -233,8 +225,7 @@ function ReceiptsTab({ poId }: { poId: string }) {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
   )
 }
 
@@ -269,9 +260,8 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-border">
-      <CardContent className="pt-4">
-        {/* 지급 요약 */}
+    <div className="pt-2">
+      {/* 지급 요약 */}
         <div className="flex items-center gap-6 mb-4 text-sm">
           <div>
             <span className="text-muted-foreground">총 금액: </span>
@@ -345,25 +335,24 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-xs">지급일</TableHead>
-                <TableHead className="text-xs text-right">금액</TableHead>
-                <TableHead className="text-xs">방법</TableHead>
-                <TableHead className="text-xs">비고</TableHead>
+                <TableHead>지급일</TableHead>
+                <TableHead className="text-right">금액</TableHead>
+                <TableHead>방법</TableHead>
+                <TableHead>비고</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {payments.map((p: any) => (
-                <TableRow key={p.id} className="h-9">
-                  <TableCell className="text-[13px] font-data">{formatDate(p.payment_date)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatAmount(p.amount)}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{p.payment_method || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{p.notes || '-'}</TableCell>
+                <TableRow key={p.id}>
+                  <TableCell className="font-data">{formatDate(p.payment_date)}</TableCell>
+                  <TableCell className="font-data text-right">{formatAmount(p.amount)}</TableCell>
+                  <TableCell className="text-text-secondary">{p.payment_method || '-'}</TableCell>
+                  <TableCell className="text-text-secondary">{p.notes || '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
-      </CardContent>
-    </Card>
+      </div>
   )
 }

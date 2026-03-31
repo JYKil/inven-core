@@ -80,11 +80,11 @@ export default function PartnersPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">업체명</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">유형</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">사업자번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">담당자</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">연락처</TableHead>
+              <TableHead>업체명</TableHead>
+              <TableHead>유형</TableHead>
+              <TableHead>사업자번호</TableHead>
+              <TableHead>담당자</TableHead>
+              <TableHead>연락처</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,20 +110,22 @@ export default function PartnersPage() {
               data?.data.map((partner) => (
                 <TableRow
                   key={partner.id}
-                  className="cursor-pointer hover:bg-background/30 h-9"
+                  className="cursor-pointer hover:bg-background/30"
+                  tabIndex={0}
                   onClick={() => router.push(`/partners/${partner.id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/partners/${partner.id}`) }}
                 >
-                  <TableCell className="text-[13px] font-medium">{partner.name}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">
+                  <TableCell className="font-medium">{partner.name}</TableCell>
+                  <TableCell className="text-text-secondary">
                     {partnerTypeLabels[partner.partner_type] ?? partner.partner_type}
                   </TableCell>
-                  <TableCell className="text-[13px] font-data text-text-secondary">
+                  <TableCell className="font-data text-text-secondary">
                     {partner.business_number || '-'}
                   </TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">
+                  <TableCell className="text-text-secondary">
                     {partner.contact_name || '-'}
                   </TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">
+                  <TableCell className="text-text-secondary">
                     {partner.phone || '-'}
                   </TableCell>
                 </TableRow>

@@ -318,15 +318,15 @@ function BomTab({ itemId }: { itemId: string }) {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
-                    <TableHead className="text-xs">재료 품목</TableHead>
-                    <TableHead className="text-xs w-32">수량</TableHead>
-                    <TableHead className="text-xs w-10"></TableHead>
+                    <TableHead>재료 품목</TableHead>
+                    <TableHead className="w-32">수량</TableHead>
+                    <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {newLines.map((line, idx) => (
                     <TableRow key={idx}>
-                      <TableCell className="text-[13px]">{line.materialName}</TableCell>
+                      <TableCell>{line.materialName}</TableCell>
                       <TableCell>
                         <Input
                           type="number"
@@ -371,19 +371,19 @@ function BomTab({ itemId }: { itemId: string }) {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
-                    <TableHead className="text-xs">코드</TableHead>
-                    <TableHead className="text-xs">재료 품목명</TableHead>
-                    <TableHead className="text-xs">단위</TableHead>
-                    <TableHead className="text-xs text-right">수량</TableHead>
+                    <TableHead>코드</TableHead>
+                    <TableHead>재료 품목명</TableHead>
+                    <TableHead>단위</TableHead>
+                    <TableHead className="text-right">수량</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {bom.bom_lines?.map((line: any) => (
-                    <TableRow key={line.id} className="h-9">
-                      <TableCell className="text-[13px] font-data">{line.material_item?.code}</TableCell>
-                      <TableCell className="text-[13px]">{line.material_item?.name}</TableCell>
-                      <TableCell className="text-[13px] text-text-secondary">{line.material_item?.unit}</TableCell>
-                      <TableCell className="text-[13px] font-data text-right">
+                    <TableRow key={line.id}>
+                      <TableCell className="font-data">{line.material_item?.code}</TableCell>
+                      <TableCell>{line.material_item?.name}</TableCell>
+                      <TableCell className="text-text-secondary">{line.material_item?.unit}</TableCell>
+                      <TableCell className="font-data text-right">
                         {formatQty(line.quantity, line.material_item?.unit)}
                       </TableCell>
                     </TableRow>
@@ -413,25 +413,25 @@ function StockTab({ itemId, unit }: { itemId: string; unit: string }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-xs">창고</TableHead>
-                <TableHead className="text-xs">입고일</TableHead>
-                <TableHead className="text-xs">출처</TableHead>
-                <TableHead className="text-xs text-right">초기수량</TableHead>
-                <TableHead className="text-xs text-right">잔여수량</TableHead>
-                <TableHead className="text-xs text-right">단가</TableHead>
+                <TableHead>창고</TableHead>
+                <TableHead>입고일</TableHead>
+                <TableHead>출처</TableHead>
+                <TableHead className="text-right">초기수량</TableHead>
+                <TableHead className="text-right">잔여수량</TableHead>
+                <TableHead className="text-right">단가</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {lots.map((lot: any) => (
-                <TableRow key={lot.id} className="h-9">
-                  <TableCell className="text-[13px]">
+                <TableRow key={lot.id}>
+                  <TableCell>
                     {lot.warehouse?.code} — {lot.warehouse?.name}
                   </TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(lot.lot_date)}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{lot.source_type}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>
+                  <TableCell className="font-data">{formatDate(lot.lot_date)}</TableCell>
+                  <TableCell className="text-text-secondary">{lot.source_type}</TableCell>
+                  <TableCell className="font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
+                  <TableCell className="font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
+                  <TableCell className="font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

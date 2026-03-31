@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
@@ -55,11 +54,9 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
     return (
       <div>
         <PageHeader title="판매 주문 상세" />
-        <Card className="border-border">
-          <CardContent className="pt-6 space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
+        </div>
       </div>
     )
   }
@@ -102,78 +99,75 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       </PageHeader>
 
       {/* SO 헤더 정보 */}
-      <Card className="border-border mb-4">
-        <CardContent className="pt-6">
-          <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">상태</dt>
-              <dd><StatusBadge status={so.status} /></dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">거래처</dt>
-              <dd className="font-medium">{(so as any).partner?.name ?? '-'}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">주문일</dt>
-              <dd className="font-data">{formatDate(so.order_date)}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs mb-1">매출 금액</dt>
-              <dd className="font-data font-medium">{formatAmount(so.total_amount)}</dd>
-            </div>
-            {isShipped && (
-              <>
-                <div>
-                  <dt className="text-muted-foreground text-xs mb-1">매출원가</dt>
-                  <dd className="font-data">{formatAmount(totalCogs)}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs mb-1">매출이익</dt>
-                  <dd className={`font-data font-medium ${grossProfit >= 0 ? 'text-secondary' : 'text-destructive'}`}>
-                    {formatAmount(grossProfit)}
-                  </dd>
-                </div>
-              </>
-            )}
-            {so.notes && (
-              <div className="col-span-4">
-                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
-                <dd>{so.notes}</dd>
+      <section className="pb-6 mb-6 border-b border-border">
+        <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">상태</dt>
+            <dd><StatusBadge status={so.status} /></dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">거래처</dt>
+            <dd className="font-medium">{(so as any).partner?.name ?? '-'}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">주문일</dt>
+            <dd className="font-data">{formatDate(so.order_date)}</dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground text-xs mb-1">매출 금액</dt>
+            <dd className="font-data font-medium">{formatAmount(so.total_amount)}</dd>
+          </div>
+          {isShipped && (
+            <>
+              <div>
+                <dt className="text-muted-foreground text-xs mb-1">매출원가</dt>
+                <dd className="font-data">{formatAmount(totalCogs)}</dd>
               </div>
-            )}
-          </dl>
-        </CardContent>
-      </Card>
+              <div>
+                <dt className="text-muted-foreground text-xs mb-1">매출이익</dt>
+                <dd className={`font-data font-medium ${grossProfit >= 0 ? 'text-secondary' : 'text-destructive'}`}>
+                  {formatAmount(grossProfit)}
+                </dd>
+              </div>
+            </>
+          )}
+          {so.notes && (
+            <div className="col-span-4">
+              <dt className="text-muted-foreground text-xs mb-1">비고</dt>
+              <dd>{so.notes}</dd>
+            </div>
+          )}
+        </dl>
+      </section>
 
       {/* 판매 라인 */}
-      <Card className="border-border">
-        <CardContent className="pt-4">
-          <h3 className="font-heading font-semibold text-[15px] mb-3">판매 품목</h3>
+      <section>
+        <h3 className="font-heading font-semibold text-[15px] mb-3">판매 품목</h3>
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-xs">코드</TableHead>
-                <TableHead className="text-xs">품목명</TableHead>
-                <TableHead className="text-xs">출고 창고</TableHead>
-                <TableHead className="text-xs text-right">수량</TableHead>
-                <TableHead className="text-xs text-right">판매 단가</TableHead>
-                <TableHead className="text-xs text-right">매출 금액</TableHead>
-                {isShipped && <TableHead className="text-xs text-right">매출원가</TableHead>}
+                <TableHead>코드</TableHead>
+                <TableHead>품목명</TableHead>
+                <TableHead>출고 창고</TableHead>
+                <TableHead className="text-right">수량</TableHead>
+                <TableHead className="text-right">판매 단가</TableHead>
+                <TableHead className="text-right">매출 금액</TableHead>
+                {isShipped && <TableHead className="text-right">매출원가</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {lines.map((line: any) => (
-                <TableRow key={line.id} className="h-9">
-                  <TableCell className="text-[13px] font-data">{line.item?.code}</TableCell>
-                  <TableCell className="text-[13px]">{line.item?.name}</TableCell>
-                  <TableCell className="text-[13px]">{line.warehouse?.name ?? '-'}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">
+                <TableRow key={line.id}>
+                  <TableCell className="font-data">{line.item?.code}</TableCell>
+                  <TableCell>{line.item?.name}</TableCell>
+                  <TableCell>{line.warehouse?.name ?? '-'}</TableCell>
+                  <TableCell className="font-data text-right">
                     {formatQty(line.quantity, line.item?.unit)}
                   </TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(line.unit_price)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatAmount(line.line_amount)}</TableCell>
+                  <TableCell className="font-data text-right">{formatUnitPrice(line.unit_price)}</TableCell>
+                  <TableCell className="font-data text-right">{formatAmount(line.line_amount)}</TableCell>
                   {isShipped && (
-                    <TableCell className="text-[13px] font-data text-right">
+                    <TableCell className="font-data text-right">
                       {formatAmount(line.cost_of_goods)}
                     </TableCell>
                   )}
@@ -183,19 +177,18 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
                 <TableCell colSpan={isShipped ? 5 : 5} className="text-right text-xs font-medium text-text-secondary">
                   합계
                 </TableCell>
-                <TableCell className="text-[13px] font-data font-medium text-right">
+                <TableCell className="font-data font-medium text-right">
                   {formatAmount(so.total_amount)}
                 </TableCell>
                 {isShipped && (
-                  <TableCell className="text-[13px] font-data font-medium text-right">
+                  <TableCell className="font-data font-medium text-right">
                     {formatAmount(totalCogs)}
                   </TableCell>
                 )}
               </TableRow>
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+      </section>
 
       {/* 하단 액션 */}
       <div className="flex justify-between mt-4">

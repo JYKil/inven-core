@@ -38,12 +38,12 @@ export default function PoPaymentsPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">공급업체</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">지급일</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">지급금액</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">방법</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">비고</TableHead>
+              <TableHead>PO번호</TableHead>
+              <TableHead>공급업체</TableHead>
+              <TableHead>지급일</TableHead>
+              <TableHead className="text-right">지급금액</TableHead>
+              <TableHead>방법</TableHead>
+              <TableHead>비고</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -66,17 +66,17 @@ export default function PoPaymentsPage() {
               </TableRow>
             ) : (
               data?.data.map((payment: any) => (
-                <TableRow key={payment.id} className="h-9">
-                  <TableCell className="text-[13px] font-data font-medium">
+                <TableRow key={payment.id}>
+                  <TableCell className="font-data font-medium">
                     {payment.purchase_order?.po_number ?? '-'}
                   </TableCell>
-                  <TableCell className="text-[13px]">
+                  <TableCell>
                     {payment.purchase_order?.partner?.name ?? '-'}
                   </TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(payment.payment_date)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatAmount(payment.amount)}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{payment.payment_method || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{payment.notes || '-'}</TableCell>
+                  <TableCell className="font-data">{formatDate(payment.payment_date)}</TableCell>
+                  <TableCell className="font-data text-right">{formatAmount(payment.amount)}</TableCell>
+                  <TableCell className="text-text-secondary">{payment.payment_method || '-'}</TableCell>
+                  <TableCell className="text-text-secondary">{payment.notes || '-'}</TableCell>
                 </TableRow>
               ))
             )}

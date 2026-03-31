@@ -175,11 +175,11 @@ export default function NewPurchaseOrderPage() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-background/50">
-                        <TableHead className="text-xs">품목</TableHead>
-                        <TableHead className="text-xs w-32">수량</TableHead>
-                        <TableHead className="text-xs w-36">단가</TableHead>
-                        <TableHead className="text-xs w-36 text-right">금액</TableHead>
-                        <TableHead className="text-xs w-10"></TableHead>
+                        <TableHead>품목</TableHead>
+                        <TableHead className="w-32">수량</TableHead>
+                        <TableHead className="w-36">단가</TableHead>
+                        <TableHead className="w-36 text-right">금액</TableHead>
+                        <TableHead className="w-10"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -187,8 +187,8 @@ export default function NewPurchaseOrderPage() {
                         const qty = watchLines[idx]?.ordered_qty || 0
                         const price = watchLines[idx]?.unit_price || 0
                         return (
-                          <TableRow key={field.id} className="h-9">
-                            <TableCell className="text-[13px]">
+                          <TableRow key={field.id}>
+                            <TableCell>
                               {itemNames[watchLines[idx]?.item_id] || watchLines[idx]?.item_id}
                             </TableCell>
                             <TableCell>
@@ -209,7 +209,7 @@ export default function NewPurchaseOrderPage() {
                                 className="h-8 w-28 font-data text-sm"
                               />
                             </TableCell>
-                            <TableCell className="text-[13px] font-data text-right">
+                            <TableCell className="font-data text-right">
                               {formatAmount(qty * price)}
                             </TableCell>
                             <TableCell>
@@ -224,7 +224,7 @@ export default function NewPurchaseOrderPage() {
                         <TableCell colSpan={3} className="text-right text-xs font-medium text-text-secondary">
                           합계
                         </TableCell>
-                        <TableCell className="text-[13px] font-data font-medium text-right">
+                        <TableCell className="font-data font-medium text-right">
                           {formatAmount(totalAmount)}
                         </TableCell>
                         <TableCell></TableCell>

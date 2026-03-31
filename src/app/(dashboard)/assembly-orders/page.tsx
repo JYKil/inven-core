@@ -63,13 +63,13 @@ export default function AssemblyOrdersPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">조립번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">결과 품목</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">수량</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">조립 창고</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">조립일</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">총원가</TableHead>
+              <TableHead>조립번호</TableHead>
+              <TableHead>결과 품목</TableHead>
+              <TableHead className="text-right">수량</TableHead>
+              <TableHead>조립 창고</TableHead>
+              <TableHead>조립일</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead className="text-right">총원가</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -93,26 +93,26 @@ export default function AssemblyOrdersPage() {
               </TableRow>
             ) : (
               data?.data.map((ao: any) => (
-                <TableRow key={ao.id} className="h-9">
+                <TableRow key={ao.id}>
                   <TableCell>
                     <Link
                       href={`/assembly-orders/${ao.id}`}
-                      className="text-[13px] font-data font-medium text-primary hover:underline"
+                      className="font-data font-medium text-primary hover:underline"
                     >
                       {ao.order_number}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-[13px]">
+                  <TableCell>
                     <span className="font-data">{ao.product_item?.code}</span>
                     <span className="text-text-secondary ml-1">{ao.product_item?.name}</span>
                   </TableCell>
-                  <TableCell className="text-[13px] font-data text-right">
+                  <TableCell className="font-data text-right">
                     {formatQty(Number(ao.quantity), ao.product_item?.unit)}
                   </TableCell>
-                  <TableCell className="text-[13px]">{ao.warehouse?.name ?? '-'}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(ao.assembly_date)}</TableCell>
+                  <TableCell>{ao.warehouse?.name ?? '-'}</TableCell>
+                  <TableCell className="font-data">{formatDate(ao.assembly_date)}</TableCell>
                   <TableCell><StatusBadge status={ao.status} /></TableCell>
-                  <TableCell className="text-[13px] font-data text-right">
+                  <TableCell className="font-data text-right">
                     {ao.total_cost != null ? formatAmount(Number(ao.total_cost)) : '-'}
                   </TableCell>
                 </TableRow>

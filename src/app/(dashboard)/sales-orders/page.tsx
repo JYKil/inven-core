@@ -66,11 +66,11 @@ export default function SalesOrdersPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">주문번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">거래처</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">매출 금액</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">주문일</TableHead>
+              <TableHead>주문번호</TableHead>
+              <TableHead>거래처</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead className="text-right">매출 금액</TableHead>
+              <TableHead>주문일</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -96,14 +96,16 @@ export default function SalesOrdersPage() {
               data?.data.map((so: any) => (
                 <TableRow
                   key={so.id}
-                  className="cursor-pointer hover:bg-background/30 h-9"
+                  className="cursor-pointer hover:bg-background/30"
+                  tabIndex={0}
                   onClick={() => router.push(`/sales-orders/${so.id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/sales-orders/${so.id}`) }}
                 >
-                  <TableCell className="text-[13px] font-data font-medium">{so.order_number}</TableCell>
-                  <TableCell className="text-[13px]">{so.partner?.name ?? '-'}</TableCell>
+                  <TableCell className="font-data font-medium">{so.order_number}</TableCell>
+                  <TableCell>{so.partner?.name ?? '-'}</TableCell>
                   <TableCell><StatusBadge status={so.status} /></TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatAmount(so.total_amount)}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(so.order_date)}</TableCell>
+                  <TableCell className="font-data text-right">{formatAmount(so.total_amount)}</TableCell>
+                  <TableCell className="font-data">{formatDate(so.order_date)}</TableCell>
                 </TableRow>
               ))
             )}

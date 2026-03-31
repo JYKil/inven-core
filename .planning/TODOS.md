@@ -87,6 +87,9 @@
 - [x] Next.js 빌드 확인 통과
 - [ ] ComingSoon 제거 — sales-orders/page.tsx 실제 UI로 교체
 
+### 디자인 리뷰 ✅
+- [x] `/design-review` 완료
+
 ---
 
 ## P2 — 슬라이스 5: 이동 + 보고서 + 대시보드

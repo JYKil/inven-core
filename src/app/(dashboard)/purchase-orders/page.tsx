@@ -67,12 +67,12 @@ export default function PurchaseOrdersPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">공급업체</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">총 금액</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">발주일</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">예상입고일</TableHead>
+              <TableHead>PO번호</TableHead>
+              <TableHead>공급업체</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead className="text-right">총 금액</TableHead>
+              <TableHead>발주일</TableHead>
+              <TableHead>예상입고일</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,15 +98,17 @@ export default function PurchaseOrdersPage() {
               data?.data.map((po: any) => (
                 <TableRow
                   key={po.id}
-                  className="cursor-pointer hover:bg-background/30 h-9"
+                  className="cursor-pointer hover:bg-background/30"
+                  tabIndex={0}
                   onClick={() => router.push(`/purchase-orders/${po.id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/purchase-orders/${po.id}`) }}
                 >
-                  <TableCell className="text-[13px] font-data font-medium">{po.po_number}</TableCell>
-                  <TableCell className="text-[13px]">{po.partner?.name ?? '-'}</TableCell>
+                  <TableCell className="font-data font-medium">{po.po_number}</TableCell>
+                  <TableCell>{po.partner?.name ?? '-'}</TableCell>
                   <TableCell><StatusBadge status={po.status} /></TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatAmount(po.total_amount)}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(po.order_date)}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(po.expected_date)}</TableCell>
+                  <TableCell className="font-data text-right">{formatAmount(po.total_amount)}</TableCell>
+                  <TableCell className="font-data">{formatDate(po.order_date)}</TableCell>
+                  <TableCell className="font-data">{formatDate(po.expected_date)}</TableCell>
                 </TableRow>
               ))
             )}

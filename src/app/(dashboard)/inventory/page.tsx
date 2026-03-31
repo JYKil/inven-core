@@ -86,13 +86,13 @@ export default function InventoryPage() {
           <TableHeader>
             <TableRow className="bg-background/50">
               {filters.view === 'warehouse' && (
-                <TableHead className="text-xs font-medium text-text-secondary">창고</TableHead>
+                <TableHead>창고</TableHead>
               )}
-              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary">품목명</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">총 재고량</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary text-right">총 재고가치</TableHead>
-              <TableHead className="text-xs font-medium text-text-secondary w-10"></TableHead>
+              <TableHead>코드</TableHead>
+              <TableHead>품목명</TableHead>
+              <TableHead className="text-right">총 재고량</TableHead>
+              <TableHead className="text-right">총 재고가치</TableHead>
+              <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -117,18 +117,26 @@ export default function InventoryPage() {
                   return (
                     <TableRow
                       key={row.item_id}
-                      className="cursor-pointer hover:bg-background/30 h-9"
+                      className="cursor-pointer hover:bg-background/30"
+                      tabIndex={0}
                       onClick={() => {
                         setSelectedItemId(selectedItemId === row.item_id ? null : row.item_id)
                         setSelectedItemUnit(row.unit ?? 'EA')
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          setSelectedItemId(selectedItemId === row.item_id ? null : row.item_id)
+                          setSelectedItemUnit(row.unit ?? 'EA')
+                        }
+                      }}
                     >
-                      <TableCell className="text-[13px] font-data font-medium">{row.code}</TableCell>
-                      <TableCell className="text-[13px] font-medium">{row.name}</TableCell>
-                      <TableCell className="text-[13px] font-data text-right">
+                      <TableCell className="font-data font-medium">{row.code}</TableCell>
+                      <TableCell className="font-medium">{row.name}</TableCell>
+                      <TableCell className="font-data text-right">
                         {formatQty(row.totalQty, row.unit)}
                       </TableCell>
-                      <TableCell className="text-[13px] font-data text-right">
+                      <TableCell className="font-data text-right">
                         {formatAmount(row.totalValue)}
                       </TableCell>
                       <TableCell>
@@ -148,14 +156,14 @@ export default function InventoryPage() {
                 </TableRow>
               ) : (
                 data?.data.map((row: any) => (
-                  <TableRow key={row.id} className="h-9">
-                    <TableCell className="text-[13px]">{row.warehouse?.name}</TableCell>
-                    <TableCell className="text-[13px] font-data">{row.item?.code}</TableCell>
-                    <TableCell className="text-[13px]">{row.item?.name}</TableCell>
-                    <TableCell className="text-[13px] font-data text-right">
+                  <TableRow key={row.id}>
+                    <TableCell>{row.warehouse?.name}</TableCell>
+                    <TableCell className="font-data">{row.item?.code}</TableCell>
+                    <TableCell>{row.item?.name}</TableCell>
+                    <TableCell className="font-data text-right">
                       {formatQty(row.total_qty, row.item?.unit)}
                     </TableCell>
-                    <TableCell className="text-[13px] font-data text-right">
+                    <TableCell className="font-data text-right">
                       {formatAmount(row.total_value)}
                     </TableCell>
                     <TableCell>
@@ -227,23 +235,23 @@ function LotDrilldown({ itemId, unit }: { itemId: string; unit: string }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
-                <TableHead className="text-xs">창고</TableHead>
-                <TableHead className="text-xs">입고일</TableHead>
-                <TableHead className="text-xs">출처</TableHead>
-                <TableHead className="text-xs text-right">초기수량</TableHead>
-                <TableHead className="text-xs text-right">잔여수량</TableHead>
-                <TableHead className="text-xs text-right">단가</TableHead>
+                <TableHead>창고</TableHead>
+                <TableHead>입고일</TableHead>
+                <TableHead>출처</TableHead>
+                <TableHead className="text-right">초기수량</TableHead>
+                <TableHead className="text-right">잔여수량</TableHead>
+                <TableHead className="text-right">단가</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {lots.map((lot: any) => (
                 <TableRow key={lot.id} className="h-8">
-                  <TableCell className="text-[13px]">{lot.warehouse?.name}</TableCell>
-                  <TableCell className="text-[13px] font-data">{formatDate(lot.lot_date)}</TableCell>
-                  <TableCell className="text-[13px] text-text-secondary">{lot.source_type}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
-                  <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>
+                  <TableCell>{lot.warehouse?.name}</TableCell>
+                  <TableCell className="font-data">{formatDate(lot.lot_date)}</TableCell>
+                  <TableCell className="text-text-secondary">{lot.source_type}</TableCell>
+                  <TableCell className="font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
+                  <TableCell className="font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
+                  <TableCell className="font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
