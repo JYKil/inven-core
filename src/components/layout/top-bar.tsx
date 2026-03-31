@@ -61,7 +61,7 @@ export function TopBar() {
       <div className="flex-1" />
       <button
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+        className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
         aria-label="테마 전환"
       >
         <Sun className="h-4 w-4 block dark:hidden" />
