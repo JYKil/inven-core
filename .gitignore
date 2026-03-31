@@ -42,3 +42,6 @@ next-env.d.ts
 .claude/
 .gstack/
 .gstack-reports/
+
+# gstack design review output
+.gstack-output/
