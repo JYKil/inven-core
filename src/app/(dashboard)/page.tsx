@@ -34,7 +34,7 @@ export default function DashboardPage() {
       {/* 온보딩 위젯 — 기초 데이터가 없을 때만 */}
       {showOnboarding && (
         <section className="border border-border rounded-[8px] p-5">
-          <h2 className="font-heading text-[16px] font-semibold mb-4">시작하기</h2>
+          <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-4">시작하기</h2>
           <p className="text-[13px] text-muted-foreground mb-4">
             기초 데이터를 등록하면 재고 관리를 시작할 수 있습니다.
           </p>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
       {/* 재발주 알림 */}
       <section>
-        <h2 className="font-heading text-[16px] font-semibold mb-3">재발주 알림</h2>
+        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">재발주 알림</h2>
         {alertsLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}

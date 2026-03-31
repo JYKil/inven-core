@@ -141,7 +141,7 @@ export default function SettingsPage() {
         <div className="border border-border rounded-[8px] bg-card">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
             <Building2 className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-heading text-[16px] font-semibold text-foreground">
+            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
               기본 정보
             </h2>
           </div>
@@ -226,7 +226,7 @@ export default function SettingsPage() {
         {/* 원가 계산 방식 (읽기 전용) */}
         <div className="border border-border rounded-[8px] bg-card">
           <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-heading text-[16px] font-semibold text-foreground">
+            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
               원가 계산 방식
             </h2>
           </div>
@@ -248,7 +248,7 @@ export default function SettingsPage() {
         {/* 초대 코드 */}
         <div className="border border-border rounded-[8px] bg-card">
           <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-heading text-[16px] font-semibold text-foreground">
+            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
               초대 코드
             </h2>
           </div>
