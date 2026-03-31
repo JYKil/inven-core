@@ -1206,6 +1206,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_create_company: {
+        Args: {
+          p_address?: string
+          p_business_number?: string
+          p_name: string
+          p_phone?: string
+        }
+        Returns: string
+      }
       consume_inventory: {
         Args: {
           p_company_id: string
@@ -1215,6 +1224,16 @@ export type Database = {
           p_warehouse_id: string
         }
         Returns: number
+      }
+      create_company_with_profile: {
+        Args: {
+          p_business_number?: string
+          p_company_name: string
+          p_display_name?: string
+          p_email?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       execute_assembly: {

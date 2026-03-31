@@ -95,12 +95,11 @@ export default function AdminCompaniesPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      // DB push 전까지 타입 단언 필요 (admin_create_company RPC 미반영)
-      const { error } = await (supabase.rpc as any)('admin_create_company', {
+      const { error } = await supabase.rpc('admin_create_company', {
         p_name: name,
-        p_business_number: businessNumber || null,
-        p_address: address || null,
-        p_phone: phone || null,
+        p_business_number: businessNumber || undefined,
+        p_address: address || undefined,
+        p_phone: phone || undefined,
       })
       if (error) throw error
     },

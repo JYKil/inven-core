@@ -50,10 +50,10 @@
 - [x] admin_create_company RPC 역할 확인을 JWT → profiles 직접 조회로 변경
 - [x] 로그아웃 시 프로필 캐시 미초기화 수정 — TopBar useEffect→useQuery 통일 + queryClient.clear()
 
-### 슬라이스 3 마무리 (DB push 필요)
-- [ ] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
-- [ ] `supabase gen types typescript` — RPC 함수 타입 반영
-- [ ] API Route의 `(supabase.rpc as any)` 타입 단언 제거
+### 슬라이스 3 마무리 ✅
+- [x] `supabase db push` — consume_inventory + execute_assembly RPC 마이그레이션 적용
+- [x] `supabase gen types typescript` — RPC 함수 타입 반영
+- [x] API Route의 `(supabase.rpc as any)` 타입 단언 제거
 
 ---
 
@@ -98,26 +98,13 @@ FIFO 역전 코스팅(원가 복원) 로직이 복잡하므로 정방향 FIFO가
 
 ## 배포 전 체크리스트
 
-- [ ] `supabase db push` — execute_goods_receipt 마이그레이션 클라우드 적용
-- [ ] `supabase gen types typescript` — DB 타입 재생성 (RPC 함수 타입 반영)
-- [ ] Supabase 대시보드 → Authentication → Providers → **Google OAuth 설정**
-  - Google Cloud Console에서 OAuth 2.0 클라이언트 ID 생성
-  - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
-  - Client ID / Client Secret을 Supabase에 입력
-- [ ] Supabase 대시보드 → Authentication → URL Configuration
-  - Site URL: 배포된 Vercel URL (예: `https://inven-core.vercel.app`)
-  - Redirect URLs에 `https://inven-core.vercel.app/auth/callback` 추가
-- [ ] **super_admin 계정 생성** (Supabase 대시보드)
-  1. Authentication → Users → Add user (Auto Confirm 체크)
-  2. SQL Editor에서 profiles INSERT (`role = 'super_admin'`, `company_id = NULL`)
-- [ ] **Vercel 배포**
-  - GitHub 연결 → 프로젝트 import
-  - 환경변수 설정: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - 빌드 확인 후 배포
-- [ ] 배포 후 검증
-  - `/login` 접속 → 이메일 로그인 + Google OAuth 테스트
-  - super_admin으로 로그인 → `/admin/companies`, `/admin/users` 접근 확인
-  - 회원가입 → 온보딩(회사 생성) → 대시보드 진입 확인
+- [x] `supabase db push` — execute_goods_receipt 마이그레이션 클라우드 적용
+- [x] `supabase gen types typescript` — DB 타입 재생성 (RPC 함수 타입 반영)
+- [x] Supabase 대시보드 → Authentication → Providers → **Google OAuth 설정**
+- [x] Supabase 대시보드 → Authentication → URL Configuration
+- [x] **super_admin 계정 생성** (Supabase 대시보드)
+- [x] **Vercel 배포** (GitHub 연결 + 환경변수 설정)
+- [x] 배포 후 검증 (로그인, OAuth, 관리자 접근, 회원가입 플로우)
 
 ---
 
