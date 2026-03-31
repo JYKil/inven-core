@@ -51,7 +51,7 @@ export function TopBar() {
   }
 
   return (
-    <header className="h-12 flex items-center gap-2 border-b border-border bg-surface px-4 shrink-0">
+    <header className="h-12 flex items-center gap-2 border-b border-[#E0D8CF] bg-[#FEFCF9] px-4 shrink-0">
       <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
       <Separator orientation="vertical" className="h-4" />
       <div className="flex-1" />
