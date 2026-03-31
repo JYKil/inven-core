@@ -34,7 +34,7 @@ export function TopBar() {
       if (!user) return null
       const { data } = await supabase
         .from('profiles')
-        .select('display_name, email, role')
+        .select('display_name, email, role, company_id')
         .eq('id', user.id)
         .single()
       if (!data) return null
@@ -42,6 +42,7 @@ export function TopBar() {
         displayName: data.display_name || data.email,
         email: data.email,
         role: data.role,
+        company_id: data.company_id,
       }
     },
     staleTime: 5 * 60 * 1000, // 5분 캐시

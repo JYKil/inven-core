@@ -33,17 +33,23 @@ export default function SettingsPage() {
   const qc = useQueryClient()
 
   // 현재 사용자의 프로필 (역할 + company_id)
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', 'me'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return null
       const { data } = await supabase
         .from('profiles')
-        .select('company_id, role')
+        .select('display_name, email, role, company_id')
         .eq('id', user.id)
         .single()
-      return data
+      if (!data) return null
+      return {
+        displayName: data.display_name || data.email,
+        email: data.email,
+        role: data.role,
+        company_id: data.company_id,
+      }
     },
     staleTime: 5 * 60 * 1000,
   })
@@ -114,7 +120,7 @@ export default function SettingsPage() {
     (phone || '') !== (company.phone || '')
   )
 
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return (
       <div className="space-y-6">
         <PageHeader title="회사 설정" description="회사 기본 정보를 관리합니다." />
