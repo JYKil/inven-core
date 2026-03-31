@@ -32,7 +32,7 @@ export default function PurchaseOrdersPage() {
   return (
     <div>
       <PageHeader title="발주서(PO)">
-        <Button render={<Link href="/purchase-orders/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/purchase-orders/new" />} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             발주서 생성
         </Button>
@@ -63,16 +63,16 @@ export default function PurchaseOrdersPage() {
         </Select>
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">공급업체</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">상태</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">총 금액</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">발주일</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">예상입고일</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">공급업체</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">총 금액</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">발주일</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">예상입고일</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,7 +98,7 @@ export default function PurchaseOrdersPage() {
               data?.data.map((po: any) => (
                 <TableRow
                   key={po.id}
-                  className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                  className="cursor-pointer hover:bg-background/30 h-9"
                   onClick={() => router.push(`/purchase-orders/${po.id}`)}
                 >
                   <TableCell className="text-[13px] font-data font-medium">{po.po_number}</TableCell>

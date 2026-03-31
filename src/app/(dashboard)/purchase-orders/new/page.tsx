@@ -92,7 +92,7 @@ export default function NewPurchaseOrderPage() {
     <div>
       <PageHeader title="발주서 생성" />
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-6">
             {/* 헤더 정보 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
@@ -100,7 +100,7 @@ export default function NewPurchaseOrderPage() {
                 <Label>PO 번호 *</Label>
                 <Input {...form.register('po_number')} placeholder="PO-2026-001" />
                 {form.formState.errors.po_number && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.po_number.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.po_number.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -118,7 +118,7 @@ export default function NewPurchaseOrderPage() {
                   </SelectContent>
                 </Select>
                 {form.formState.errors.partner_id && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.partner_id.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.partner_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -150,16 +150,16 @@ export default function NewPurchaseOrderPage() {
                   className="h-9"
                 />
                 {itemSearch && itemResults && itemResults.length > 0 && (
-                  <div className="absolute z-10 top-full mt-1 w-full bg-white border border-[#E0D8CF] rounded-[6px] shadow-md max-h-48 overflow-auto">
+                  <div className="absolute z-10 top-full mt-1 w-full bg-white border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
                     {itemResults.map((item) => (
                       <button
                         key={item.id}
                         type="button"
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-[#F5F0EB] flex justify-between"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-background flex justify-between"
                         onClick={() => addLineWithName(item)}
                       >
                         <span className="font-data">{item.code}</span>
-                        <span className="text-[#6B6158]">{item.name}</span>
+                        <span className="text-text-secondary">{item.name}</span>
                       </button>
                     ))}
                   </div>
@@ -167,14 +167,14 @@ export default function NewPurchaseOrderPage() {
               </div>
 
               {form.formState.errors.lines?.root && (
-                <p className="text-xs text-[#B83A2A] mb-2">{form.formState.errors.lines.root.message}</p>
+                <p className="text-xs text-destructive mb-2">{form.formState.errors.lines.root.message}</p>
               )}
 
               {fields.length > 0 && (
-                <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+                <div className="border border-border rounded-[8px] overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#F5F0EB]/50">
+                      <TableRow className="bg-background/50">
                         <TableHead className="text-xs">품목</TableHead>
                         <TableHead className="text-xs w-32">수량</TableHead>
                         <TableHead className="text-xs w-36">단가</TableHead>
@@ -214,14 +214,14 @@ export default function NewPurchaseOrderPage() {
                             </TableCell>
                             <TableCell>
                               <Button variant="ghost" size="sm" type="button" onClick={() => remove(idx)}>
-                                <X className="h-4 w-4 text-[#B83A2A]" />
+                                <X className="h-4 w-4 text-destructive" />
                               </Button>
                             </TableCell>
                           </TableRow>
                         )
                       })}
-                      <TableRow className="bg-[#F5F0EB]/30">
-                        <TableCell colSpan={3} className="text-right text-xs font-medium text-[#6B6158]">
+                      <TableRow className="bg-background/30">
+                        <TableCell colSpan={3} className="text-right text-xs font-medium text-text-secondary">
                           합계
                         </TableCell>
                         <TableCell className="text-[13px] font-data font-medium text-right">
@@ -237,7 +237,7 @@ export default function NewPurchaseOrderPage() {
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>
-              <Button type="submit" disabled={createPO.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+              <Button type="submit" disabled={createPO.isPending} className="bg-primary hover:bg-primary-hover">
                 {createPO.isPending ? '생성 중...' : '발주서 생성'}
               </Button>
             </div>

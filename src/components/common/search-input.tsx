@@ -26,7 +26,7 @@ export function SearchInput({
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9C9189]" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
         value={internal}
         onChange={(e) => setInternal(e.target.value)}

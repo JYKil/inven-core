@@ -49,7 +49,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
     return (
       <div>
         <PageHeader title="발주서 상세" />
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
           </CardContent>
@@ -58,7 +58,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
     )
   }
 
-  if (!po) return <div className="text-center py-16 text-[#9C9189]">발주서를 찾을 수 없습니다</div>
+  if (!po) return <div className="text-center py-16 text-muted-foreground">발주서를 찾을 수 없습니다</div>
 
   const canConfirm = po.status === 'draft'
   const canReceive = po.status === 'confirmed' || po.status === 'partially_received'
@@ -69,50 +69,50 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       <PageHeader title={po.po_number}>
         {canConfirm && (
           <Button size="sm" onClick={handleConfirm} disabled={updateStatus.isPending}
-            className="bg-[#4A7B94] hover:bg-[#3d6679]">
+            className="bg-info hover:bg-[#3d6679]">
             확정
           </Button>
         )}
         {canReceive && (
-          <Button render={<Link href={`/goods-receipts/new?po=${id}`} />} size="sm" className="bg-[#D4642A] hover:bg-[#BF5520]">
+          <Button render={<Link href={`/goods-receipts/new?po=${id}`} />} size="sm" className="bg-primary hover:bg-primary-hover">
               <PackageCheck className="h-4 w-4 mr-1" />입고 처리
           </Button>
         )}
         {canCancel && (
           <Button variant="outline" size="sm" onClick={handleCancel}
-            disabled={updateStatus.isPending} className="text-[#B83A2A]">
+            disabled={updateStatus.isPending} className="text-destructive">
             취소
           </Button>
         )}
       </PageHeader>
 
       {/* PO 헤더 정보 */}
-      <Card className="border-[#E0D8CF] mb-4">
+      <Card className="border-border mb-4">
         <CardContent className="pt-6">
           <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">상태</dt>
+              <dt className="text-muted-foreground text-xs mb-1">상태</dt>
               <dd><StatusBadge status={po.status} /></dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">공급업체</dt>
+              <dt className="text-muted-foreground text-xs mb-1">공급업체</dt>
               <dd className="font-medium">{(po as any).partner?.name ?? '-'}</dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">발주일</dt>
+              <dt className="text-muted-foreground text-xs mb-1">발주일</dt>
               <dd className="font-data">{formatDate(po.order_date)}</dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">예상입고일</dt>
+              <dt className="text-muted-foreground text-xs mb-1">예상입고일</dt>
               <dd className="font-data">{formatDate(po.expected_date)}</dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">총 금액</dt>
+              <dt className="text-muted-foreground text-xs mb-1">총 금액</dt>
               <dd className="font-data font-medium">{formatAmount(po.total_amount)}</dd>
             </div>
             {po.notes && (
               <div className="col-span-3">
-                <dt className="text-[#9C9189] text-xs mb-1">비고</dt>
+                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
                 <dd>{po.notes}</dd>
               </div>
             )}
@@ -129,11 +129,11 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         </TabsList>
 
         <TabsContent value="lines">
-          <Card className="border-[#E0D8CF]">
+          <Card className="border-border">
             <CardContent className="pt-4">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#F5F0EB]/50">
+                  <TableRow className="bg-background/50">
                     <TableHead className="text-xs">코드</TableHead>
                     <TableHead className="text-xs">품목명</TableHead>
                     <TableHead className="text-xs text-right">발주수량</TableHead>
@@ -158,7 +158,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
                           {formatQty(line.received_qty, line.item?.unit)}
                         </TableCell>
                         <TableCell className="text-[13px] font-data text-right">
-                          <span className={receiveRate >= 100 ? 'text-[#2B7A6F]' : receiveRate > 0 ? 'text-[#C4901A]' : ''}>
+                          <span className={receiveRate >= 100 ? 'text-secondary' : receiveRate > 0 ? 'text-warning' : ''}>
                             {formatPercent(receiveRate)}
                           </span>
                         </TableCell>
@@ -192,24 +192,24 @@ function ReceiptsTab({ poId }: { poId: string }) {
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-[#E0D8CF]">
+    <Card className="border-border">
       <CardContent className="pt-4">
         {!receipts || receipts.length === 0 ? (
-          <p className="text-center py-8 text-sm text-[#9C9189]">입고 이력이 없습니다</p>
+          <p className="text-center py-8 text-sm text-muted-foreground">입고 이력이 없습니다</p>
         ) : (
           <div className="space-y-4">
             {receipts.map((gr: any) => (
-              <div key={gr.id} className="border border-[#E0D8CF] rounded-[6px] p-4">
+              <div key={gr.id} className="border border-border rounded-[6px] p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3 text-sm">
                     <span className="font-data font-medium">{gr.receipt_number}</span>
-                    <span className="text-[#6B6158]">{formatDate(gr.receipt_date)}</span>
-                    <span className="text-[#6B6158]">{gr.warehouse?.name}</span>
+                    <span className="text-text-secondary">{formatDate(gr.receipt_date)}</span>
+                    <span className="text-text-secondary">{gr.warehouse?.name}</span>
                   </div>
                 </div>
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#F5F0EB]/50">
+                    <TableRow className="bg-background/50">
                       <TableHead className="text-xs">품목</TableHead>
                       <TableHead className="text-xs text-right">수량</TableHead>
                       <TableHead className="text-xs text-right">단가</TableHead>
@@ -269,35 +269,35 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-[#E0D8CF]">
+    <Card className="border-border">
       <CardContent className="pt-4">
         {/* 지급 요약 */}
         <div className="flex items-center gap-6 mb-4 text-sm">
           <div>
-            <span className="text-[#9C9189]">총 금액: </span>
+            <span className="text-muted-foreground">총 금액: </span>
             <span className="font-data font-medium">{formatAmount(totalAmount)}</span>
           </div>
           <div>
-            <span className="text-[#9C9189]">누적 지급: </span>
-            <span className="font-data font-medium text-[#2B7A6F]">{formatAmount(paidTotal)}</span>
+            <span className="text-muted-foreground">누적 지급: </span>
+            <span className="font-data font-medium text-secondary">{formatAmount(paidTotal)}</span>
           </div>
           <div>
-            <span className="text-[#9C9189]">잔액: </span>
-            <span className="font-data font-medium text-[#B83A2A]">{formatAmount(remaining)}</span>
+            <span className="text-muted-foreground">잔액: </span>
+            <span className="font-data font-medium text-destructive">{formatAmount(remaining)}</span>
           </div>
           <div>
-            <span className="text-[#9C9189]">지급율: </span>
+            <span className="text-muted-foreground">지급율: </span>
             <span className="font-data">{formatPercent(paymentRate)}</span>
           </div>
           <div className="flex-1" />
-          <Button size="sm" onClick={() => setShowForm(true)} className="bg-[#D4642A] hover:bg-[#BF5520]">
+          <Button size="sm" onClick={() => setShowForm(true)} className="bg-primary hover:bg-primary-hover">
             <CreditCard className="h-4 w-4 mr-1" />지급 등록
           </Button>
         </div>
 
         {/* 지급 등록 폼 */}
         {showForm && (
-          <div className="border border-[#E0D8CF] rounded-[6px] p-4 mb-4 bg-[#F5F0EB]/30">
+          <div className="border border-border rounded-[6px] p-4 mb-4 bg-background/30">
             <div className="grid grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">지급일</Label>
@@ -329,7 +329,7 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
               </div>
               <div className="flex items-end gap-2">
                 <Button size="sm" onClick={handleSubmit} disabled={createPayment.isPending}
-                  className="bg-[#D4642A] hover:bg-[#BF5520]">
+                  className="bg-primary hover:bg-primary-hover">
                   {createPayment.isPending ? '등록 중...' : '등록'}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>취소</Button>
@@ -340,11 +340,11 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
 
         {/* 지급 목록 */}
         {!payments || payments.length === 0 ? (
-          <p className="text-center py-8 text-sm text-[#9C9189]">지급 이력이 없습니다</p>
+          <p className="text-center py-8 text-sm text-muted-foreground">지급 이력이 없습니다</p>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F5F0EB]/50">
+              <TableRow className="bg-background/50">
                 <TableHead className="text-xs">지급일</TableHead>
                 <TableHead className="text-xs text-right">금액</TableHead>
                 <TableHead className="text-xs">방법</TableHead>
@@ -356,8 +356,8 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
                 <TableRow key={p.id} className="h-9">
                   <TableCell className="text-[13px] font-data">{formatDate(p.payment_date)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatAmount(p.amount)}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{p.payment_method || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{p.notes || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{p.payment_method || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{p.notes || '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

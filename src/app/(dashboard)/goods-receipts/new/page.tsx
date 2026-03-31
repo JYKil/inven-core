@@ -117,7 +117,7 @@ function NewGoodsReceiptContent() {
     <div>
       <PageHeader title="입고 등록" />
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-6">
             {/* 헤더 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
@@ -125,7 +125,7 @@ function NewGoodsReceiptContent() {
                 <Label>입고번호 *</Label>
                 <Input {...form.register('receipt_number')} placeholder="GR-2026-001" />
                 {form.formState.errors.receipt_number && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.receipt_number.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.receipt_number.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -143,7 +143,7 @@ function NewGoodsReceiptContent() {
                   </SelectContent>
                 </Select>
                 {form.formState.errors.warehouse_id && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.warehouse_id.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.warehouse_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -153,7 +153,7 @@ function NewGoodsReceiptContent() {
               {poId && (
                 <div className="space-y-1.5">
                   <Label>연결 PO</Label>
-                  <Input value={(po as any)?.po_number ?? poId} disabled className="bg-[#F5F0EB]" />
+                  <Input value={(po as any)?.po_number ?? poId} disabled className="bg-background" />
                 </div>
               )}
               <div className="col-span-2 space-y-1.5">
@@ -175,16 +175,16 @@ function NewGoodsReceiptContent() {
                     className="h-9"
                   />
                   {itemSearch && itemResults && itemResults.length > 0 && (
-                    <div className="absolute z-10 top-full mt-1 w-full bg-white border border-[#E0D8CF] rounded-[6px] shadow-md max-h-48 overflow-auto">
+                    <div className="absolute z-10 top-full mt-1 w-full bg-white border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
                       {itemResults.map((item) => (
                         <button
                           key={item.id}
                           type="button"
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-[#F5F0EB] flex justify-between"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-background flex justify-between"
                           onClick={() => addLine(item)}
                         >
                           <span className="font-data">{item.code}</span>
-                          <span className="text-[#6B6158]">{item.name}</span>
+                          <span className="text-text-secondary">{item.name}</span>
                         </button>
                       ))}
                     </div>
@@ -193,14 +193,14 @@ function NewGoodsReceiptContent() {
               )}
 
               {form.formState.errors.lines?.root && (
-                <p className="text-xs text-[#B83A2A] mb-2">{form.formState.errors.lines.root.message}</p>
+                <p className="text-xs text-destructive mb-2">{form.formState.errors.lines.root.message}</p>
               )}
 
               {fields.length > 0 && (
-                <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+                <div className="border border-border rounded-[8px] overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#F5F0EB]/50">
+                      <TableRow className="bg-background/50">
                         <TableHead className="text-xs">품목</TableHead>
                         <TableHead className="text-xs w-32">수량</TableHead>
                         <TableHead className="text-xs w-36">단가</TableHead>
@@ -234,7 +234,7 @@ function NewGoodsReceiptContent() {
                           <TableCell>
                             {!poId && (
                               <Button variant="ghost" size="sm" type="button" onClick={() => remove(idx)}>
-                                <X className="h-4 w-4 text-[#B83A2A]" />
+                                <X className="h-4 w-4 text-destructive" />
                               </Button>
                             )}
                           </TableCell>
@@ -248,7 +248,7 @@ function NewGoodsReceiptContent() {
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>
-              <Button type="submit" disabled={executeGR.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+              <Button type="submit" disabled={executeGR.isPending} className="bg-primary hover:bg-primary-hover">
                 {executeGR.isPending ? '입고 처리 중...' : '입고 실행'}
               </Button>
             </div>

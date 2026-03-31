@@ -30,7 +30,7 @@ export default function AssemblyOrdersPage() {
   return (
     <div>
       <PageHeader title="조립 지시">
-        <Button render={<Link href="/assembly-orders/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/assembly-orders/new" />} className="bg-primary hover:bg-primary-hover">
           <Plus className="h-4 w-4 mr-1" />
           조립 생성
         </Button>
@@ -59,17 +59,17 @@ export default function AssemblyOrdersPage() {
         </Select>
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">조립번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">결과 품목</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">수량</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">조립 창고</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">조립일</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">상태</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">총원가</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">조립번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">결과 품목</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">수량</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">조립 창고</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">조립일</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">총원가</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -97,14 +97,14 @@ export default function AssemblyOrdersPage() {
                   <TableCell>
                     <Link
                       href={`/assembly-orders/${ao.id}`}
-                      className="text-[13px] font-data font-medium text-[#D4642A] hover:underline"
+                      className="text-[13px] font-data font-medium text-primary hover:underline"
                     >
                       {ao.order_number}
                     </Link>
                   </TableCell>
                   <TableCell className="text-[13px]">
                     <span className="font-data">{ao.product_item?.code}</span>
-                    <span className="text-[#6B6158] ml-1">{ao.product_item?.name}</span>
+                    <span className="text-text-secondary ml-1">{ao.product_item?.name}</span>
                   </TableCell>
                   <TableCell className="text-[13px] font-data text-right">
                     {formatQty(Number(ao.quantity), ao.product_item?.unit)}

@@ -54,15 +54,15 @@ export default function OnboardingPage() {
   if (error) {
     return (
       <div className="space-y-4 text-center">
-        <AlertCircle className="h-8 w-8 text-[#B83A2A] mx-auto" />
-        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-[#1A1714]">
+        <AlertCircle className="h-8 w-8 text-destructive mx-auto" />
+        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
           등록 오류
         </h2>
-        <p className="text-[14px] text-[#6B6158]">{error}</p>
+        <p className="text-[14px] text-text-secondary">{error}</p>
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="text-[13px] text-[#D4642A] hover:text-[#BF5520] font-medium"
+          className="text-[13px] text-primary hover:text-primary-hover font-medium"
         >
           로그아웃
         </Button>
@@ -72,8 +72,8 @@ export default function OnboardingPage() {
 
   return (
     <div className="space-y-4 text-center">
-      <Loader2 className="h-8 w-8 text-[#D4642A] animate-spin mx-auto" />
-      <p className="text-[14px] text-[#6B6158]">등록 처리 중...</p>
+      <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+      <p className="text-[14px] text-text-secondary">등록 처리 중...</p>
     </div>
   )
 }

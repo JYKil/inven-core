@@ -3,13 +3,13 @@ import { cn } from '@/lib/utils'
 
 // DESIGN.md: 두꺼운 테두리 정방형 스타일 (결재 도장 느낌)
 const statusStyles: Record<string, string> = {
-  draft: 'border-[1.5px] border-[#9C9189] text-[#6B6158] bg-transparent',
-  confirmed: 'border-[1.5px] border-[#4A7B94] text-[#4A7B94] bg-transparent',
-  partially_received: 'border-[1.5px] border-[#C4901A] text-[#C4901A] bg-transparent',
-  received: 'border-[1.5px] border-[#2B7A6F] text-[#2B7A6F] bg-transparent',
-  completed: 'border-[1.5px] border-[#2B7A6F] text-[#2B7A6F] bg-transparent',
-  shipped: 'border-[1.5px] border-[#2B7A6F] text-[#2B7A6F] bg-transparent',
-  cancelled: 'border-[1.5px] border-[#B83A2A] text-[#B83A2A] bg-transparent',
+  draft: 'border-[1.5px] border-muted-foreground text-text-secondary bg-transparent',
+  confirmed: 'border-[1.5px] border-[#4A7B94] text-info bg-transparent',
+  partially_received: 'border-[1.5px] border-warning text-warning bg-transparent',
+  received: 'border-[1.5px] border-secondary text-secondary bg-transparent',
+  completed: 'border-[1.5px] border-secondary text-secondary bg-transparent',
+  shipped: 'border-[1.5px] border-secondary text-secondary bg-transparent',
+  cancelled: 'border-[1.5px] border-destructive text-destructive bg-transparent',
 }
 
 const statusLabels: Record<string, string> = {

@@ -36,21 +36,21 @@ export default function NewWarehousePage() {
     <div>
       <PageHeader title="창고 등록" />
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF] max-w-2xl">
+        <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="code">창고코드 *</Label>
                 <Input id="code" {...form.register('code')} placeholder="WH-001" />
                 {form.formState.errors.code && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.code.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="name">창고명 *</Label>
                 <Input id="name" {...form.register('name')} placeholder="제1창고" />
                 {form.formState.errors.name && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.name.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                 )}
               </div>
             </div>
@@ -70,7 +70,7 @@ export default function NewWarehousePage() {
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>
-              <Button type="submit" disabled={createWarehouse.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+              <Button type="submit" disabled={createWarehouse.isPending} className="bg-primary hover:bg-primary-hover">
                 {createWarehouse.isPending ? '등록 중...' : '등록'}
               </Button>
             </div>

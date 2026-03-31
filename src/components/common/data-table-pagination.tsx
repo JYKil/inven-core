@@ -30,7 +30,7 @@ export function DataTablePagination({
 
   return (
     <div className="flex items-center justify-between mt-4">
-      <p className="text-xs text-[#9C9189]">
+      <p className="text-xs text-muted-foreground">
         총 {totalCount.toLocaleString()}건 중 {((page - 1) * pageSize + 1).toLocaleString()}–{Math.min(page * pageSize, totalCount).toLocaleString()}건
       </p>
       <Pagination>

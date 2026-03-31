@@ -34,16 +34,16 @@ export default function PoPaymentsPage() {
         />
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">공급업체</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">지급일</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">지급금액</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">방법</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">비고</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">공급업체</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">지급일</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">지급금액</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">방법</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">비고</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -75,8 +75,8 @@ export default function PoPaymentsPage() {
                   </TableCell>
                   <TableCell className="text-[13px] font-data">{formatDate(payment.payment_date)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatAmount(payment.amount)}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{payment.payment_method || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{payment.notes || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{payment.payment_method || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{payment.notes || '-'}</TableCell>
                 </TableRow>
               ))
             )}

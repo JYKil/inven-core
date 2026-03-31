@@ -44,21 +44,21 @@ export default function NewItemPage() {
     <div>
       <PageHeader title="품목 등록" />
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF] max-w-2xl">
+        <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>품목코드 *</Label>
                 <Input {...form.register('code')} placeholder="ITEM-001" />
                 {form.formState.errors.code && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.code.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
                 <Label>품목명 *</Label>
                 <Input {...form.register('name')} />
                 {form.formState.errors.name && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.name.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                 )}
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function NewItemPage() {
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>
-              <Button type="submit" disabled={createItem.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+              <Button type="submit" disabled={createItem.isPending} className="bg-primary hover:bg-primary-hover">
                 {createItem.isPending ? '등록 중...' : '등록'}
               </Button>
             </div>

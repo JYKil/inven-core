@@ -65,7 +65,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
     return (
       <div>
         <PageHeader title="창고 상세" />
-        <Card className="border-[#E0D8CF] max-w-2xl">
+        <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-9 w-full" />
@@ -76,7 +76,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
     )
   }
 
-  if (!wh) return <div className="text-center py-16 text-[#9C9189]">창고를 찾을 수 없습니다</div>
+  if (!wh) return <div className="text-center py-16 text-muted-foreground">창고를 찾을 수 없습니다</div>
 
   return (
     <div>
@@ -86,14 +86,14 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             <Button variant="outline" size="sm" onClick={startEdit}>
               <Pencil className="h-4 w-4 mr-1" />수정
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="text-[#B83A2A]">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="text-destructive">
               <Trash2 className="h-4 w-4 mr-1" />비활성화
             </Button>
           </>
         )}
       </PageHeader>
 
-      <Card className="border-[#E0D8CF] max-w-2xl">
+      <Card className="border-border max-w-2xl">
         <CardContent className="pt-6">
           {editing ? (
             <form onSubmit={onSubmit} className="space-y-4">
@@ -123,7 +123,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
               </div>
               <div className="flex justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setEditing(false)}>취소</Button>
-                <Button type="submit" disabled={updateWarehouse.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+                <Button type="submit" disabled={updateWarehouse.isPending} className="bg-primary hover:bg-primary-hover">
                   {updateWarehouse.isPending ? '저장 중...' : '저장'}
                 </Button>
               </div>
@@ -131,23 +131,23 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
           ) : (
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">창고코드</dt>
+                <dt className="text-muted-foreground text-xs mb-1">창고코드</dt>
                 <dd className="font-data font-medium">{wh.code}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">창고명</dt>
+                <dt className="text-muted-foreground text-xs mb-1">창고명</dt>
                 <dd className="font-medium">{wh.name}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">위치</dt>
+                <dt className="text-muted-foreground text-xs mb-1">위치</dt>
                 <dd>{wh.location || '-'}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">연락처</dt>
+                <dt className="text-muted-foreground text-xs mb-1">연락처</dt>
                 <dd>{wh.phone || '-'}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-[#9C9189] text-xs mb-1">비고</dt>
+                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
                 <dd className="whitespace-pre-wrap">{wh.notes || '-'}</dd>
               </div>
             </dl>

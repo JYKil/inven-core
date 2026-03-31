@@ -32,20 +32,20 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-[#1A1714]">
+        <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
           대시보드
         </h1>
-        <p className="text-[14px] text-[#6B6158] mt-1">
+        <p className="text-[14px] text-text-secondary mt-1">
           재고수불관리 시스템에 오신 것을 환영합니다.
         </p>
       </div>
 
       {/* 퀵 스타트 가이드 */}
-      <div className="border border-[#E0D8CF] rounded-[8px] bg-[#FEFCF9] p-6">
-        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-[#1A1714]">
+      <div className="border border-border rounded-[8px] bg-card p-6">
+        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
           시작하기
         </h2>
-        <p className="text-[13px] text-[#9C9189] mt-1">
+        <p className="text-[13px] text-muted-foreground mt-1">
           아래 순서대로 기초 데이터를 등록하면 재고 관리를 시작할 수 있습니다.
         </p>
 
@@ -54,19 +54,19 @@ export default function DashboardPage() {
             <Link
               key={action.href}
               href={action.href}
-              className="group flex flex-col gap-3 border border-[#E0D8CF] rounded-[6px] p-4 hover:border-[#D4642A]/40 hover:bg-[#D4642A]/5 transition-colors"
+              className="group flex flex-col gap-3 border border-border rounded-[6px] p-4 hover:border-primary/40 hover:bg-primary/5 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-[12px] font-medium text-[#9C9189]">
+                <span className="text-[12px] font-medium text-muted-foreground">
                   {i + 1}
                 </span>
-                <action.icon className="h-4 w-4 text-[#6B6158] group-hover:text-[#D4642A] transition-colors" />
+                <action.icon className="h-4 w-4 text-text-secondary group-hover:text-primary transition-colors" />
               </div>
               <div>
-                <div className="text-[14px] font-medium text-[#1A1714]">
+                <div className="text-[14px] font-medium text-foreground">
                   {action.title}
                 </div>
-                <div className="text-[12px] text-[#9C9189] mt-0.5">
+                <div className="text-[12px] text-muted-foreground mt-0.5">
                   {action.description}
                 </div>
               </div>

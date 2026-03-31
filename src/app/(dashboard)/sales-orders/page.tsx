@@ -32,7 +32,7 @@ export default function SalesOrdersPage() {
   return (
     <div>
       <PageHeader title="판매 주문">
-        <Button render={<Link href="/sales-orders/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/sales-orders/new" />} className="bg-primary hover:bg-primary-hover">
           <Plus className="h-4 w-4 mr-1" />
           주문 생성
         </Button>
@@ -62,15 +62,15 @@ export default function SalesOrdersPage() {
         </Select>
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">주문번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">거래처</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">상태</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">매출 금액</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">주문일</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">주문번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">거래처</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">매출 금액</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">주문일</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -96,7 +96,7 @@ export default function SalesOrdersPage() {
               data?.data.map((so: any) => (
                 <TableRow
                   key={so.id}
-                  className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                  className="cursor-pointer hover:bg-background/30 h-9"
                   onClick={() => router.push(`/sales-orders/${so.id}`)}
                 >
                   <TableCell className="text-[13px] font-data font-medium">{so.order_number}</TableCell>

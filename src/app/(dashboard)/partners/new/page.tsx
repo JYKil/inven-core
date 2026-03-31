@@ -54,14 +54,14 @@ export default function NewPartnerPage() {
       <PageHeader title="거래처 등록" />
 
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF] max-w-2xl">
+        <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name">업체명 *</Label>
                 <Input id="name" {...form.register('name')} placeholder="업체명" />
                 {form.formState.errors.name && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.name.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -101,7 +101,7 @@ export default function NewPartnerPage() {
                 <Label htmlFor="email">이메일</Label>
                 <Input id="email" type="email" {...form.register('email')} />
                 {form.formState.errors.email && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.email.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
                 )}
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function NewPartnerPage() {
               <Button
                 type="submit"
                 disabled={createPartner.isPending}
-                className="bg-[#D4642A] hover:bg-[#BF5520]"
+                className="bg-primary hover:bg-primary-hover"
               >
                 {createPartner.isPending ? '등록 중...' : '등록'}
               </Button>

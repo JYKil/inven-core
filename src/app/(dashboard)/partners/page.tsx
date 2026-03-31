@@ -45,7 +45,7 @@ export default function PartnersPage() {
   return (
     <div>
       <PageHeader title="거래처">
-        <Button render={<Link href="/partners/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/partners/new" />} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             거래처 등록
         </Button>
@@ -76,15 +76,15 @@ export default function PartnersPage() {
       </div>
 
       {/* 테이블 */}
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">업체명</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">유형</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">사업자번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">담당자</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">연락처</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">업체명</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">유형</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">사업자번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">담당자</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">연락처</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,20 +110,20 @@ export default function PartnersPage() {
               data?.data.map((partner) => (
                 <TableRow
                   key={partner.id}
-                  className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                  className="cursor-pointer hover:bg-background/30 h-9"
                   onClick={() => router.push(`/partners/${partner.id}`)}
                 >
                   <TableCell className="text-[13px] font-medium">{partner.name}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">
+                  <TableCell className="text-[13px] text-text-secondary">
                     {partnerTypeLabels[partner.partner_type] ?? partner.partner_type}
                   </TableCell>
-                  <TableCell className="text-[13px] font-data text-[#6B6158]">
+                  <TableCell className="text-[13px] font-data text-text-secondary">
                     {partner.business_number || '-'}
                   </TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">
+                  <TableCell className="text-[13px] text-text-secondary">
                     {partner.contact_name || '-'}
                   </TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">
+                  <TableCell className="text-[13px] text-text-secondary">
                     {partner.phone || '-'}
                   </TableCell>
                 </TableRow>

@@ -27,7 +27,7 @@ export default function GoodsReceiptsPage() {
   return (
     <div>
       <PageHeader title="입고 처리">
-        <Button render={<Link href="/goods-receipts/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/goods-receipts/new" />} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             입고 등록
         </Button>
@@ -41,15 +41,15 @@ export default function GoodsReceiptsPage() {
         />
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">입고번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">PO번호</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">입고창고</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">입고일</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">상태</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">입고번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">PO번호</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">입고창고</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">입고일</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">상태</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -75,7 +75,7 @@ export default function GoodsReceiptsPage() {
               data?.data.map((gr: any) => (
                 <TableRow key={gr.id} className="h-9">
                   <TableCell className="text-[13px] font-data font-medium">{gr.receipt_number}</TableCell>
-                  <TableCell className="text-[13px] font-data text-[#6B6158]">
+                  <TableCell className="text-[13px] font-data text-text-secondary">
                     {gr.purchase_order?.po_number ?? '-'}
                   </TableCell>
                   <TableCell className="text-[13px]">{gr.warehouse?.name ?? '-'}</TableCell>

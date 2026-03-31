@@ -49,15 +49,15 @@ export default function InventoryPage() {
       <PageHeader title="재고 현황" />
 
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex rounded-[6px] border border-[#E0D8CF] overflow-hidden">
+        <div className="flex rounded-[6px] border border-border overflow-hidden">
           <button
-            className={`px-3 py-1.5 text-xs font-medium ${filters.view === 'item' ? 'bg-[#D4642A] text-white' : 'text-[#6B6158] hover:bg-[#F5F0EB]'}`}
+            className={`px-3 py-1.5 text-xs font-medium ${filters.view === 'item' ? 'bg-primary text-white' : 'text-text-secondary hover:bg-background'}`}
             onClick={() => setFilters((p) => ({ ...p, view: 'item' }))}
           >
             품목별
           </button>
           <button
-            className={`px-3 py-1.5 text-xs font-medium ${filters.view === 'warehouse' ? 'bg-[#D4642A] text-white' : 'text-[#6B6158] hover:bg-[#F5F0EB]'}`}
+            className={`px-3 py-1.5 text-xs font-medium ${filters.view === 'warehouse' ? 'bg-primary text-white' : 'text-text-secondary hover:bg-background'}`}
             onClick={() => setFilters((p) => ({ ...p, view: 'warehouse' }))}
           >
             창고별
@@ -81,18 +81,18 @@ export default function InventoryPage() {
       </div>
 
       {/* 메인 테이블 */}
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
+            <TableRow className="bg-background/50">
               {filters.view === 'warehouse' && (
-                <TableHead className="text-xs font-medium text-[#6B6158]">창고</TableHead>
+                <TableHead className="text-xs font-medium text-text-secondary">창고</TableHead>
               )}
-              <TableHead className="text-xs font-medium text-[#6B6158]">코드</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">품목명</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">총 재고량</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">총 재고가치</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] w-10"></TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">품목명</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">총 재고량</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">총 재고가치</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -117,7 +117,7 @@ export default function InventoryPage() {
                   return (
                     <TableRow
                       key={row.item_id}
-                      className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                      className="cursor-pointer hover:bg-background/30 h-9"
                       onClick={() => {
                         setSelectedItemId(selectedItemId === row.item_id ? null : row.item_id)
                         setSelectedItemUnit(row.unit ?? 'EA')
@@ -132,7 +132,7 @@ export default function InventoryPage() {
                         {formatAmount(row.totalValue)}
                       </TableCell>
                       <TableCell>
-                        {isLow && <AlertTriangle className="h-4 w-4 text-[#C4901A]" />}
+                        {isLow && <AlertTriangle className="h-4 w-4 text-warning" />}
                       </TableCell>
                     </TableRow>
                   )
@@ -160,7 +160,7 @@ export default function InventoryPage() {
                     </TableCell>
                     <TableCell>
                       {row.item?.min_stock_qty > 0 && row.total_qty < row.item.min_stock_qty && (
-                        <AlertTriangle className="h-4 w-4 text-[#C4901A]" />
+                        <AlertTriangle className="h-4 w-4 text-warning" />
                       )}
                     </TableCell>
                   </TableRow>
@@ -218,15 +218,15 @@ function LotDrilldown({ itemId, unit }: { itemId: string; unit: string }) {
   if (isLoading) return <Skeleton className="h-40 w-full mt-4" />
 
   return (
-    <Card className="border-[#E0D8CF] mt-4">
+    <Card className="border-border mt-4">
       <CardContent className="pt-4">
         <h3 className="font-heading font-semibold text-[15px] mb-3">로트 상세</h3>
         {!lots || lots.length === 0 ? (
-          <p className="text-sm text-[#9C9189] text-center py-4">로트가 없습니다</p>
+          <p className="text-sm text-muted-foreground text-center py-4">로트가 없습니다</p>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F5F0EB]/50">
+              <TableRow className="bg-background/50">
                 <TableHead className="text-xs">창고</TableHead>
                 <TableHead className="text-xs">입고일</TableHead>
                 <TableHead className="text-xs">출처</TableHead>
@@ -240,7 +240,7 @@ function LotDrilldown({ itemId, unit }: { itemId: string; unit: string }) {
                 <TableRow key={lot.id} className="h-8">
                   <TableCell className="text-[13px]">{lot.warehouse?.name}</TableCell>
                   <TableCell className="text-[13px] font-data">{formatDate(lot.lot_date)}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{lot.source_type}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{lot.source_type}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>

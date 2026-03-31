@@ -141,7 +141,7 @@ function NewAssemblyContent() {
     <div>
       <PageHeader title="조립 생성" />
       <form onSubmit={onSubmit}>
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-6">
             {/* 헤더 폼 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
@@ -149,7 +149,7 @@ function NewAssemblyContent() {
                 <Label>조립번호 *</Label>
                 <Input {...form.register('order_number')} placeholder="ASM-2026-001" />
                 {form.formState.errors.order_number && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.order_number.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.order_number.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -161,7 +161,7 @@ function NewAssemblyContent() {
                 {itemsLoading ? (
                   <Skeleton className="h-9 w-full" />
                 ) : (assemblyItems ?? []).length === 0 ? (
-                  <p className="text-xs text-[#6B6158] py-2">
+                  <p className="text-xs text-text-secondary py-2">
                     조립 가능 품목이 없습니다. 품목에 BOM을 먼저 등록해주세요.
                   </p>
                 ) : (
@@ -177,7 +177,7 @@ function NewAssemblyContent() {
                   </Select>
                 )}
                 {form.formState.errors.product_item_id && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.product_item_id.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.product_item_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -198,7 +198,7 @@ function NewAssemblyContent() {
                   </SelectContent>
                 </Select>
                 {form.formState.errors.bom_header_id && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.bom_header_id.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.bom_header_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -216,7 +216,7 @@ function NewAssemblyContent() {
                   </SelectContent>
                 </Select>
                 {form.formState.errors.warehouse_id && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.warehouse_id.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.warehouse_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -229,7 +229,7 @@ function NewAssemblyContent() {
                   className="font-data"
                 />
                 {form.formState.errors.quantity && (
-                  <p className="text-xs text-[#B83A2A]">{form.formState.errors.quantity.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.quantity.message}</p>
                 )}
               </div>
             </div>
@@ -238,16 +238,16 @@ function NewAssemblyContent() {
             {selectedBomId && watchWarehouseId && watchQuantity > 0 && (
               <div>
                 <h2 className="font-heading font-semibold text-[15px] mb-3">재료 가용성 확인</h2>
-                <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+                <div className="border border-border rounded-[8px] overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#F5F0EB]/50">
-                        <TableHead className="text-xs font-medium text-[#6B6158]">재료 품목</TableHead>
-                        <TableHead className="text-xs font-medium text-[#6B6158] text-right">필요 수량</TableHead>
-                        <TableHead className="text-xs font-medium text-[#6B6158] text-right">현재고</TableHead>
-                        <TableHead className="text-xs font-medium text-[#6B6158] text-center">가용 여부</TableHead>
-                        <TableHead className="text-xs font-medium text-[#6B6158] text-right">부족량</TableHead>
-                        <TableHead className="text-xs font-medium text-[#6B6158] text-right">예상 원가</TableHead>
+                      <TableRow className="bg-background/50">
+                        <TableHead className="text-xs font-medium text-text-secondary">재료 품목</TableHead>
+                        <TableHead className="text-xs font-medium text-text-secondary text-right">필요 수량</TableHead>
+                        <TableHead className="text-xs font-medium text-text-secondary text-right">현재고</TableHead>
+                        <TableHead className="text-xs font-medium text-text-secondary text-center">가용 여부</TableHead>
+                        <TableHead className="text-xs font-medium text-text-secondary text-right">부족량</TableHead>
+                        <TableHead className="text-xs font-medium text-text-secondary text-right">예상 원가</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -263,11 +263,11 @@ function NewAssemblyContent() {
                         availability?.map((m) => (
                           <TableRow
                             key={m.materialItemId}
-                            className={m.isAvailable ? '' : 'bg-[#B83A2A]/5'}
+                            className={m.isAvailable ? '' : 'bg-destructive/5'}
                           >
                             <TableCell className="text-[13px]">
                               <span className="font-data">{m.materialItem.code}</span>
-                              <span className="text-[#6B6158] ml-1">{m.materialItem.name}</span>
+                              <span className="text-text-secondary ml-1">{m.materialItem.name}</span>
                             </TableCell>
                             <TableCell className="text-[13px] font-data text-right">
                               {formatQty(m.requiredQty, m.materialItem.unit)}
@@ -277,14 +277,14 @@ function NewAssemblyContent() {
                             </TableCell>
                             <TableCell className="text-center">
                               {m.isAvailable ? (
-                                <CheckCircle2 className="h-4 w-4 text-[#2B7A6F] inline-block" />
+                                <CheckCircle2 className="h-4 w-4 text-secondary inline-block" />
                               ) : (
-                                <AlertTriangle className="h-4 w-4 text-[#B83A2A] inline-block" />
+                                <AlertTriangle className="h-4 w-4 text-destructive inline-block" />
                               )}
                             </TableCell>
                             <TableCell className="text-[13px] font-data text-right">
                               {m.shortage > 0 ? (
-                                <span className="text-[#B83A2A]">{formatQty(m.shortage, m.materialItem.unit)}</span>
+                                <span className="text-destructive">{formatQty(m.shortage, m.materialItem.unit)}</span>
                               ) : '-'}
                             </TableCell>
                             <TableCell className="text-[13px] font-data text-right">
@@ -297,20 +297,20 @@ function NewAssemblyContent() {
                   </Table>
                 </div>
                 {availability && !allAvailable && (
-                  <p className="text-xs text-[#B83A2A] mt-2">
+                  <p className="text-xs text-destructive mt-2">
                     재료가 부족하여 조립을 실행할 수 없습니다.
                   </p>
                 )}
                 {availability && allAvailable && estimatedTotalCost > 0 && (
                   <div className="mt-3 flex gap-6 items-center px-1">
                     <div>
-                      <span className="text-xs text-[#6B6158]">예상 총원가</span>
-                      <span className="ml-2 text-sm font-data font-semibold text-[#D4642A]">
+                      <span className="text-xs text-text-secondary">예상 총원가</span>
+                      <span className="ml-2 text-sm font-data font-semibold text-primary">
                         {formatAmount(estimatedTotalCost)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B6158]">예상 단위원가</span>
+                      <span className="text-xs text-text-secondary">예상 단위원가</span>
                       <span className="ml-2 text-sm font-data font-semibold">
                         {formatUnitPrice(estimatedUnitCost)}
                       </span>
@@ -325,7 +325,7 @@ function NewAssemblyContent() {
               <Button
                 type="submit"
                 disabled={!canExecute || executeAssembly.isPending}
-                className="bg-[#D4642A] hover:bg-[#BF5520]"
+                className="bg-primary hover:bg-primary-hover"
               >
                 {executeAssembly.isPending ? '조립 처리 중...' : '조립 실행'}
               </Button>

@@ -80,7 +80,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
     return (
       <div>
         <PageHeader title="품목 상세" />
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
           </CardContent>
@@ -89,7 +89,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
     )
   }
 
-  if (!item) return <div className="text-center py-16 text-[#9C9189]">품목을 찾을 수 없습니다</div>
+  if (!item) return <div className="text-center py-16 text-muted-foreground">품목을 찾을 수 없습니다</div>
 
   return (
     <div>
@@ -99,7 +99,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
             <Button variant="outline" size="sm" onClick={startEdit}>
               <Pencil className="h-4 w-4 mr-1" />수정
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="text-[#B83A2A]">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="text-destructive">
               <Trash2 className="h-4 w-4 mr-1" />비활성화
             </Button>
           </>
@@ -114,7 +114,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
         </TabsList>
 
         <TabsContent value="info">
-          <Card className="border-[#E0D8CF] max-w-2xl">
+          <Card className="border-border max-w-2xl">
             <CardContent className="pt-6">
               {editing ? (
                 <form onSubmit={onSubmit} className="space-y-4">
@@ -171,7 +171,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                   <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={() => setEditing(false)}>취소</Button>
-                    <Button type="submit" disabled={updateItem.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+                    <Button type="submit" disabled={updateItem.isPending} className="bg-primary hover:bg-primary-hover">
                       {updateItem.isPending ? '저장 중...' : '저장'}
                     </Button>
                   </div>
@@ -179,31 +179,31 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
               ) : (
                 <dl className="grid grid-cols-3 gap-x-6 gap-y-4 text-sm">
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">품목코드</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">품목코드</dt>
                     <dd className="font-data font-medium">{item.code}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">품목명</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">품목명</dt>
                     <dd className="font-medium">{item.name}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">유형</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">유형</dt>
                     <dd>{item.item_type === 'assembly' ? '조립' : '기초'}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">단위</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">단위</dt>
                     <dd>{item.unit}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">카테고리</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">카테고리</dt>
                     <dd>{item.category || '-'}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#9C9189] text-xs mb-1">최소 재고</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">최소 재고</dt>
                     <dd className="font-data">{formatQty(item.min_stock_qty ?? 0, item.unit)}</dd>
                   </div>
                   <div className="col-span-3">
-                    <dt className="text-[#9C9189] text-xs mb-1">설명</dt>
+                    <dt className="text-muted-foreground text-xs mb-1">설명</dt>
                     <dd className="whitespace-pre-wrap">{item.description || '-'}</dd>
                   </div>
                 </dl>
@@ -275,12 +275,12 @@ function BomTab({ itemId }: { itemId: string }) {
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-[#E0D8CF]">
+    <Card className="border-border">
       <CardContent className="pt-6">
         {(!boms || boms.length === 0) && !isCreating ? (
           <div className="text-center py-8">
-            <p className="text-sm text-[#9C9189] mb-3">BOM이 정의되지 않았습니다</p>
-            <Button size="sm" onClick={() => setIsCreating(true)} className="bg-[#D4642A] hover:bg-[#BF5520]">
+            <p className="text-sm text-muted-foreground mb-3">BOM이 정의되지 않았습니다</p>
+            <Button size="sm" onClick={() => setIsCreating(true)} className="bg-primary hover:bg-primary-hover">
               <Plus className="h-4 w-4 mr-1" />BOM 생성
             </Button>
           </div>
@@ -297,16 +297,16 @@ function BomTab({ itemId }: { itemId: string }) {
                 className="h-9"
               />
               {materialSearch && searchResults && searchResults.length > 0 && (
-                <div className="absolute z-10 top-full mt-1 w-full bg-white border border-[#E0D8CF] rounded-[6px] shadow-md max-h-48 overflow-auto">
+                <div className="absolute z-10 top-full mt-1 w-full bg-white border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
                   {searchResults.map((mat) => (
                     <button
                       key={mat.id}
                       type="button"
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#F5F0EB] flex justify-between"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-background flex justify-between"
                       onClick={() => addLine(mat)}
                     >
                       <span className="font-data">{mat.code}</span>
-                      <span className="text-[#6B6158]">{mat.name}</span>
+                      <span className="text-text-secondary">{mat.name}</span>
                     </button>
                   ))}
                 </div>
@@ -317,7 +317,7 @@ function BomTab({ itemId }: { itemId: string }) {
             {newLines.length > 0 && (
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#F5F0EB]/50">
+                  <TableRow className="bg-background/50">
                     <TableHead className="text-xs">재료 품목</TableHead>
                     <TableHead className="text-xs w-32">수량</TableHead>
                     <TableHead className="text-xs w-10"></TableHead>
@@ -342,7 +342,7 @@ function BomTab({ itemId }: { itemId: string }) {
                       </TableCell>
                       <TableCell>
                         <Button variant="ghost" size="sm" onClick={() => removeLine(idx)}>
-                          <X className="h-4 w-4 text-[#B83A2A]" />
+                          <X className="h-4 w-4 text-destructive" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -353,7 +353,7 @@ function BomTab({ itemId }: { itemId: string }) {
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => { setIsCreating(false); setNewLines([]) }}>취소</Button>
-              <Button size="sm" onClick={handleCreateBom} disabled={createBom.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+              <Button size="sm" onClick={handleCreateBom} disabled={createBom.isPending} className="bg-primary hover:bg-primary-hover">
                 {createBom.isPending ? '저장 중...' : 'BOM 저장'}
               </Button>
             </div>
@@ -365,12 +365,12 @@ function BomTab({ itemId }: { itemId: string }) {
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-heading font-semibold text-[15px]">
                   BOM v{bom.version}
-                  {!bom.is_active && <span className="text-[#9C9189] ml-2">(비활성)</span>}
+                  {!bom.is_active && <span className="text-muted-foreground ml-2">(비활성)</span>}
                 </h3>
               </div>
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#F5F0EB]/50">
+                  <TableRow className="bg-background/50">
                     <TableHead className="text-xs">코드</TableHead>
                     <TableHead className="text-xs">재료 품목명</TableHead>
                     <TableHead className="text-xs">단위</TableHead>
@@ -382,7 +382,7 @@ function BomTab({ itemId }: { itemId: string }) {
                     <TableRow key={line.id} className="h-9">
                       <TableCell className="text-[13px] font-data">{line.material_item?.code}</TableCell>
                       <TableCell className="text-[13px]">{line.material_item?.name}</TableCell>
-                      <TableCell className="text-[13px] text-[#6B6158]">{line.material_item?.unit}</TableCell>
+                      <TableCell className="text-[13px] text-text-secondary">{line.material_item?.unit}</TableCell>
                       <TableCell className="text-[13px] font-data text-right">
                         {formatQty(line.quantity, line.material_item?.unit)}
                       </TableCell>
@@ -405,14 +405,14 @@ function StockTab({ itemId, unit }: { itemId: string; unit: string }) {
   if (isLoading) return <Skeleton className="h-40 w-full" />
 
   return (
-    <Card className="border-[#E0D8CF]">
+    <Card className="border-border">
       <CardContent className="pt-6">
         {!lots || lots.length === 0 ? (
-          <p className="text-center py-8 text-sm text-[#9C9189]">재고가 없습니다</p>
+          <p className="text-center py-8 text-sm text-muted-foreground">재고가 없습니다</p>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F5F0EB]/50">
+              <TableRow className="bg-background/50">
                 <TableHead className="text-xs">창고</TableHead>
                 <TableHead className="text-xs">입고일</TableHead>
                 <TableHead className="text-xs">출처</TableHead>
@@ -428,7 +428,7 @@ function StockTab({ itemId, unit }: { itemId: string; unit: string }) {
                     {lot.warehouse?.code} — {lot.warehouse?.name}
                   </TableCell>
                   <TableCell className="text-[13px] font-data">{formatDate(lot.lot_date)}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{lot.source_type}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{lot.source_type}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatQty(lot.initial_qty, unit)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatQty(lot.remaining_qty, unit)}</TableCell>
                   <TableCell className="text-[13px] font-data text-right">{formatUnitPrice(lot.unit_cost)}</TableCell>

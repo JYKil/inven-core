@@ -55,7 +55,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
     return (
       <div>
         <PageHeader title="판매 주문 상세" />
-        <Card className="border-[#E0D8CF]">
+        <Card className="border-border">
           <CardContent className="pt-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
           </CardContent>
@@ -64,7 +64,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
     )
   }
 
-  if (!so) return <div className="text-center py-16 text-[#9C9189]">판매주문을 찾을 수 없습니다</div>
+  if (!so) return <div className="text-center py-16 text-muted-foreground">판매주문을 찾을 수 없습니다</div>
 
   const canConfirm = so.status === 'draft'
   const canShip = so.status === 'confirmed'
@@ -81,55 +81,55 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       <PageHeader title={so.order_number}>
         {canConfirm && (
           <Button size="sm" onClick={handleConfirm} disabled={updateStatus.isPending}
-            className="bg-[#4A7B94] hover:bg-[#3d6679]">
+            className="bg-info hover:bg-[#3d6679]">
             확정
           </Button>
         )}
         {canShip && (
           <Button size="sm" onClick={handleShip}
             disabled={executeShipment.isPending}
-            className="bg-[#D4642A] hover:bg-[#BF5520]">
+            className="bg-primary hover:bg-primary-hover">
             <Truck className="h-4 w-4 mr-1" />
             {executeShipment.isPending ? '출고 처리 중...' : '출고 실행'}
           </Button>
         )}
         {canCancel && (
           <Button variant="outline" size="sm" onClick={handleCancel}
-            disabled={updateStatus.isPending} className="text-[#B83A2A]">
+            disabled={updateStatus.isPending} className="text-destructive">
             취소
           </Button>
         )}
       </PageHeader>
 
       {/* SO 헤더 정보 */}
-      <Card className="border-[#E0D8CF] mb-4">
+      <Card className="border-border mb-4">
         <CardContent className="pt-6">
           <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">상태</dt>
+              <dt className="text-muted-foreground text-xs mb-1">상태</dt>
               <dd><StatusBadge status={so.status} /></dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">거래처</dt>
+              <dt className="text-muted-foreground text-xs mb-1">거래처</dt>
               <dd className="font-medium">{(so as any).partner?.name ?? '-'}</dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">주문일</dt>
+              <dt className="text-muted-foreground text-xs mb-1">주문일</dt>
               <dd className="font-data">{formatDate(so.order_date)}</dd>
             </div>
             <div>
-              <dt className="text-[#9C9189] text-xs mb-1">매출 금액</dt>
+              <dt className="text-muted-foreground text-xs mb-1">매출 금액</dt>
               <dd className="font-data font-medium">{formatAmount(so.total_amount)}</dd>
             </div>
             {isShipped && (
               <>
                 <div>
-                  <dt className="text-[#9C9189] text-xs mb-1">매출원가</dt>
+                  <dt className="text-muted-foreground text-xs mb-1">매출원가</dt>
                   <dd className="font-data">{formatAmount(totalCogs)}</dd>
                 </div>
                 <div>
-                  <dt className="text-[#9C9189] text-xs mb-1">매출이익</dt>
-                  <dd className={`font-data font-medium ${grossProfit >= 0 ? 'text-[#2B7A6F]' : 'text-[#B83A2A]'}`}>
+                  <dt className="text-muted-foreground text-xs mb-1">매출이익</dt>
+                  <dd className={`font-data font-medium ${grossProfit >= 0 ? 'text-secondary' : 'text-destructive'}`}>
                     {formatAmount(grossProfit)}
                   </dd>
                 </div>
@@ -137,7 +137,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
             )}
             {so.notes && (
               <div className="col-span-4">
-                <dt className="text-[#9C9189] text-xs mb-1">비고</dt>
+                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
                 <dd>{so.notes}</dd>
               </div>
             )}
@@ -146,12 +146,12 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       </Card>
 
       {/* 판매 라인 */}
-      <Card className="border-[#E0D8CF]">
+      <Card className="border-border">
         <CardContent className="pt-4">
           <h3 className="font-heading font-semibold text-[15px] mb-3">판매 품목</h3>
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F5F0EB]/50">
+              <TableRow className="bg-background/50">
                 <TableHead className="text-xs">코드</TableHead>
                 <TableHead className="text-xs">품목명</TableHead>
                 <TableHead className="text-xs">출고 창고</TableHead>
@@ -179,8 +179,8 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
                   )}
                 </TableRow>
               ))}
-              <TableRow className="bg-[#F5F0EB]/30">
-                <TableCell colSpan={isShipped ? 5 : 5} className="text-right text-xs font-medium text-[#6B6158]">
+              <TableRow className="bg-background/30">
+                <TableCell colSpan={isShipped ? 5 : 5} className="text-right text-xs font-medium text-text-secondary">
                   합계
                 </TableCell>
                 <TableCell className="text-[13px] font-data font-medium text-right">

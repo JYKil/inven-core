@@ -27,7 +27,7 @@ export default function WarehousesPage() {
   return (
     <div>
       <PageHeader title="창고">
-        <Button render={<Link href="/warehouses/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/warehouses/new" />} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             창고 등록
         </Button>
@@ -41,14 +41,14 @@ export default function WarehousesPage() {
         />
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">코드</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">창고명</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">위치</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">연락처</TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">창고명</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">위치</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">연락처</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -74,13 +74,13 @@ export default function WarehousesPage() {
               data?.data.map((wh) => (
                 <TableRow
                   key={wh.id}
-                  className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                  className="cursor-pointer hover:bg-background/30 h-9"
                   onClick={() => router.push(`/warehouses/${wh.id}`)}
                 >
                   <TableCell className="text-[13px] font-data font-medium">{wh.code}</TableCell>
                   <TableCell className="text-[13px] font-medium">{wh.name}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{wh.location || '-'}</TableCell>
-                  <TableCell className="text-[13px] text-[#6B6158]">{wh.phone || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{wh.location || '-'}</TableCell>
+                  <TableCell className="text-[13px] text-text-secondary">{wh.phone || '-'}</TableCell>
                 </TableRow>
               ))
             )}

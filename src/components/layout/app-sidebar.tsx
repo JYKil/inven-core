@@ -137,7 +137,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-12 flex items-center justify-center border-b border-border">
         <Link href="/" className="flex items-center gap-2 px-2">
-          <Building2 className="h-5 w-5 text-[#D4642A] shrink-0" />
+          <Building2 className="h-5 w-5 text-primary shrink-0" />
           <span className="font-heading font-semibold text-sm truncate group-data-[collapsible=icon]:hidden">
             inven-core
           </span>
@@ -147,7 +147,7 @@ export function AppSidebar() {
         {groups.map((group) => (
           <SidebarGroup key={group.label || 'home'}>
             {group.label && (
-              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wider text-[#9C9189]">{group.label}</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</SidebarGroupLabel>
             )}
             <SidebarGroupContent>
               <SidebarMenu>

@@ -15,12 +15,12 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <p className="text-sm font-medium text-[#1A1714]">{title}</p>
+      <p className="text-sm font-medium text-foreground">{title}</p>
       {description && (
-        <p className="text-xs text-[#9C9189] mt-1">{description}</p>
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
       )}
       {actionLabel && actionHref && (
-        <Button render={<Link href={actionHref} />} size="sm" className="mt-4 bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href={actionHref} />} size="sm" className="mt-4 bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             {actionLabel}
         </Button>

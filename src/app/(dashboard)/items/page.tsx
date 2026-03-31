@@ -32,7 +32,7 @@ export default function ItemsPage() {
   return (
     <div>
       <PageHeader title="품목 관리">
-        <Button render={<Link href="/items/new" />} className="bg-[#D4642A] hover:bg-[#BF5520]">
+        <Button render={<Link href="/items/new" />} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             품목 등록
         </Button>
@@ -60,17 +60,17 @@ export default function ItemsPage() {
         </Select>
       </div>
 
-      <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-[8px] overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F5F0EB]/50">
-              <TableHead className="text-xs font-medium text-[#6B6158]">코드</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">품목명</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">유형</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">단위</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158]">카테고리</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] text-right">현재고</TableHead>
-              <TableHead className="text-xs font-medium text-[#6B6158] w-10"></TableHead>
+            <TableRow className="bg-background/50">
+              <TableHead className="text-xs font-medium text-text-secondary">코드</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">품목명</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">유형</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">단위</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary">카테고리</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary text-right">현재고</TableHead>
+              <TableHead className="text-xs font-medium text-text-secondary w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,28 +103,28 @@ export default function ItemsPage() {
                 return (
                   <TableRow
                     key={item.id}
-                    className="cursor-pointer hover:bg-[#F5F0EB]/30 h-9"
+                    className="cursor-pointer hover:bg-background/30 h-9"
                     onClick={() => router.push(`/items/${item.id}`)}
                   >
                     <TableCell className="text-[13px] font-data font-medium">{item.code}</TableCell>
                     <TableCell className="text-[13px] font-medium">{item.name}</TableCell>
                     <TableCell className="text-[13px]">
                       {item.item_type === 'assembly' ? (
-                        <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-[#4A7B94] text-[#4A7B94] text-xs">
+                        <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-[#4A7B94] text-info text-xs">
                           <Wrench className="h-3 w-3 mr-1" />조립
                         </Badge>
                       ) : (
-                        <span className="text-[#6B6158]">기초</span>
+                        <span className="text-text-secondary">기초</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-[13px] text-[#6B6158]">{item.unit}</TableCell>
-                    <TableCell className="text-[13px] text-[#6B6158]">{item.category || '-'}</TableCell>
+                    <TableCell className="text-[13px] text-text-secondary">{item.unit}</TableCell>
+                    <TableCell className="text-[13px] text-text-secondary">{item.category || '-'}</TableCell>
                     <TableCell className="text-[13px] font-data text-right">
                       {formatQty(totalQty, item.unit)}
                     </TableCell>
                     <TableCell>
                       {isLow && (
-                        <AlertTriangle className="h-4 w-4 text-[#C4901A]" />
+                        <AlertTriangle className="h-4 w-4 text-warning" />
                       )}
                     </TableCell>
                   </TableRow>

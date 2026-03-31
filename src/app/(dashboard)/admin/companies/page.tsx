@@ -229,8 +229,8 @@ export default function AdminCompaniesPage() {
   }
 
   const roleBadgeStyles: Record<string, string> = {
-    company_admin: 'border-[#4A7B94] text-[#4A7B94]',
-    normal: 'border-[#6B6158] text-[#6B6158]',
+    company_admin: 'border-[#4A7B94] text-info',
+    normal: 'border-text-secondary text-text-secondary',
   }
 
   return (
@@ -238,16 +238,16 @@ export default function AdminCompaniesPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-[#1A1714]">
+          <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
             회사 관리
           </h1>
-          <p className="text-[14px] text-[#6B6158] mt-1">
+          <p className="text-[14px] text-text-secondary mt-1">
             등록된 회사를 관리하고 회사 관리자를 추가합니다.
           </p>
         </div>
         <Button
           onClick={openCreate}
-          className="h-9 bg-[#D4642A] hover:bg-[#BF5520] text-white text-[14px]"
+          className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
         >
           회사 추가
         </Button>
@@ -255,42 +255,42 @@ export default function AdminCompaniesPage() {
 
       {/* 테이블 */}
       {isLoading ? (
-        <p className="text-[14px] text-[#9C9189]">불러오는 중...</p>
+        <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
       ) : (
-        <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+        <div className="border border-border rounded-[8px] overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F5F0EB]/50">
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">회사명</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">사업자번호</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">연락처</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">원가방식</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">상태</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158]">초대 코드</TableHead>
-                <TableHead className="text-[13px] font-medium text-[#6B6158] w-[200px]">작업</TableHead>
+              <TableRow className="bg-background/50">
+                <TableHead className="text-[13px] font-medium text-text-secondary">회사명</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary">사업자번호</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary">연락처</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary">원가방식</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary">상태</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary">초대 코드</TableHead>
+                <TableHead className="text-[13px] font-medium text-text-secondary w-[200px]">작업</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {companies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-[14px] text-[#9C9189] py-8">
+                  <TableCell colSpan={7} className="text-center text-[14px] text-muted-foreground py-8">
                     등록된 회사가 없습니다.
                   </TableCell>
                 </TableRow>
               ) : (
                 companies.map((company) => (
                   <TableRow key={company.id} className="h-[36px]">
-                    <TableCell className="text-[13px] text-[#1A1714] font-medium">
+                    <TableCell className="text-[13px] text-foreground font-medium">
                       {company.name}
                     </TableCell>
-                    <TableCell className="text-[13px] text-[#6B6158]">
+                    <TableCell className="text-[13px] text-text-secondary">
                       {company.business_number || '-'}
                     </TableCell>
-                    <TableCell className="text-[13px] text-[#6B6158]">
+                    <TableCell className="text-[13px] text-text-secondary">
                       {company.phone || '-'}
                     </TableCell>
                     <TableCell>
-                      <span className="font-data text-[13px] text-[#1A1714]">
+                      <span className="font-data text-[13px] text-foreground">
                         {company.costing_method}
                       </span>
                     </TableCell>
@@ -299,15 +299,15 @@ export default function AdminCompaniesPage() {
                         variant="outline"
                         className={`text-[12px] rounded-[3px] border-[1.5px] ${
                           company.is_active
-                            ? 'border-[#2B7A6F] text-[#2B7A6F]'
-                            : 'border-[#C4BBB2] text-[#C4BBB2]'
+                            ? 'border-secondary text-secondary'
+                            : 'border-[#C4BBB2] text-text-muted'
                         }`}
                       >
                         {company.is_active ? '활성' : '비활성'}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <code className="font-data text-[11px] text-[#9C9189] bg-[#F5F0EB] px-1.5 py-0.5 rounded">
+                      <code className="font-data text-[11px] text-muted-foreground bg-background px-1.5 py-0.5 rounded">
                         {company.id.slice(0, 8)}...
                       </code>
                     </TableCell>
@@ -317,7 +317,7 @@ export default function AdminCompaniesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openAdmins(company)}
-                          className="h-7 text-[12px] text-[#4A7B94] hover:text-[#4A7B94]"
+                          className="h-7 text-[12px] text-info hover:text-info"
                         >
                           사용자
                         </Button>
@@ -325,7 +325,7 @@ export default function AdminCompaniesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openEdit(company)}
-                          className="h-7 text-[12px] text-[#6B6158] hover:text-[#1A1714]"
+                          className="h-7 text-[12px] text-text-secondary hover:text-foreground"
                         >
                           수정
                         </Button>
@@ -338,8 +338,8 @@ export default function AdminCompaniesPage() {
                           })}
                           className={`h-7 text-[12px] ${
                             company.is_active
-                              ? 'text-[#B83A2A] hover:text-[#B83A2A]'
-                              : 'text-[#2B7A6F] hover:text-[#2B7A6F]'
+                              ? 'text-destructive hover:text-destructive'
+                              : 'text-secondary hover:text-secondary'
                           }`}
                         >
                           {company.is_active ? '비활성화' : '활성화'}
@@ -356,7 +356,7 @@ export default function AdminCompaniesPage() {
 
       {/* 회사 생성/수정 다이얼로그 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-white border-[#E0D8CF]">
+        <DialogContent className="bg-white border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               {editing ? '회사 수정' : '회사 추가'}
@@ -364,14 +364,14 @@ export default function AdminCompaniesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {(createMutation.error || updateMutation.error) && (
-              <div className="text-[13px] text-[#B83A2A] bg-[#B83A2A]/10 border border-[#B83A2A]/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
                 {(createMutation.error || updateMutation.error)?.message}
               </div>
             )}
 
             <div className="space-y-1.5">
               <Label className="text-[13px]">
-                회사명 <span className="text-[#B83A2A]">*</span>
+                회사명 <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={name}
@@ -416,14 +416,14 @@ export default function AdminCompaniesPage() {
                 type="button"
                 variant="outline"
                 onClick={closeDialog}
-                className="h-9 text-[14px] border-[#E0D8CF]"
+                className="h-9 text-[14px] border-border"
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="h-9 bg-[#D4642A] hover:bg-[#BF5520] text-white text-[14px]"
+                className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
               >
                 {isSaving ? '저장 중...' : editing ? '수정' : '추가'}
               </Button>
@@ -434,7 +434,7 @@ export default function AdminCompaniesPage() {
 
       {/* 회사 사용자 목록 다이얼로그 */}
       <Dialog open={adminsDialogOpen} onOpenChange={setAdminsDialogOpen}>
-        <DialogContent className="bg-white border-[#E0D8CF] max-w-lg">
+        <DialogContent className="bg-white border-border max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               {adminsCompany?.name} — 사용자
@@ -445,36 +445,36 @@ export default function AdminCompaniesPage() {
             <div className="flex justify-end">
               <Button
                 onClick={() => adminsCompany && openInvite(adminsCompany)}
-                className="h-8 bg-[#D4642A] hover:bg-[#BF5520] text-white text-[13px]"
+                className="h-8 bg-primary hover:bg-primary-hover text-white text-[13px]"
               >
                 관리자 추가
               </Button>
             </div>
 
             {adminsLoading ? (
-              <p className="text-[14px] text-[#9C9189]">불러오는 중...</p>
+              <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
             ) : companyAdmins.length === 0 ? (
-              <p className="text-center text-[14px] text-[#9C9189] py-4">
+              <p className="text-center text-[14px] text-muted-foreground py-4">
                 등록된 사용자가 없습니다.
               </p>
             ) : (
-              <div className="border border-[#E0D8CF] rounded-[8px] overflow-hidden">
+              <div className="border border-border rounded-[8px] overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#F5F0EB]/50">
-                      <TableHead className="text-[13px] font-medium text-[#6B6158]">이름</TableHead>
-                      <TableHead className="text-[13px] font-medium text-[#6B6158]">이메일</TableHead>
-                      <TableHead className="text-[13px] font-medium text-[#6B6158]">역할</TableHead>
-                      <TableHead className="text-[13px] font-medium text-[#6B6158]">상태</TableHead>
+                    <TableRow className="bg-background/50">
+                      <TableHead className="text-[13px] font-medium text-text-secondary">이름</TableHead>
+                      <TableHead className="text-[13px] font-medium text-text-secondary">이메일</TableHead>
+                      <TableHead className="text-[13px] font-medium text-text-secondary">역할</TableHead>
+                      <TableHead className="text-[13px] font-medium text-text-secondary">상태</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {companyAdmins.map((admin) => (
                       <TableRow key={admin.id} className="h-[36px]">
-                        <TableCell className="text-[13px] text-[#1A1714] font-medium">
+                        <TableCell className="text-[13px] text-foreground font-medium">
                           {admin.display_name || '-'}
                         </TableCell>
-                        <TableCell className="text-[13px] text-[#6B6158]">
+                        <TableCell className="text-[13px] text-text-secondary">
                           {admin.email}
                         </TableCell>
                         <TableCell>
@@ -492,8 +492,8 @@ export default function AdminCompaniesPage() {
                             variant="outline"
                             className={`text-[12px] rounded-[3px] border-[1.5px] ${
                               admin.is_active
-                                ? 'border-[#2B7A6F] text-[#2B7A6F]'
-                                : 'border-[#C4BBB2] text-[#C4BBB2]'
+                                ? 'border-secondary text-secondary'
+                                : 'border-[#C4BBB2] text-text-muted'
                             }`}
                           >
                             {admin.is_active ? '활성' : '비활성'}
@@ -511,7 +511,7 @@ export default function AdminCompaniesPage() {
 
       {/* 관리자 초대 다이얼로그 */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-        <DialogContent className="bg-white border-[#E0D8CF]">
+        <DialogContent className="bg-white border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
               관리자 추가 — {inviteCompany?.name}
@@ -519,14 +519,14 @@ export default function AdminCompaniesPage() {
           </DialogHeader>
           <form onSubmit={handleInviteSubmit} className="space-y-4">
             {inviteMutation.error && (
-              <div className="text-[13px] text-[#B83A2A] bg-[#B83A2A]/10 border border-[#B83A2A]/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
                 {inviteMutation.error.message}
               </div>
             )}
 
             <div className="space-y-1.5">
               <Label className="text-[13px]">
-                이름 <span className="text-[#B83A2A]">*</span>
+                이름 <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={inviteName}
@@ -539,7 +539,7 @@ export default function AdminCompaniesPage() {
 
             <div className="space-y-1.5">
               <Label className="text-[13px]">
-                이메일 <span className="text-[#B83A2A]">*</span>
+                이메일 <span className="text-destructive">*</span>
               </Label>
               <Input
                 type="email"
@@ -553,7 +553,7 @@ export default function AdminCompaniesPage() {
 
             <div className="space-y-1.5">
               <Label className="text-[13px]">
-                초기 비밀번호 <span className="text-[#B83A2A]">*</span>
+                초기 비밀번호 <span className="text-destructive">*</span>
               </Label>
               <Input
                 type="password"
@@ -564,7 +564,7 @@ export default function AdminCompaniesPage() {
                 className="h-9 text-[14px]"
                 placeholder="6자 이상"
               />
-              <p className="text-[12px] text-[#9C9189]">
+              <p className="text-[12px] text-muted-foreground">
                 회사 관리자(company_admin) 역할로 생성됩니다.
               </p>
             </div>
@@ -574,14 +574,14 @@ export default function AdminCompaniesPage() {
                 type="button"
                 variant="outline"
                 onClick={closeInviteDialog}
-                className="h-9 text-[14px] border-[#E0D8CF]"
+                className="h-9 text-[14px] border-border"
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 disabled={inviteMutation.isPending}
-                className="h-9 bg-[#D4642A] hover:bg-[#BF5520] text-white text-[14px]"
+                className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
               >
                 {inviteMutation.isPending ? '생성 중...' : '추가'}
               </Button>

@@ -76,7 +76,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
     return (
       <div>
         <PageHeader title="거래처 상세" />
-        <Card className="border-[#E0D8CF] max-w-2xl">
+        <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton key={i} className="h-9 w-full" />
@@ -88,7 +88,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
   }
 
   if (!partner) {
-    return <div className="text-center py-16 text-[#9C9189]">거래처를 찾을 수 없습니다</div>
+    return <div className="text-center py-16 text-muted-foreground">거래처를 찾을 수 없습니다</div>
   }
 
   const partnerTypeLabels: Record<string, string> = {
@@ -104,7 +104,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
               <Pencil className="h-4 w-4 mr-1" />
               수정
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDelete} className="text-[#B83A2A]">
+            <Button variant="outline" size="sm" onClick={handleDelete} className="text-destructive">
               <Trash2 className="h-4 w-4 mr-1" />
               비활성화
             </Button>
@@ -112,7 +112,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
         )}
       </PageHeader>
 
-      <Card className="border-[#E0D8CF] max-w-2xl">
+      <Card className="border-border max-w-2xl">
         <CardContent className="pt-6">
           {editing ? (
             <form onSubmit={onSubmit} className="space-y-4">
@@ -121,7 +121,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
                   <Label>업체명 *</Label>
                   <Input {...form.register('name')} />
                   {form.formState.errors.name && (
-                    <p className="text-xs text-[#B83A2A]">{form.formState.errors.name.message}</p>
+                    <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
@@ -172,7 +172,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
                 <Button type="button" variant="outline" onClick={() => setEditing(false)}>
                   취소
                 </Button>
-                <Button type="submit" disabled={updatePartner.isPending} className="bg-[#D4642A] hover:bg-[#BF5520]">
+                <Button type="submit" disabled={updatePartner.isPending} className="bg-primary hover:bg-primary-hover">
                   {updatePartner.isPending ? '저장 중...' : '저장'}
                 </Button>
               </div>
@@ -180,35 +180,35 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
           ) : (
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">업체명</dt>
+                <dt className="text-muted-foreground text-xs mb-1">업체명</dt>
                 <dd className="font-medium">{partner.name}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">유형</dt>
+                <dt className="text-muted-foreground text-xs mb-1">유형</dt>
                 <dd>{partnerTypeLabels[partner.partner_type] ?? partner.partner_type}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">사업자번호</dt>
+                <dt className="text-muted-foreground text-xs mb-1">사업자번호</dt>
                 <dd className="font-data">{partner.business_number || '-'}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">담당자</dt>
+                <dt className="text-muted-foreground text-xs mb-1">담당자</dt>
                 <dd>{partner.contact_name || '-'}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">연락처</dt>
+                <dt className="text-muted-foreground text-xs mb-1">연락처</dt>
                 <dd>{partner.phone || '-'}</dd>
               </div>
               <div>
-                <dt className="text-[#9C9189] text-xs mb-1">이메일</dt>
+                <dt className="text-muted-foreground text-xs mb-1">이메일</dt>
                 <dd>{partner.email || '-'}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-[#9C9189] text-xs mb-1">주소</dt>
+                <dt className="text-muted-foreground text-xs mb-1">주소</dt>
                 <dd>{partner.address || '-'}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-[#9C9189] text-xs mb-1">비고</dt>
+                <dt className="text-muted-foreground text-xs mb-1">비고</dt>
                 <dd className="whitespace-pre-wrap">{partner.notes || '-'}</dd>
               </div>
             </dl>
