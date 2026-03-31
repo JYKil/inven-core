@@ -177,7 +177,7 @@ export default function AssemblyOrderDetailPage({
         {/* 재료 소비 내역 */}
         <section>
           <h2 className="font-heading font-semibold text-[15px] mb-3">재료 소비 내역</h2>
-          <div className="border border-border rounded-[8px] overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">

@@ -257,7 +257,7 @@ export default function AdminCompaniesPage() {
       {isLoading ? (
         <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
       ) : (
-        <div className="border border-border rounded-[8px] overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
@@ -297,7 +297,7 @@ export default function AdminCompaniesPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                        className={`text-[12px] rounded-sm border-[1.5px] ${
                           company.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -364,7 +364,7 @@ export default function AdminCompaniesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {(createMutation.error || updateMutation.error) && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {(createMutation.error || updateMutation.error)?.message}
               </div>
             )}
@@ -458,7 +458,7 @@ export default function AdminCompaniesPage() {
                 등록된 사용자가 없습니다.
               </p>
             ) : (
-              <div className="border border-border rounded-[8px] overflow-hidden">
+              <div className="border border-border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-background/50">
@@ -480,7 +480,7 @@ export default function AdminCompaniesPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                            className={`text-[12px] rounded-sm border-[1.5px] ${
                               roleBadgeStyles[admin.role] || roleBadgeStyles.normal
                             }`}
                           >
@@ -490,7 +490,7 @@ export default function AdminCompaniesPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                            className={`text-[12px] rounded-sm border-[1.5px] ${
                               admin.is_active
                                 ? 'border-secondary text-secondary'
                                 : 'border-text-disabled text-text-muted'
@@ -519,7 +519,7 @@ export default function AdminCompaniesPage() {
           </DialogHeader>
           <form onSubmit={handleInviteSubmit} className="space-y-4">
             {inviteMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {inviteMutation.error.message}
               </div>
             )}

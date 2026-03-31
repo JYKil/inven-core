@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 디자인 리뷰 완료 (Design B- → B, 6건 수정, 7건 deferred)
+- **단계**: 디자인 리뷰 deferred 전체 완료
 - **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
@@ -150,8 +150,19 @@
     - [x] 폼 label htmlFor/id 연결 (6개 폼: items/PO/SO/GR/assembly/transfer)
     - [x] 테이블 sticky 컬럼 (items, warehouses, inventory, 보고서 3종)
 
+24. **디자인 리뷰 deferred 마무리** → 완료 (2026-03-31)
+    - [x] 사이드바 hover 플로팅 패널 (DESIGN.MD L77 스펙)
+      - sidebar.tsx: hovered 상태 + onMouseEnter/onMouseLeave
+      - 갭 항상 56px, 호버 시 220px 플로팅 확장 + shadow-xl
+      - 데스크톱 SidebarTrigger 숨김 (md:hidden)
+      - 툴팁 호버 확장 시 자동 숨김
+    - [x] 스페이싱 디자인 토큰 정리 (49개 파일)
+      - rounded-[8px] → rounded-lg (29파일)
+      - rounded-[6px] → rounded-md (14파일)
+      - rounded-[3px] → rounded-sm (6파일)
+
 ### 남은 작업
-1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win 반영
+1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 반영
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항

@@ -298,7 +298,7 @@ function BomTab({ itemId }: { itemId: string }) {
                 className="h-9"
               />
               {materialSearch && searchResults && searchResults.length > 0 && (
-                <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-[6px] shadow-md max-h-48 overflow-auto">
+                <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-md shadow-md max-h-48 overflow-auto">
                   {searchResults.map((mat) => (
                     <button
                       key={mat.id}

@@ -240,7 +240,7 @@ function NewAssemblyContent() {
             {selectedBomId && watchWarehouseId && watchQuantity > 0 && (
               <div>
                 <h2 className="font-heading font-semibold text-[15px] mb-3">재료 가용성 확인</h2>
-                <div className="border border-border rounded-[8px] overflow-hidden">
+                <div className="border border-border rounded-lg overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-background/50">

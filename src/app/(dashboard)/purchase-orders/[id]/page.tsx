@@ -192,7 +192,7 @@ function ReceiptsTab({ poId }: { poId: string }) {
       ) : (
         <div className="space-y-4">
           {receipts.map((gr: any) => (
-            <div key={gr.id} className="border border-border rounded-[6px] p-4">
+            <div key={gr.id} className="border border-border rounded-md p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3 text-sm">
                     <span className="font-data font-medium">{gr.receipt_number}</span>
@@ -288,7 +288,7 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
 
         {/* 지급 등록 폼 */}
         {showForm && (
-          <div className="border border-border rounded-[6px] p-4 mb-4 bg-background/30">
+          <div className="border border-border rounded-md p-4 mb-4 bg-background/30">
             <div className="grid grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">지급일</Label>

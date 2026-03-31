@@ -60,7 +60,7 @@ export default function ItemsContent() {
         </Select>
       </div>
 
-      <div className="border border-border rounded-[8px] overflow-x-auto">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
@@ -112,7 +112,7 @@ export default function ItemsContent() {
                     <TableCell className="font-medium sticky left-[100px] z-10 bg-card min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">{item.name}</TableCell>
                     <TableCell>
                       {item.item_type === 'assembly' ? (
-                        <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-info text-info text-xs">
+                        <Badge variant="outline" className="rounded-sm border-[1.5px] border-info text-info text-xs">
                           <Wrench className="h-3 w-3 mr-1" />조립
                         </Badge>
                       ) : (

@@ -49,7 +49,7 @@ export default function InventoryContent() {
       <PageHeader title="재고 현황" />
 
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex rounded-[6px] border border-border overflow-hidden">
+        <div className="flex rounded-md border border-border overflow-hidden">
           <button
             className={`px-3 py-1.5 text-xs font-medium ${filters.view === 'item' ? 'bg-primary text-white' : 'text-text-secondary hover:bg-background'}`}
             onClick={() => setFilters((p) => ({ ...p, view: 'item' }))}
@@ -81,7 +81,7 @@ export default function InventoryContent() {
       </div>
 
       {/* 메인 테이블 */}
-      <div className="border border-border rounded-[8px] overflow-x-auto">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">

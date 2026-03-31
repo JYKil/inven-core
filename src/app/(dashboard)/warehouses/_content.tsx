@@ -41,7 +41,7 @@ export default function WarehousesContent() {
         />
       </div>
 
-      <div className="border border-border rounded-[8px] overflow-x-auto">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">

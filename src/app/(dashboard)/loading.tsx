@@ -13,7 +13,7 @@ export default function DashboardLoading() {
       {/* 요약 카드 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="border border-border rounded-[8px] p-4">
+          <div key={i} className="border border-border rounded-lg p-4">
             <Skeleton className="h-4 w-20 mb-2" />
             <Skeleton className="h-7 w-16" />
           </div>
@@ -21,7 +21,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* 테이블 */}
-      <div className="border border-border rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <div className="p-4 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-10 w-full" />

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, expectToast, selectOption, uniqueId } from './helpers'
+import { login, selectOption, uniqueId } from './helpers'
 
 // 판매 플로우: SO 생성 → 확정 → 출고 → 재고 차감 확인
 test.describe.serial('판매 플로우: 주문 → 확정 → 출고', () => {

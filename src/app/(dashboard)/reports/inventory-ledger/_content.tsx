@@ -155,7 +155,7 @@ export default function InventoryLedgerContent() {
       {data && data.summary.length > 0 && (
         <div className="mb-6">
           <h3 className="font-heading font-semibold text-[15px] mb-3">기간 요약</h3>
-          <div className="border border-border rounded-[8px] overflow-x-auto">
+          <div className="border border-border rounded-lg overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-background/50">
@@ -188,7 +188,7 @@ export default function InventoryLedgerContent() {
 
       {/* 거래 내역 */}
       <h3 className="font-heading font-semibold text-[15px] mb-3">거래 내역</h3>
-      <div className="border border-border rounded-[8px] overflow-x-auto">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">

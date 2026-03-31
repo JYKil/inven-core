@@ -223,8 +223,8 @@
 - [ ] **HIGH**: 대시보드 첫 화면 카드 그리드 → 테이블 우선 레이아웃 전환 (DESIGN.MD grid-disciplined 스펙)
 - [x] **MEDIUM**: CRUD 폼 label htmlFor/id 연결 — 6개 폼 페이지 (items/PO/SO/GR/assembly/transfer)
 - [x] **MEDIUM**: 테이블 코드+품목명 좌측 sticky — items, warehouses, inventory, 보고서 3종
-- [ ] **MEDIUM**: 사이드바 hover 확장 → 현재 click 토글 (DESIGN.MD L77 스펙)
-- [ ] **MEDIUM**: 스페이싱 arbitrary px 값 → 디자인 토큰 정리 (p-5, max-w-[400px] 등)
+- [x] **MEDIUM**: 사이드바 hover 확장 → click 토글에서 hover 플로팅 패널로 변경 (DESIGN.MD L77 스펙)
+- [x] **MEDIUM**: 스페이싱 arbitrary px 값 → 디자인 토큰 정리 (rounded-[Npx] → rounded-sm/md/lg)
 
 ---
 

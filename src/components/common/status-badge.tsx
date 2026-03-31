@@ -33,7 +33,7 @@ export function StatusBadge({
     <Badge
       variant="outline"
       className={cn(
-        'rounded-[3px] font-medium text-xs px-2 py-0.5',
+        'rounded-sm font-medium text-xs px-2 py-0.5',
         statusStyles[status] ?? statusStyles.draft,
         className,
       )}

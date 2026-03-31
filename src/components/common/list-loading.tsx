@@ -20,7 +20,7 @@ export function ListLoading({ columns = 6, rows = 8 }: { columns?: number; rows?
       </div>
 
       {/* 테이블 */}
-      <div className="border border-border rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-background/50 border-b border-border">

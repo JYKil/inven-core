@@ -33,7 +33,7 @@ export default function DashboardContent() {
 
       {/* 온보딩 위젯 — 기초 데이터가 없을 때만 */}
       {showOnboarding && (
-        <section className="border border-border rounded-[8px] p-6">
+        <section className="border border-border rounded-lg p-6">
           <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-4">시작하기</h2>
           <p className="text-[13px] text-muted-foreground mb-4">
             기초 데이터를 등록하면 재고 관리를 시작할 수 있습니다.
@@ -65,7 +65,7 @@ export default function DashboardContent() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {summaryLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="border border-border rounded-[8px] p-4">
+            <div key={i} className="border border-border rounded-lg p-4">
               <Skeleton className="h-4 w-20 mb-2" />
               <Skeleton className="h-7 w-16" />
             </div>
@@ -108,12 +108,12 @@ export default function DashboardContent() {
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : !alerts || alerts.length === 0 ? (
-          <div className="flex items-center gap-3 border border-secondary/30 rounded-[8px] p-4 bg-secondary/5">
+          <div className="flex items-center gap-3 border border-secondary/30 rounded-lg p-4 bg-secondary/5">
             <CheckCircle className="h-5 w-5 text-secondary flex-shrink-0" />
             <p className="text-sm text-secondary font-medium">모든 품목의 재고가 충분합니다</p>
           </div>
         ) : (
-          <div className="border border-border rounded-[8px] overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-background/50 border-b border-border">
@@ -167,7 +167,7 @@ function SummaryCard({ label, value, sub, icon: Icon, href }: {
   href?: string
 }) {
   const content = (
-    <div className={`border border-border rounded-[8px] p-4 ${href ? 'hover:bg-card/60 transition-colors cursor-pointer' : ''}`}>
+    <div className={`border border-border rounded-lg p-4 ${href ? 'hover:bg-card/60 transition-colors cursor-pointer' : ''}`}>
       <div className="flex items-center gap-2 mb-1">
         <Icon className="h-4 w-4 text-muted-foreground" />
         <p className="text-xs text-muted-foreground">{label}</p>
@@ -188,7 +188,7 @@ function OnboardingItem({ icon: Icon, title, count, href }: {
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 p-3 border border-border rounded-[6px] hover:bg-card/60 transition-colors"
+      className="group flex items-center gap-3 p-3 border border-border rounded-md hover:bg-card/60 transition-colors"
     >
       <Icon className={`h-4 w-4 ${done ? 'text-secondary' : 'text-muted-foreground'}`} />
       <div className="flex-1">

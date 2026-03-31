@@ -114,7 +114,7 @@ export default function SalesReportContent() {
       )}
 
       {/* 라인 테이블 */}
-      <div className="border border-border rounded-[8px] overflow-x-auto">
+      <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
@@ -184,7 +184,7 @@ export default function SalesReportContent() {
 
 function SummaryCard({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
-    <div className="border border-border rounded-[8px] p-4">
+    <div className="border border-border rounded-lg p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className={`font-heading text-[36px] font-bold tracking-[-0.02em] leading-tight ${className ?? ''}`}>{value}</p>
     </div>

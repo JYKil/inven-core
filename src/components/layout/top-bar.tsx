@@ -56,8 +56,8 @@ export function TopBar() {
 
   return (
     <header className="h-12 flex items-center gap-2 border-b border-border bg-card px-4 shrink-0">
-      <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
-      <Separator orientation="vertical" className="h-4" />
+      <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px] md:hidden" />
+      <Separator orientation="vertical" className="h-4 md:hidden" />
       <div className="flex-1" />
       <button
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

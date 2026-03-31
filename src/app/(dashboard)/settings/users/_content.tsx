@@ -222,7 +222,7 @@ export default function UsersSettingsContent() {
         {pendingCount > 0 && (
           <Badge
             variant="outline"
-            className="text-[12px] rounded-[3px] border-[1.5px] border-warning text-warning bg-warning/10 px-2.5 py-1"
+            className="text-[12px] rounded-sm border-[1.5px] border-warning text-warning bg-warning/10 px-2.5 py-1"
           >
             승인 대기 {pendingCount}명
           </Badge>
@@ -233,7 +233,7 @@ export default function UsersSettingsContent() {
       {isLoading ? (
         <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
       ) : (
-        <div className="border border-border rounded-[8px] overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
@@ -270,7 +270,7 @@ export default function UsersSettingsContent() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                        className={`text-[12px] rounded-sm border-[1.5px] ${
                           roleBadgeStyles[user.role] || roleBadgeStyles.normal
                         }`}
                       >
@@ -280,7 +280,7 @@ export default function UsersSettingsContent() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                        className={`text-[12px] rounded-sm border-[1.5px] ${
                           user.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -360,7 +360,7 @@ export default function UsersSettingsContent() {
           </DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); inviteMutation.mutate() }} className="space-y-4">
             {inviteMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {extractErrorMessage(inviteMutation.error)}
               </div>
             )}
@@ -457,7 +457,7 @@ export default function UsersSettingsContent() {
           {editingUser && (
             <form onSubmit={(e) => { e.preventDefault(); updateRoleMutation.mutate() }} className="space-y-4">
               {updateRoleMutation.error && (
-                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                   {extractErrorMessage(updateRoleMutation.error)}
                 </div>
               )}

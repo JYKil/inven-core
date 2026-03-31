@@ -34,7 +34,7 @@ export default function PoPaymentsContent() {
         />
       </div>
 
-      <div className="border border-border rounded-[8px] overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">

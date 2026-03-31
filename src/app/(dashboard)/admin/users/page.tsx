@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
       {isLoading ? (
         <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
       ) : (
-        <div className="border border-border rounded-[8px] overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">
@@ -239,7 +239,7 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                        className={`text-[12px] rounded-sm border-[1.5px] ${
                           roleBadgeStyles[user.role] || roleBadgeStyles.normal
                         }`}
                       >
@@ -252,7 +252,7 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-[3px] border-[1.5px] ${
+                        className={`text-[12px] rounded-sm border-[1.5px] ${
                           user.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -321,7 +321,7 @@ export default function AdminUsersPage() {
           {editingUser && (
             <form onSubmit={handleSubmit} className="space-y-4">
               {updateMutation.error && (
-                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                   {updateMutation.error.message}
                 </div>
               )}

@@ -144,7 +144,7 @@ export default function SettingsContent() {
 
       <div className="max-w-2xl space-y-6">
         {/* 회사 정보 카드 */}
-        <div className="border border-border rounded-[8px] bg-card">
+        <div className="border border-border rounded-lg bg-card">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
             <Building2 className="h-4 w-4 text-muted-foreground" />
             <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
@@ -154,12 +154,12 @@ export default function SettingsContent() {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {updateMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {extractErrorMessage(updateMutation.error)}
               </div>
             )}
             {updateMutation.isSuccess && (
-              <div className="text-[13px] text-secondary bg-secondary/10 border border-secondary/20 rounded-[6px] px-3 py-2">
+              <div className="text-[13px] text-secondary bg-secondary/10 border border-secondary/20 rounded-md px-3 py-2">
                 저장되었습니다.
               </div>
             )}
@@ -230,7 +230,7 @@ export default function SettingsContent() {
         </div>
 
         {/* 원가 계산 방식 (읽기 전용) */}
-        <div className="border border-border rounded-[8px] bg-card">
+        <div className="border border-border rounded-lg bg-card">
           <div className="px-6 py-4 border-b border-border">
             <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
               원가 계산 방식
@@ -240,7 +240,7 @@ export default function SettingsContent() {
             <div className="flex items-center gap-3">
               <Badge
                 variant="outline"
-                className="text-[13px] rounded-[3px] border-[1.5px] border-primary text-primary px-3 py-1"
+                className="text-[13px] rounded-sm border-[1.5px] border-primary text-primary px-3 py-1"
               >
                 {costingMethodLabels[company.costing_method] || company.costing_method}
               </Badge>
@@ -252,7 +252,7 @@ export default function SettingsContent() {
         </div>
 
         {/* 초대 코드 */}
-        <div className="border border-border rounded-[8px] bg-card">
+        <div className="border border-border rounded-lg bg-card">
           <div className="px-6 py-4 border-b border-border">
             <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
               초대 코드
@@ -262,7 +262,7 @@ export default function SettingsContent() {
             <p className="text-[13px] text-muted-foreground">
               아래 코드를 새 사용자에게 전달하면, 회원가입 시 이 회사에 소속됩니다.
             </p>
-            <code className="block font-data text-[14px] text-foreground bg-muted px-4 py-2.5 rounded-[6px] select-all">
+            <code className="block font-data text-[14px] text-foreground bg-muted px-4 py-2.5 rounded-md select-all">
               {company.id}
             </code>
           </div>

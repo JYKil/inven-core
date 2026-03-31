@@ -47,7 +47,7 @@ export default function LoginPage() {
       </h2>
 
       {error && (
-        <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-[6px] px-3 py-2">
+        <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
           {error}
         </div>
       )}
