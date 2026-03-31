@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 롤백/취소 전체 완료 + E2E 테스트 보강 완료 → Vercel 재배포 대기
+- **단계**: 디자인 리뷰 완료 (Design B- → B, 6건 수정, 7건 deferred)
 - **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
@@ -126,8 +126,27 @@
     - [x] 대시보드 (위젯 렌더링 + 링크 동작) — 3건
     - [x] 설정 (회사 설정/사용자 관리 + 탭 네비) — 3건
 
+21. ~~성능 최적화~~ → 완료
+    - [x] next.config.ts 프로덕션 설정 (poweredByHeader, compress, optimizeCss)
+    - [x] middleware.ts → proxy.ts 마이그레이션 (Next.js 16 권장)
+    - [x] TanStack Query 캐시 전략 (gcTime 10분, retry 1회, refetchOnReconnect)
+    - [x] loading.tsx 7개 라우트 추가 (대시보드 + 주요 목록 6개)
+    - [x] 16개 페이지 서버/클라이언트 분리 (page.tsx → 서버 래퍼 + _content.tsx 클라이언트)
+    - [x] 16개 페이지별 메타데이터 추가 + 루트 title template 적용
+    - [x] Pretendard 폰트 preload + dns-prefetch/preconnect (렌더 블로킹 제거)
+    - [x] ListLoading 공통 스켈레톤 컴포넌트
+
+22. ~~롤백 기능 QA~~ → 완료
+    - [x] 출고 취소 (cancel_shipment): PASS — shipped→confirmed, 토스트/취소일/사유 정상
+    - [x] 입고 취소 (cancel_goods_receipt): PASS — confirmed→cancelled, 취소일/사유 정상
+    - [x] 재고 수불부 cancel 반영: PASS — sale_out_cancel, purchase_in_cancel 정상 표시/상계
+    - [x] **버그 수정**: transaction_type CHECK 제약조건 누락 (migration 000017)
+    - [x] **버그 수정**: proxy.ts export 이름 (middleware→proxy, Next.js 16)
+    - [x] **버그 수정**: critters 모듈 누락 (npm install)
+    - [ ] 창고이동 취소 / 조립 취소: 테스트 데이터 부족으로 미검증 (RPC는 동일 패턴)
+
 ### 남은 작업
-1. **Vercel 재배포** — 롤백 기능 + E2E + QA/디자인 수정사항 반영
+1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 반영
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항

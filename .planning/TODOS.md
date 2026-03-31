@@ -217,6 +217,17 @@
 
 ---
 
+## 디자인 리뷰 Deferred (2026-03-31)
+
+- [ ] **HIGH**: CTA 버튼 대비 3.63:1 → AA 4.5:1 미달. #D4642A/#FEFCF9 조합 수정 필요 (브랜드 색상 조정)
+- [ ] **HIGH**: 대시보드 첫 화면 카드 그리드 → 테이블 우선 레이아웃 전환 (DESIGN.MD grid-disciplined 스펙)
+- [ ] **MEDIUM**: CRUD 폼 label htmlFor/id 연결 누락 (items/new, purchase-orders/new 등)
+- [ ] **MEDIUM**: 테이블 코드+품목명 좌측 sticky 컬럼 구현 (DESIGN.MD L83 스펙)
+- [ ] **MEDIUM**: 사이드바 hover 확장 → 현재 click 토글 (DESIGN.MD L77 스펙)
+- [ ] **MEDIUM**: 스페이싱 arbitrary px 값 → 디자인 토큰 정리 (p-5, max-w-[400px] 등)
+
+---
+
 ## P3 — 참고 사항
 
 ### 일정 가이드라인
