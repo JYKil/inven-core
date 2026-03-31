@@ -97,7 +97,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
         <CardContent className="pt-6">
           {editing ? (
             <form onSubmit={onSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>창고코드 *</Label>
                   <Input {...form.register('code')} />
@@ -107,7 +107,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
                   <Input {...form.register('name')} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>위치</Label>
                   <Input {...form.register('location')} />

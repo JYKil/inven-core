@@ -120,7 +120,7 @@ function NewGoodsReceiptContent() {
         <Card className="border-[#E0D8CF]">
           <CardContent className="pt-6 space-y-6">
             {/* 헤더 */}
-            <div className="grid grid-cols-2 gap-4 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
                 <Label>입고번호 *</Label>
                 <Input {...form.register('receipt_number')} placeholder="GR-2026-001" />

@@ -116,7 +116,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
         <CardContent className="pt-6">
           {editing ? (
             <form onSubmit={onSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>업체명 *</Label>
                   <Input {...form.register('name')} />
@@ -140,7 +140,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>사업자번호</Label>
                   <Input {...form.register('business_number')} />
@@ -150,7 +150,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
                   <Input {...form.register('contact_name')} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>연락처</Label>
                   <Input {...form.register('phone')} />

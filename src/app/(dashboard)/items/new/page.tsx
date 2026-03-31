@@ -46,7 +46,7 @@ export default function NewItemPage() {
       <form onSubmit={onSubmit}>
         <Card className="border-[#E0D8CF] max-w-2xl">
           <CardContent className="pt-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>품목코드 *</Label>
                 <Input {...form.register('code')} placeholder="ITEM-001" />

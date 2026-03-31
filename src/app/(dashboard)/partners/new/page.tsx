@@ -56,7 +56,7 @@ export default function NewPartnerPage() {
       <form onSubmit={onSubmit}>
         <Card className="border-[#E0D8CF] max-w-2xl">
           <CardContent className="pt-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name">업체명 *</Label>
                 <Input id="name" {...form.register('name')} placeholder="업체명" />
@@ -81,7 +81,7 @@ export default function NewPartnerPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="business_number">사업자번호</Label>
                 <Input id="business_number" {...form.register('business_number')} placeholder="000-00-00000" />
@@ -92,7 +92,7 @@ export default function NewPartnerPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="phone">연락처</Label>
                 <Input id="phone" {...form.register('phone')} placeholder="000-0000-0000" />

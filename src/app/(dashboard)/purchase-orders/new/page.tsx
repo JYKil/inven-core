@@ -95,7 +95,7 @@ export default function NewPurchaseOrderPage() {
         <Card className="border-[#E0D8CF]">
           <CardContent className="pt-6 space-y-6">
             {/* 헤더 정보 */}
-            <div className="grid grid-cols-2 gap-4 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
                 <Label>PO 번호 *</Label>
                 <Input {...form.register('po_number')} placeholder="PO-2026-001" />
