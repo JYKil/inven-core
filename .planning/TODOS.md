@@ -191,7 +191,7 @@
   - [x] 창고 이동 상세 — 이동 취소 버튼 + 취소 정보 표시
   - [x] 입고 상세 페이지 신규 생성 — 입고 취소 버튼 + 라인 목록 + 목록 클릭 링크
   - [x] goodsReceipts.detail 쿼리 키 + useGoodsReceipt 훅 추가
-- [ ] 보고서 RPC 수정 (cancel 타입 집계)
+- [x] 보고서 RPC 수정 (cancel 타입 집계)
 
 ---
 

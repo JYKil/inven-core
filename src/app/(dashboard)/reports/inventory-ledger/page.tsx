@@ -30,13 +30,21 @@ function getDefaultDates() {
 
 const txTypeLabels: Record<string, string> = {
   purchase_in: '매입입고',
+  purchase_in_cancel: '매입입고 취소',
   goods_receipt: '입고',
   sale_out: '매출출고',
+  sale_out_cancel: '매출출고 취소',
   shipment: '출고',
+  assembly_in: '조립생산',
+  assembly_in_cancel: '조립생산 취소',
+  assembly_out: '조립소비',
+  assembly_out_cancel: '조립소비 취소',
   assembly_consume: '조립소비',
   assembly_produce: '조립생산',
   transfer_out: '이동출고',
+  transfer_out_cancel: '이동출고 취소',
   transfer_in: '이동입고',
+  transfer_in_cancel: '이동입고 취소',
 }
 
 export default function InventoryLedgerPage() {

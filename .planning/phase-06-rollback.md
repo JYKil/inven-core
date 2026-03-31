@@ -9,7 +9,7 @@
 - [x] UI 구현 (CancelDialog + 뮤테이션 훅 + 상세 페이지 4종)
 - [x] 입고 상세 페이지 신규 생성 (goods-receipts/[id]/page.tsx)
 - [x] DB push + 타입 재생성 + TypeScript/Next.js 빌드 통과
-- [ ] 보고서 RPC 수정 (cancel 타입 집계)
+- [x] 보고서 RPC 수정 (cancel 타입 집계)
 
 ## 설계 원칙
 
