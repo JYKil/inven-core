@@ -44,25 +44,33 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // 인증됨 + 온보딩 미완료 확인 (프로필 없으면 온보딩으로)
-  if (pathname !== '/onboarding') {
+  // 인증됨 + 프로필 상태 확인
+  if (pathname !== '/onboarding' && pathname !== '/pending') {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('id', user.id)
       .single()
 
-    // DB 에러 시 프로필 없음으로 오판하지 않고 그대로 통과
+    // DB 에러 시 안전하게 차단 (fail-closed)
     if (profileError && profileError.code !== 'PGRST116') {
-      // PGRST116 = "not found" (0 rows) → 온보딩 필요
-      // 그 외 에러(네트워크 등) → 차단하지 않고 통과
-      return supabaseResponse
+      const pendingUrl = request.nextUrl.clone()
+      pendingUrl.pathname = '/pending'
+      return NextResponse.redirect(pendingUrl)
     }
 
+    // 프로필 없으면 온보딩으로 (pending 프로필 생성)
     if (!profile) {
       const onboardingUrl = request.nextUrl.clone()
       onboardingUrl.pathname = '/onboarding'
       return NextResponse.redirect(onboardingUrl)
+    }
+
+    // pending 상태면 승인 대기 페이지로
+    if (profile.role === 'pending') {
+      const pendingUrl = request.nextUrl.clone()
+      pendingUrl.pathname = '/pending'
+      return NextResponse.redirect(pendingUrl)
     }
   }
 

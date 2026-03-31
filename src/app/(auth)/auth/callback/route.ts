@@ -17,14 +17,18 @@ export async function GET(request: Request) {
       if (user) {
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('id')
+          .select('id, role')
           .eq('id', user.id)
           .single()
 
-        // PGRST116 = not found → 온보딩 필요
-        // 그 외 DB 에러 → 대시보드로 보내고 미들웨어에서 재확인
+        // 프로필 없음 → 온보딩 (pending 프로필 생성)
         if (!profile && (!profileError || profileError.code === 'PGRST116')) {
           return NextResponse.redirect(`${origin}/onboarding`)
+        }
+
+        // pending 상태 → 승인 대기 페이지
+        if (profile?.role === 'pending') {
+          return NextResponse.redirect(`${origin}/pending`)
         }
       }
 

@@ -16,6 +16,7 @@ const roleLabels: Record<string, string> = {
   super_admin: '최고 관리자',
   company_admin: '회사 관리자',
   normal: '일반 사용자',
+  pending: '승인 대기',
 }
 
 export function TopBar() {

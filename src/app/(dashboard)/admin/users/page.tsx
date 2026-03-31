@@ -49,18 +49,21 @@ const roleLabels: Record<string, string> = {
   super_admin: '슈퍼관리자',
   company_admin: '회사관리자',
   normal: '일반',
+  pending: '승인대기',
 }
 
 const roleBadgeStyles: Record<string, string> = {
   super_admin: 'border-[#D4642A] text-[#D4642A]',
   company_admin: 'border-[#4A7B94] text-[#4A7B94]',
   normal: 'border-[#6B6158] text-[#6B6158]',
+  pending: 'border-[#C4901A] text-[#C4901A] bg-[#C4901A]/10',
 }
 
 export default function AdminUsersPage() {
   const supabase = createClient()
   const qc = useQueryClient()
   const [search, setSearch] = useState('')
+  const [filterPending, setFilterPending] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<Profile | null>(null)
 
@@ -134,7 +137,8 @@ export default function AdminUsersPage() {
 
   const openEdit = (user: Profile) => {
     setEditingUser(user)
-    setEditRole(user.role)
+    // pending 사용자는 기본 역할을 normal로 설정
+    setEditRole(user.role === 'pending' ? 'normal' : user.role)
     setEditCompanyId(user.company_id)
     setDialogOpen(true)
   }
@@ -145,14 +149,19 @@ export default function AdminUsersPage() {
     updateMutation.mutate()
   }
 
-  // 검색 필터
-  const filteredUsers = search
-    ? users.filter(
-        (u) =>
-          u.email.toLowerCase().includes(search.toLowerCase()) ||
-          u.display_name?.toLowerCase().includes(search.toLowerCase())
-      )
-    : users
+  // pending 사용자 수
+  const pendingCount = users.filter((u) => u.role === 'pending').length
+
+  // 검색 + 필터
+  const filteredUsers = users.filter((u) => {
+    if (filterPending && u.role !== 'pending') return false
+    if (search) {
+      const q = search.toLowerCase()
+      return u.email.toLowerCase().includes(q)
+        || u.display_name?.toLowerCase().includes(q)
+    }
+    return true
+  })
 
   return (
     <div className="space-y-6">
@@ -166,13 +175,28 @@ export default function AdminUsersPage() {
         </p>
       </div>
 
-      {/* 검색 */}
-      <Input
-        placeholder="이메일 또는 이름으로 검색..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm h-9 text-[14px]"
-      />
+      {/* 검색 + 필터 */}
+      <div className="flex items-center gap-3">
+        <Input
+          placeholder="이메일 또는 이름으로 검색..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm h-9 text-[14px]"
+        />
+        {pendingCount > 0 && (
+          <Button
+            variant={filterPending ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterPending(!filterPending)}
+            className={filterPending
+              ? 'h-9 bg-[#C4901A] hover:bg-[#C4901A]/90 text-white text-[13px]'
+              : 'h-9 border-[#C4901A] text-[#C4901A] hover:bg-[#C4901A]/10 text-[13px]'
+            }
+          >
+            승인대기 {pendingCount}명
+          </Button>
+        )}
+      </div>
 
       {/* 테이블 */}
       {isLoading ? (
@@ -199,7 +223,7 @@ export default function AdminUsersPage() {
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id} className="h-[36px]">
+                  <TableRow key={user.id} className={`h-[36px] ${user.role === 'pending' ? 'border-l-[3px] border-l-[#C4901A]' : ''}`}>
                     <TableCell className="text-[13px] text-[#1A1714] font-medium">
                       {user.display_name || '-'}
                     </TableCell>
@@ -233,29 +257,42 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEdit(user)}
-                          className="h-7 text-[12px] text-[#6B6158] hover:text-[#1A1714]"
-                        >
-                          수정
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleActiveMutation.mutate({
-                            id: user.id,
-                            isActive: user.is_active,
-                          })}
-                          className={`h-7 text-[12px] ${
-                            user.is_active
-                              ? 'text-[#B83A2A] hover:text-[#B83A2A]'
-                              : 'text-[#2B7A6F] hover:text-[#2B7A6F]'
-                          }`}
-                        >
-                          {user.is_active ? '비활성화' : '활성화'}
-                        </Button>
+                        {user.role === 'pending' ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEdit(user)}
+                            className="h-7 text-[12px] text-[#C4901A] hover:text-[#C4901A] font-medium"
+                          >
+                            승인
+                          </Button>
+                        ) : (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEdit(user)}
+                              className="h-7 text-[12px] text-[#6B6158] hover:text-[#1A1714]"
+                            >
+                              수정
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleActiveMutation.mutate({
+                                id: user.id,
+                                isActive: user.is_active,
+                              })}
+                              className={`h-7 text-[12px] ${
+                                user.is_active
+                                  ? 'text-[#B83A2A] hover:text-[#B83A2A]'
+                                  : 'text-[#2B7A6F] hover:text-[#2B7A6F]'
+                              }`}
+                            >
+                              {user.is_active ? '비활성화' : '활성화'}
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -271,7 +308,7 @@ export default function AdminUsersPage() {
         <DialogContent className="bg-white border-[#E0D8CF]">
           <DialogHeader>
             <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
-              사용자 수정
+              {editingUser?.role === 'pending' ? '사용자 승인' : '사용자 수정'}
             </DialogTitle>
           </DialogHeader>
 
@@ -295,9 +332,9 @@ export default function AdminUsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="super_admin">슈퍼관리자</SelectItem>
                     <SelectItem value="company_admin">회사관리자</SelectItem>
                     <SelectItem value="normal">일반</SelectItem>
+                    <SelectItem value="super_admin">슈퍼관리자</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -307,6 +344,9 @@ export default function AdminUsersPage() {
                   <Label className="text-[13px]">
                     소속 회사 <span className="text-[#B83A2A]">*</span>
                   </Label>
+                  {!editCompanyId && (
+                    <p className="text-[12px] text-[#B83A2A]">회사를 선택해야 저장할 수 있습니다</p>
+                  )}
                   <Select
                     value={editCompanyId || ''}
                     onValueChange={(v) => setEditCompanyId(v || null)}
