@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -133,7 +134,7 @@ function NewAssemblyContent() {
       toast.success(`${productName} ${data.quantity}개 조립 완료`)
       router.push(`/assembly-orders/${result.data.order_id}`)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '조립 실행 실패')
+      toast.error(extractErrorMessage(err, '조립 실행 실패'))
     }
   })
 

@@ -3,6 +3,7 @@
 import { use } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,7 +26,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       await updateStatus.mutateAsync({ id, status: 'confirmed', expectedStatus: 'draft' })
       toast.success('판매주문 확정 완료')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '상태 변경 실패')
+      toast.error(extractErrorMessage(err, '상태 변경 실패'))
     }
   }
 
@@ -36,7 +37,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       const data = result.data
       toast.success(`출고 완료 — 매출원가 ${formatAmount(data?.total_cogs)}`)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '출고 실행 실패')
+      toast.error(extractErrorMessage(err, '출고 실행 실패'))
     }
   }
 
@@ -46,7 +47,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       await updateStatus.mutateAsync({ id, status: 'cancelled', expectedStatus: so?.status ?? 'draft' })
       toast.success('판매주문 취소 완료')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '상태 변경 실패')
+      toast.error(extractErrorMessage(err, '상태 변경 실패'))
     }
   }
 

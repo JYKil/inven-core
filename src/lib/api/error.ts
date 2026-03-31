@@ -44,3 +44,17 @@ export function mapSupabaseError(error: { code?: string; message: string }): Api
   }
   return new ApiError(500, error.message || '서버 오류', 'INTERNAL_ERROR')
 }
+
+// 클라이언트 catch 블록에서 사용 — Supabase PostgrestError 포함 모든 에러 처리
+export function extractErrorMessage(err: unknown, fallback = '오류가 발생했습니다'): string {
+  if (err instanceof Error) return err.message
+  if (err && typeof err === 'object' && 'message' in err) {
+    const e = err as { code?: string; message: string }
+    // PostgreSQL 제약조건 에러를 한국어로 변환
+    if (e.code === '23505') return '이미 존재하는 데이터입니다'
+    if (e.code === '23503') return '참조하는 데이터가 존재하지 않습니다'
+    if (e.code === '23514') return '데이터 검증에 실패했습니다'
+    return e.message
+  }
+  return fallback
+}

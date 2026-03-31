@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -36,7 +37,7 @@ export default function NewItemPage() {
       toast.success(`품목 "${result.name}" 등록 완료`)
       router.push(`/items/${result.id}`)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '등록 실패')
+      toast.error(extractErrorMessage(err, '등록 실패'))
     }
   })
 

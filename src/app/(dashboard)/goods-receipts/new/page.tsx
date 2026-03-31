@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -107,7 +108,7 @@ function NewGoodsReceiptContent() {
         router.push('/goods-receipts')
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '입고 처리 실패')
+      toast.error(extractErrorMessage(err, '입고 처리 실패'))
     }
   })
 

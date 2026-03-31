@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -93,7 +94,7 @@ export default function NewSalesOrderPage() {
       toast.success(`판매주문 ${result.order_number} 생성 완료`)
       router.push(`/sales-orders/${result.id}`)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '생성 실패')
+      toast.error(extractErrorMessage(err, '생성 실패'))
     }
   })
 

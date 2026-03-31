@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { Pencil, Trash2, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -61,7 +62,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
       toast.success('품목 수정 완료')
       setEditing(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '수정 실패')
+      toast.error(extractErrorMessage(err, '수정 실패'))
     }
   })
 
@@ -72,7 +73,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
       toast.success('품목 비활성화 완료')
       router.push('/items')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '삭제 실패')
+      toast.error(extractErrorMessage(err, '삭제 실패'))
     }
   }
 
@@ -268,7 +269,7 @@ function BomTab({ itemId }: { itemId: string }) {
       setIsCreating(false)
       setNewLines([])
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'BOM 생성 실패')
+      toast.error(extractErrorMessage(err, 'BOM 생성 실패'))
     }
   }
 

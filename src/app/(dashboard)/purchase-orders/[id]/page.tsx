@@ -3,6 +3,7 @@
 import { use, useState } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { PackageCheck, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,7 +31,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       await updateStatus.mutateAsync({ id, status: 'confirmed', expectedStatus: 'draft' })
       toast.success('발주서 확정 완료')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '상태 변경 실패')
+      toast.error(extractErrorMessage(err, '상태 변경 실패'))
     }
   }
 
@@ -40,7 +41,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       await updateStatus.mutateAsync({ id, status: 'cancelled', expectedStatus: po?.status ?? 'draft' })
       toast.success('발주서 취소 완료')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '상태 변경 실패')
+      toast.error(extractErrorMessage(err, '상태 변경 실패'))
     }
   }
 
@@ -253,7 +254,7 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
       setShowForm(false)
       setPaymentForm({ payment_date: new Date().toISOString().split('T')[0], amount: 0, payment_method: '', notes: '' })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '지급 등록 실패')
+      toast.error(extractErrorMessage(err, '지급 등록 실패'))
     }
   }
 

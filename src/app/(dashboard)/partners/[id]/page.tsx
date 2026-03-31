@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { extractErrorMessage } from '@/lib/api/error'
 import { Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -57,7 +58,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
       toast.success('거래처 수정 완료')
       setEditing(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '수정 실패')
+      toast.error(extractErrorMessage(err, '수정 실패'))
     }
   })
 
@@ -68,7 +69,7 @@ export default function PartnerDetailPage({ params }: { params: Promise<{ id: st
       toast.success('거래처 비활성화 완료')
       router.push('/partners')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '삭제 실패')
+      toast.error(extractErrorMessage(err, '삭제 실패'))
     }
   }
 
