@@ -17,18 +17,6 @@ https://inven-core.vercel.app/
 > 회원가입 후 관리자 승인이 완료되어야 서비스를 이용할 수 있습니다.
 > Google OAuth는 현재 테스트 기간으로, 관리자가 추가한 계정만 로그인이 가능합니다.
 
-## 로컬 개발
-
-```bash
-# 의존성 설치
-npm install
-
-# 개발 서버 실행
-npm run dev
-```
-
-http://localhost:3000 에서 확인할 수 있습니다.
-
 ## 프로젝트 구조
 
 ```
