@@ -112,7 +112,7 @@ export default function ItemsPage() {
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>
                       {item.item_type === 'assembly' ? (
-                        <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-[#4A7B94] text-info text-xs">
+                        <Badge variant="outline" className="rounded-[3px] border-[1.5px] border-info text-info text-xs">
                           <Wrench className="h-3 w-3 mr-1" />조립
                         </Badge>
                       ) : (

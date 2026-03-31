@@ -67,7 +67,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       <PageHeader title={po.po_number}>
         {canConfirm && (
           <Button size="sm" onClick={handleConfirm} disabled={updateStatus.isPending}
-            className="bg-info hover:bg-[#3d6679]">
+            className="bg-info hover:bg-info/80">
             확정
           </Button>
         )}

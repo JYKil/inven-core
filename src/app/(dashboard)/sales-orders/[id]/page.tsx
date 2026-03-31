@@ -13,13 +13,15 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/common/page-header'
 import { StatusBadge } from '@/components/common/status-badge'
 import { formatAmount, formatUnitPrice, formatQty, formatDate } from '@/lib/format'
-import { useSalesOrder, useUpdateSalesOrderStatus, useExecuteShipment } from '@/hooks/use-sales-orders'
+import { useSalesOrder, useUpdateSalesOrderStatus, useExecuteShipment, useCancelShipment } from '@/hooks/use-sales-orders'
+import { CancelDialog } from '@/components/common/cancel-dialog'
 
 export default function SalesOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { data: so, isLoading } = useSalesOrder(id)
   const updateStatus = useUpdateSalesOrderStatus()
   const executeShipment = useExecuteShipment()
+  const cancelShipment = useCancelShipment()
 
   const handleConfirm = async () => {
     try {
@@ -68,6 +70,17 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
   const canShip = so.status === 'confirmed'
   const canCancel = so.status === 'draft' || so.status === 'confirmed'
   const isShipped = so.status === 'shipped'
+  const isCancelled = so.status === 'cancelled'
+
+  const handleCancelShipment = async (reason: string) => {
+    try {
+      await cancelShipment.mutateAsync({ id, reason: reason || undefined })
+      toast.success('출고 취소 완료 — 재고가 복원되었습니다')
+    } catch (err) {
+      toast.error(extractErrorMessage(err, '출고 취소 실패'))
+      throw err
+    }
+  }
 
   // 매출원가 합계 (출고 완료 후)
   const lines = (so as any).sales_order_lines ?? []
@@ -79,7 +92,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
       <PageHeader title={so.order_number}>
         {canConfirm && (
           <Button size="sm" onClick={handleConfirm} disabled={updateStatus.isPending}
-            className="bg-info hover:bg-[#3d6679]">
+            className="bg-info hover:bg-info/80">
             확정
           </Button>
         )}
@@ -96,6 +109,15 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
             disabled={updateStatus.isPending} className="text-destructive">
             취소
           </Button>
+        )}
+        {isShipped && (
+          <CancelDialog
+            title="출고 취소"
+            description="출고를 취소하면 차감된 재고가 복원됩니다. 이 작업은 되돌릴 수 없습니다."
+            triggerLabel="출고 취소"
+            onConfirm={handleCancelShipment}
+            isPending={cancelShipment.isPending}
+          />
         )}
       </PageHeader>
 

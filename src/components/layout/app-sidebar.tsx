@@ -145,6 +145,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
+        <nav aria-label="메인 메뉴">
         {groups.map((group) => (
           <SidebarGroup key={group.label || 'home'}>
             {group.label && (
@@ -173,6 +174,7 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        </nav>
       </SidebarContent>
     </Sidebar>
   )

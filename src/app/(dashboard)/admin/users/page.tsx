@@ -54,7 +54,7 @@ const roleLabels: Record<string, string> = {
 
 const roleBadgeStyles: Record<string, string> = {
   super_admin: 'border-primary text-primary',
-  company_admin: 'border-[#4A7B94] text-info',
+  company_admin: 'border-info text-info',
   normal: 'border-text-secondary text-text-secondary',
   pending: 'border-warning text-warning bg-warning/10',
 }
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
                         className={`text-[12px] rounded-[3px] border-[1.5px] ${
                           user.is_active
                             ? 'border-secondary text-secondary'
-                            : 'border-[#C4BBB2] text-text-muted'
+                            : 'border-text-disabled text-text-muted'
                         }`}
                       >
                         {user.is_active ? '활성' : '비활성'}

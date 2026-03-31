@@ -229,7 +229,7 @@ export default function AdminCompaniesPage() {
   }
 
   const roleBadgeStyles: Record<string, string> = {
-    company_admin: 'border-[#4A7B94] text-info',
+    company_admin: 'border-info text-info',
     normal: 'border-text-secondary text-text-secondary',
   }
 
@@ -300,7 +300,7 @@ export default function AdminCompaniesPage() {
                         className={`text-[12px] rounded-[3px] border-[1.5px] ${
                           company.is_active
                             ? 'border-secondary text-secondary'
-                            : 'border-[#C4BBB2] text-text-muted'
+                            : 'border-text-disabled text-text-muted'
                         }`}
                       >
                         {company.is_active ? '활성' : '비활성'}
@@ -493,7 +493,7 @@ export default function AdminCompaniesPage() {
                             className={`text-[12px] rounded-[3px] border-[1.5px] ${
                               admin.is_active
                                 ? 'border-secondary text-secondary'
-                                : 'border-[#C4BBB2] text-text-muted'
+                                : 'border-text-disabled text-text-muted'
                             }`}
                           >
                             {admin.is_active ? '활성' : '비활성'}
