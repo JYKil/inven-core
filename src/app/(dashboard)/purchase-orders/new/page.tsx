@@ -98,8 +98,8 @@ export default function NewPurchaseOrderPage() {
             {/* 헤더 정보 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
-                <Label>PO 번호 *</Label>
-                <Input {...form.register('po_number')} placeholder="PO-2026-001" />
+                <Label htmlFor="po_number">PO 번호 *</Label>
+                <Input id="po_number" {...form.register('po_number')} placeholder="PO-2026-001" />
                 {form.formState.errors.po_number && (
                   <p className="text-xs text-destructive">{form.formState.errors.po_number.message}</p>
                 )}
@@ -123,16 +123,16 @@ export default function NewPurchaseOrderPage() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>발주일 *</Label>
-                <Input type="date" {...form.register('order_date')} />
+                <Label htmlFor="order_date">발주일 *</Label>
+                <Input id="order_date" type="date" {...form.register('order_date')} />
               </div>
               <div className="space-y-1.5">
-                <Label>예상 입고일</Label>
-                <Input type="date" {...form.register('expected_date')} />
+                <Label htmlFor="expected_date">예상 입고일</Label>
+                <Input id="expected_date" type="date" {...form.register('expected_date')} />
               </div>
               <div className="col-span-2 space-y-1.5">
-                <Label>비고</Label>
-                <Textarea {...form.register('notes')} rows={2} />
+                <Label htmlFor="po_notes">비고</Label>
+                <Textarea id="po_notes" {...form.register('notes')} rows={2} />
               </div>
             </div>
 

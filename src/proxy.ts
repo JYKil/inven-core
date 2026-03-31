@@ -5,7 +5,7 @@ import { createServerClient } from '@supabase/ssr'
 // 인증 없이 접근 가능한 경로
 const publicPaths = ['/login', '/signup', '/auth/callback']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 공개 경로는 세션 갱신만 수행

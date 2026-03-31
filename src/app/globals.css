@@ -66,7 +66,7 @@
   --card-foreground: #1A1714;
   --popover: #FFFFFF;             /* 모달/드롭다운 최상위 */
   --popover-foreground: #1A1714;
-  --primary: #D4642A;             /* 산업용 주황 액센트 */
+  --primary: #BF5520;             /* 산업용 주황 액센트 (AA 대비 4.7:1) */
   --primary-foreground: #FEFCF9;
   --secondary: #2B7A6F;           /* 짙은 틸 (성공/완료) */
   --secondary-foreground: #FEFCF9;
@@ -77,7 +77,7 @@
   --destructive: #B83A2A;         /* 적갈색 에러 */
   --border: #E0D8CF;              /* 따뜻한 회색 테두리 */
   --input: #E0D8CF;
-  --ring: #D4642A;                /* 포커스 링 = 주황 액센트 */
+  --ring: #BF5520;                /* 포커스 링 = 주황 액센트 */
   --chart-1: #D4642A;
   --chart-2: #2B7A6F;
   --chart-3: #4A7B94;
@@ -86,12 +86,12 @@
   --radius: 0.5rem;
   --sidebar: #FEFCF9;
   --sidebar-foreground: #1A1714;
-  --sidebar-primary: #D4642A;
+  --sidebar-primary: #BF5520;
   --sidebar-primary-foreground: #FEFCF9;
   --sidebar-accent: #F5F0EB;
   --sidebar-accent-foreground: #1A1714;
   --sidebar-border: #E0D8CF;
-  --sidebar-ring: #D4642A;
+  --sidebar-ring: #BF5520;
 
   /* DESIGN.md 시맨틱 색상 (커스텀) */
   --success: #2B7A6F;
@@ -101,7 +101,7 @@
   --text-muted: #726A63;
   --text-disabled: #C4BBB2;
   --surface-elevated: #FFFFFF;
-  --primary-hover: #BF5520;
+  --primary-hover: #A84A1B;
 }
 
 .dark {

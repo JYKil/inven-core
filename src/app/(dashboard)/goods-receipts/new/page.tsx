@@ -123,8 +123,8 @@ function NewGoodsReceiptContent() {
             {/* 헤더 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
-                <Label>입고번호 *</Label>
-                <Input {...form.register('receipt_number')} placeholder="GR-2026-001" />
+                <Label htmlFor="receipt_number">입고번호 *</Label>
+                <Input id="receipt_number" {...form.register('receipt_number')} placeholder="GR-2026-001" />
                 {form.formState.errors.receipt_number && (
                   <p className="text-xs text-destructive">{form.formState.errors.receipt_number.message}</p>
                 )}
@@ -148,8 +148,8 @@ function NewGoodsReceiptContent() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>입고일 *</Label>
-                <Input type="date" {...form.register('receipt_date')} />
+                <Label htmlFor="receipt_date">입고일 *</Label>
+                <Input id="receipt_date" type="date" {...form.register('receipt_date')} />
               </div>
               {poId && (
                 <div className="space-y-1.5">
@@ -158,8 +158,8 @@ function NewGoodsReceiptContent() {
                 </div>
               )}
               <div className="col-span-2 space-y-1.5">
-                <Label>비고</Label>
-                <Textarea {...form.register('notes')} rows={2} />
+                <Label htmlFor="gr_notes">비고</Label>
+                <Textarea id="gr_notes" {...form.register('notes')} rows={2} />
               </div>
             </div>
 

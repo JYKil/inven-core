@@ -49,15 +49,15 @@ export default function NewItemPage() {
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>품목코드 *</Label>
-                <Input {...form.register('code')} placeholder="ITEM-001" />
+                <Label htmlFor="code">품목코드 *</Label>
+                <Input id="code" {...form.register('code')} placeholder="ITEM-001" />
                 {form.formState.errors.code && (
                   <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>품목명 *</Label>
-                <Input {...form.register('name')} />
+                <Label htmlFor="name">품목명 *</Label>
+                <Input id="name" {...form.register('name')} />
                 {form.formState.errors.name && (
                   <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                 )}
@@ -94,17 +94,17 @@ export default function NewItemPage() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>카테고리</Label>
-                <Input {...form.register('category')} />
+                <Label htmlFor="category">카테고리</Label>
+                <Input id="category" {...form.register('category')} />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>최소 재고 수량 (알람용)</Label>
-              <Input type="number" step="any" {...form.register('min_stock_qty', { valueAsNumber: true })} />
+              <Label htmlFor="min_stock_qty">최소 재고 수량 (알람용)</Label>
+              <Input id="min_stock_qty" type="number" step="any" {...form.register('min_stock_qty', { valueAsNumber: true })} />
             </div>
             <div className="space-y-1.5">
-              <Label>설명</Label>
-              <Textarea {...form.register('description')} rows={3} />
+              <Label htmlFor="description">설명</Label>
+              <Textarea id="description" {...form.register('description')} rows={3} />
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>

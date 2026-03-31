@@ -11,7 +11,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000, // 1분
+        gcTime: 10 * 60 * 1000, // 10분 (가비지 컬렉션)
         refetchOnWindowFocus: false,
+        refetchOnReconnect: true, // 네트워크 재연결 시 갱신
+        retry: 1, // 실패 시 1회 재시도
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
       },
     },
   }))

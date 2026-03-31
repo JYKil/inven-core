@@ -107,8 +107,8 @@ export default function NewSalesOrderPage() {
             {/* 헤더 정보 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
-                <Label>주문번호 *</Label>
-                <Input {...form.register('order_number')} placeholder="SO-2026-001" />
+                <Label htmlFor="order_number">주문번호 *</Label>
+                <Input id="order_number" {...form.register('order_number')} placeholder="SO-2026-001" />
                 {form.formState.errors.order_number && (
                   <p className="text-xs text-destructive">{form.formState.errors.order_number.message}</p>
                 )}
@@ -132,13 +132,13 @@ export default function NewSalesOrderPage() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>주문일 *</Label>
-                <Input type="date" {...form.register('order_date')} />
+                <Label htmlFor="so_order_date">주문일 *</Label>
+                <Input id="so_order_date" type="date" {...form.register('order_date')} />
               </div>
               <div />
               <div className="col-span-2 space-y-1.5">
-                <Label>비고</Label>
-                <Textarea {...form.register('notes')} rows={2} />
+                <Label htmlFor="so_notes">비고</Label>
+                <Textarea id="so_notes" {...form.register('notes')} rows={2} />
               </div>
             </div>
 

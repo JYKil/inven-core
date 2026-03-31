@@ -22,13 +22,25 @@ npx vitest
 npx vitest run test/format.test.ts
 ```
 
+## 현재 상태
+
+- 총 **118개** 테스트 통과
+- 10개 테스트 파일
+
 ## 디렉토리 구조
 
 ```
 test/
-├── setup.ts           # 테스트 환경 설정
-├── format.test.ts     # 유틸 함수 테스트
-└── *.regression-*.test.ts  # QA 회귀 테스트
+├── setup.ts               # 테스트 환경 설정
+├── format.test.ts         # 숫자/날짜 포맷 유틸
+├── utils.test.ts          # escapeFilterValue 등 유틸
+├── csv.test.ts            # CSV 생성/내보내기
+├── api-error.test.ts      # ApiError, extractErrorMessage
+├── api-auth.test.ts       # getAuthenticatedUser, requireRole
+├── api-handler.test.ts    # withApiHandler 래퍼
+├── validations.test.ts    # Zod 스키마 10종 검증
+├── query-keys.test.ts     # TanStack Query 키 팩토리
+└── cancel-routes.test.ts  # 취소 API Route 테스트
 ```
 
 ## 컨벤션

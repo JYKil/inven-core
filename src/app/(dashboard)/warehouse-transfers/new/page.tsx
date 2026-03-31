@@ -129,13 +129,13 @@ export default function NewWarehouseTransferPage() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>이동일 *</Label>
-                <Input type="date" {...form.register('transfer_date')} />
+                <Label htmlFor="transfer_date">이동일 *</Label>
+                <Input id="transfer_date" type="date" {...form.register('transfer_date')} />
               </div>
               <div />
               <div className="col-span-2 space-y-1.5">
-                <Label>비고</Label>
-                <Textarea {...form.register('notes')} rows={2} />
+                <Label htmlFor="transfer_notes">비고</Label>
+                <Textarea id="transfer_notes" {...form.register('notes')} rows={2} />
               </div>
             </div>
 

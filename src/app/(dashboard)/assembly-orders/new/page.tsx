@@ -147,15 +147,15 @@ function NewAssemblyContent() {
             {/* 헤더 폼 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
               <div className="space-y-1.5">
-                <Label>조립번호 *</Label>
-                <Input {...form.register('order_number')} placeholder="ASM-2026-001" />
+                <Label htmlFor="asm_order_number">조립번호 *</Label>
+                <Input id="asm_order_number" {...form.register('order_number')} placeholder="ASM-2026-001" />
                 {form.formState.errors.order_number && (
                   <p className="text-xs text-destructive">{form.formState.errors.order_number.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>조립일 *</Label>
-                <Input type="date" {...form.register('assembly_date')} />
+                <Label htmlFor="assembly_date">조립일 *</Label>
+                <Input id="assembly_date" type="date" {...form.register('assembly_date')} />
               </div>
               <div className="space-y-1.5">
                 <Label>결과 품목 *</Label>
@@ -221,8 +221,9 @@ function NewAssemblyContent() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>조립 수량 *</Label>
+                <Label htmlFor="asm_quantity">조립 수량 *</Label>
                 <Input
+                  id="asm_quantity"
                   type="number"
                   step="any"
                   min="0.0001"

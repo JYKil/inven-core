@@ -1,5 +1,5 @@
 # 프로젝트명 
-inven-code
+inven-core
 
 ## 프로젝트 개요
 재고수불시스템을 만드려고 함. 개요 이미지는 .doc/overview.jpeg 와 같음. 현재까지 정의된 내용은 .doc/memo1.md파일을 참고해줘.

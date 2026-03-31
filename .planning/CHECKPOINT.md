@@ -145,8 +145,13 @@
     - [x] **버그 수정**: critters 모듈 누락 (npm install)
     - [ ] 창고이동 취소 / 조립 취소: 테스트 데이터 부족으로 미검증 (RPC는 동일 패턴)
 
+23. ~~Quick Win 3건~~ → 완료 (2026-03-31)
+    - [x] CTA 버튼 대비 AA 충족 (primary #D4642A→#BF5520, hover→#A84A1B)
+    - [x] 폼 label htmlFor/id 연결 (6개 폼: items/PO/SO/GR/assembly/transfer)
+    - [x] 테이블 sticky 컬럼 (items, warehouses, inventory, 보고서 3종)
+
 ### 남은 작업
-1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 반영
+1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win 반영
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항
