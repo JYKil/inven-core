@@ -42,5 +42,5 @@ export function mapSupabaseError(error: { code?: string; message: string }): Api
   if (error.code === '23514') {
     return new ApiError(400, '데이터 검증 실패', 'VALIDATION_ERROR')
   }
-  return new ApiError(500, '서버 오류', 'INTERNAL_ERROR')
+  return new ApiError(500, error.message || '서버 오류', 'INTERNAL_ERROR')
 }
