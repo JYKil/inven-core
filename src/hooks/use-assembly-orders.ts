@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { AssemblyOrderCreate } from '@/lib/validations/assembly'
@@ -40,6 +40,7 @@ export function useAssemblyOrders(filters: AssemblyFilters = {}) {
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
+    placeholderData: keepPreviousData,
   })
 }
 

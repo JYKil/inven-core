@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 
@@ -48,6 +48,7 @@ export function useInventorySummary(filters: InventoryFilters = {}) {
 
       return { data: filtered, count: filters.search ? filtered.length : (count ?? 0), page, pageSize }
     },
+    placeholderData: keepPreviousData,
   })
 }
 

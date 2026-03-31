@@ -17,7 +17,7 @@ export const POST = withApiHandler(async (request: Request) => {
     p_from_warehouse_id: parsed.from_warehouse_id,
     p_to_warehouse_id: parsed.to_warehouse_id,
     p_transfer_date: parsed.transfer_date,
-    p_notes: parsed.notes || undefined,
+    p_notes: parsed.notes ?? undefined,
     p_created_by: user.id,
     p_lines: JSON.stringify(parsed.lines),
   })

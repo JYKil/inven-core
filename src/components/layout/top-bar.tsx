@@ -9,7 +9,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover'
-import { User, LogOut } from 'lucide-react'
+import { User, LogOut, Sun, Moon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { createClient } from '@/lib/supabase/client'
 
 const roleLabels: Record<string, string> = {
@@ -23,6 +24,8 @@ export function TopBar() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const supabase = createClient()
+
+  const { theme, setTheme } = useTheme()
 
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me'],
@@ -55,6 +58,14 @@ export function TopBar() {
       <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
       <Separator orientation="vertical" className="h-4" />
       <div className="flex-1" />
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+        aria-label="테마 전환"
+      >
+        <Sun className="h-4 w-4 block dark:hidden" />
+        <Moon className="h-4 w-4 hidden dark:block" />
+      </button>
       {profile && (
         <Popover>
           <PopoverTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none min-h-[44px] px-2">
