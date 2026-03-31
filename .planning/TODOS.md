@@ -203,6 +203,14 @@
 - [x] 설정 페이지 — settings.spec.ts
 - 총 11파일, 31개 E2E 시나리오 (기존 7 + 신규 24)
 
+## P2.6 — INFORMATIONAL 항목 마무리 ✅
+
+- [x] I7: useWarehouseStockReport enabled 옵션 추가 (마운트 시 불필요한 전체 조회 방지)
+- [x] loading.tsx 누락 6개 라우트 추가 (warehouses, assembly-orders, goods-receipts, po-payments, settings, warehouse-transfers)
+- [x] retry 정책 명시 — mutation retry: 0 명시적 선언 (TanStack Query 기본값이지만 의도 명확화)
+- [x] 테스트 커버리지 보강 — formatUnitPrice, formatPercent, formatDate 엣지 케이스 등 32개 추가 (총 150개)
+- 기존 I1~I3, I8, I9는 이전 리뷰에서 이미 수정 완료 확인
+
 ---
 
 ## 배포 전 체크리스트

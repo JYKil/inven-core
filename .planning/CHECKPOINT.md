@@ -161,8 +161,14 @@
       - rounded-[6px] → rounded-md (14파일)
       - rounded-[3px] → rounded-sm (6파일)
 
+25. **INFORMATIONAL 항목 마무리** → 완료 (2026-03-31)
+    - [x] I7: useWarehouseStockReport enabled 옵션 추가
+    - [x] loading.tsx 누락 6개 라우트 추가 (warehouses, assembly-orders, goods-receipts, po-payments, settings, warehouse-transfers)
+    - [x] retry 정책 명시 — mutation retry: 0 명시 (side effect 중복 방지)
+    - [x] 테스트 커버리지 보강 — 118개 → 150개 (+32개: formatUnitPrice, formatPercent, formatDate, formatQty 엣지 케이스)
+
 ### 남은 작업
-1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 반영
+1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 + INFORMATIONAL 반영
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항

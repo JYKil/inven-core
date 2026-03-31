@@ -17,6 +17,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         retry: 1, // 실패 시 1회 재시도
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
       },
+      mutations: {
+        retry: 0, // mutation은 재시도 안 함 (side effect 중복 방지)
+      },
     },
   }))
 

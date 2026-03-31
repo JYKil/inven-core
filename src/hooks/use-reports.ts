@@ -59,10 +59,11 @@ export function useInventoryLedger(filters: {
 }
 
 // 창고별 재고 현황
-export function useWarehouseStockReport(warehouseId?: string) {
+export function useWarehouseStockReport(warehouseId?: string, options?: { enabled?: boolean }) {
   const supabase = createClient()
   return useQuery({
     queryKey: queryKeys.reports.warehouseStock(warehouseId),
+    enabled: options?.enabled !== false,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')

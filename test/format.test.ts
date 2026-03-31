@@ -17,6 +17,42 @@ describe('formatQty', () => {
   it('undefined이면 - 반환', () => {
     expect(formatQty(undefined)).toBe('-')
   })
+
+  it('0은 정상 표시', () => {
+    expect(formatQty(0, 'EA')).toBe('0')
+  })
+
+  it('BOX/PCS/SET도 정수 단위', () => {
+    expect(formatQty(5.7, 'BOX')).toBe('6')
+    expect(formatQty(3, 'PCS')).toBe('3')
+    expect(formatQty(2.1, 'SET')).toBe('2')
+  })
+
+  it('소문자 단위도 정수 처리', () => {
+    expect(formatQty(10, 'ea')).toBe('10')
+  })
+})
+
+describe('formatUnitPrice', () => {
+  it('단가에 ₩ 접두사와 소수4자리 표시', () => {
+    expect(formatUnitPrice(1500)).toBe('₩1,500.0000')
+  })
+
+  it('소수점 있는 단가 표시', () => {
+    expect(formatUnitPrice(12.3456)).toBe('₩12.3456')
+  })
+
+  it('null이면 - 반환', () => {
+    expect(formatUnitPrice(null)).toBe('-')
+  })
+
+  it('undefined이면 - 반환', () => {
+    expect(formatUnitPrice(undefined)).toBe('-')
+  })
+
+  it('0은 ₩0.0000', () => {
+    expect(formatUnitPrice(0)).toBe('₩0.0000')
+  })
 })
 
 describe('formatAmount', () => {
@@ -27,21 +63,50 @@ describe('formatAmount', () => {
   it('null이면 - 반환', () => {
     expect(formatAmount(null)).toBe('-')
   })
+
+  it('0은 ₩0.00', () => {
+    expect(formatAmount(0)).toBe('₩0.00')
+  })
 })
 
 describe('formatPercent', () => {
   it('소수1자리 + % 표시', () => {
     expect(formatPercent(85.67)).toBe('85.7%')
   })
+
+  it('null이면 - 반환', () => {
+    expect(formatPercent(null)).toBe('-')
+  })
+
+  it('0%', () => {
+    expect(formatPercent(0)).toBe('0.0%')
+  })
+
+  it('100%', () => {
+    expect(formatPercent(100)).toBe('100.0%')
+  })
 })
 
 describe('formatDate', () => {
-  it('한국어 날짜 포맷', () => {
-    const result = formatDate('2026-03-31')
-    expect(result).toMatch(/2026/)
+  it('YYYY-MM-DD 포맷으로 표시', () => {
+    expect(formatDate('2026-03-31')).toBe('2026-03-31')
   })
 
-  it('빈 값이면 - 반환', () => {
+  it('ISO 날짜도 YYYY-MM-DD로 변환', () => {
+    // UTC 시각이 로컬 타임존에 맞게 변환됨
+    const result = formatDate('2026-03-31T03:00:00Z')
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
+  it('null이면 - 반환', () => {
     expect(formatDate(null)).toBe('-')
+  })
+
+  it('undefined이면 - 반환', () => {
+    expect(formatDate(undefined)).toBe('-')
+  })
+
+  it('빈 문자열이면 - 반환', () => {
+    expect(formatDate('')).toBe('-')
   })
 })
