@@ -113,14 +113,14 @@ export default function DashboardContent() {
             <p className="text-sm text-secondary font-medium">모든 품목의 재고가 충분합니다</p>
           </div>
         ) : (
-          <div className="border border-border rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-background/50 border-b border-border">
-                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">품목</th>
-                  <th className="text-right px-4 py-2 font-medium text-muted-foreground">현재고</th>
-                  <th className="text-right px-4 py-2 font-medium text-muted-foreground">안전재고</th>
-                  <th className="text-right px-4 py-2 font-medium text-muted-foreground">부족</th>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground whitespace-nowrap">품목</th>
+                  <th className="text-right px-4 py-2 font-medium text-muted-foreground whitespace-nowrap">현재고</th>
+                  <th className="text-right px-4 py-2 font-medium text-muted-foreground whitespace-nowrap">안전재고</th>
+                  <th className="text-right px-4 py-2 font-medium text-muted-foreground whitespace-nowrap">부족</th>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
