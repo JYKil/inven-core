@@ -10,7 +10,13 @@
 - **상태관리**: Zustand (클라이언트) + TanStack Query (서버)
 - **폼**: React Hook Form + Zod
 
-## 시작하기
+## 서비스 URL
+
+https://inven-core.vercel.app/
+
+> 회원가입 후 관리자 승인이 완료되어야 서비스를 이용할 수 있습니다.
+
+## 로컬 개발
 
 ```bash
 # 의존성 설치
