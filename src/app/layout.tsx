@@ -27,6 +27,7 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${geist.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <link
