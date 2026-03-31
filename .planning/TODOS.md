@@ -132,7 +132,7 @@
 
 ---
 
-## P2.5 — 슬라이스 5 완료 후
+## P2.5 — 슬라이스 5 완료 후 ✅
 
 ### settings 페이지 구현 ✅
 - [x] 회사 설정 — 기본 정보 수정(회사명/사업자번호/주소/연락처), 원가 방식 표시, 초대 코드 표시
@@ -162,6 +162,14 @@
 - [x] ISSUE-004: Base UI nativeButton 경고 (Low) — render prop 시 자동 비활성
 - [x] ISSUE-005: 모바일 보고서 테이블 잘림 (Low) — `overflow-x-auto`
 - 헬스 스코어: 79 → 100
+
+### 디자인 리뷰 — 슬라이스 5 ✅
+- [x] FINDING-001 (High): 사이드바 메뉴 터치타겟 32→40px — `sidebar.tsx` h-8→h-10
+- [x] FINDING-002 (Medium): H2 크기 16→20px — 대시보드/설정 5개소 통일
+- [x] FINDING-004 (Medium): 날짜 포맷 마침표 → YYYY-MM-DD 수동 포맷
+- [x] FINDING-005 (Medium): 수불부 거래유형 영문→한글 매핑 8종
+- [ ] FINDING-003 (Low, deferred): 대시보드 하단 빈 공간 — 데이터 축적 시 자연 해소
+- 디자인 점수: 6.5 → 8.3
 
 ### 롤백/정정 트랜잭션
 - [x] RPC 설계 문서 완료 (`.planning/phase-06-rollback.md`)

@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 5 QA 완료 (헬스 79→100) / 디자인 리뷰 진행 중
+- **단계**: 슬라이스 5 완료 (QA 헬스 79→100, 디자인 6.5→8.3) / 롤백 RPC 설계 완료
 - **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
@@ -95,21 +95,24 @@
     - [x] CSV 내보내기 유틸리티 (src/lib/csv.ts)
     - [x] TypeScript + Next.js 빌드 통과
 11. ~~슬라이스 5 코드 리뷰~~ → 완료 (C1 RPC auth, C3 CSV injection, I1~I9 수정, db push)
-12. ISSUE-003 스켈레톤 깜빡임 수정 — keepPreviousData 10개 훅 적용 완료
-13. 다크 모드 토글 UI — ThemeProvider + TopBar 토글 버튼 완료
-14. CSV 보고서 유틸 — exportCsv 제네릭 + 보고서 3종 전용 함수 (src/lib/csv-reports.ts) 완료
-15. **슬라이스 5 QA** → 완료 (헬스 79→100, 5 이슈 발견/5 수정)
-    - [x] ISSUE-001/002: 설정 페이지 캐시 키 충돌 (Critical) — profile 쿼리 select 통일
-    - [x] ISSUE-003: next-themes hydration mismatch (Medium) — suppressHydrationWarning
-    - [x] ISSUE-004: Base UI nativeButton 경고 (Low) — render prop 시 자동 비활성
-    - [x] ISSUE-005: 모바일 보고서 테이블 잘림 (Low) — overflow-x-auto
+12. ~~ISSUE-003 스켈레톤 깜빡임 수정~~ → 완료 (keepPreviousData 10개 훅 적용)
+13. ~~다크 모드 토글 UI~~ → 완료 (ThemeProvider + TopBar 토글 버튼)
+14. ~~CSV 보고서 유틸~~ → 완료 (exportCsv 제네릭 + 보고서 3종 전용 함수)
+15. ~~슬라이스 5 QA~~ → 완료 (헬스 79→100, 5 이슈 발견/5 수정)
+16. ~~settings 페이지~~ → 완료 (회사 설정 + 사용자 관리 + 초대 API)
+17. ~~단위 테스트~~ → 완료 (총 118개 통과)
+18. ~~롤백/정정 트랜잭션 설계~~ → 완료 (phase-06-rollback.md)
 
-## 리뷰 후 병렬 작업 후보
-1. ~~**settings 페이지 구현**~~ → 완료 (회사 설정 + 사용자 관리 + 사용자 초대 API)
-2. ~~**테스트 작성**~~ → 완료 (utils, api-error, validations 10종, format — 총 91개)
-3. ~~**CSV 보고서 유틸 테스트**~~ → 완료 (csv.ts 15개 테스트)
-4. ~~**추가 테스트 보강**~~ → 완료 (query-keys 14개, api-auth 7개, api-handler 5개 — 총 118개 테스트)
-5. ~~**롤백/정정 트랜잭션 설계**~~ → 완료 (phase-06-rollback.md, RPC 4종 + 공통 유틸 설계)
+19. ~~슬라이스 5 디자인 리뷰~~ → 완료 (6.5→8.3, 4 FINDING 수정, 1 deferred)
+
+### 남은 작업
+1. **롤백/정정 RPC 구현** — 설계 완료, 코드 작성 대기
+   - DB 마이그레이션 (cancelled_at, cancel_reason 컬럼)
+   - RPC 구현 (cancel_shipment → cancel_goods_receipt → cancel_transfer → cancel_assembly)
+   - API Route 4종 + UI (취소 버튼 + AlertDialog)
+   - 보고서 RPC 수정 (cancel 타입 집계)
+2. **Vercel 재배포** — QA + 디자인 리뷰 수정사항 반영
+3. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
@@ -140,6 +143,10 @@
 - base-ui Select: onValueChange에서 null 가능 — null guard 필수
 - base-ui Button: asChild 미지원 → render prop 사용
 - TopBar/사이드바: 프로필 데이터를 TanStack Query `['profile','me']` 캐시 공유, 로그아웃 시 queryClient.clear() 필수
+- **캐시 키 공유 규칙**: 같은 queryKey를 쓰는 모든 쿼리는 반드시 동일한 select 필드와 반환 구조를 사용할 것 (QA ISSUE-001/002 교훈)
+- base-ui Button: render prop 전달 시 자동으로 nativeButton=false (button.tsx 래퍼에서 처리)
+- next-themes: `<html>` 태그에 suppressHydrationWarning 필수 (SSR/클라이언트 class 불일치 방지)
+- 보고서 테이블: overflow-x-auto 사용 (overflow-hidden 금지, 모바일 가로 스크롤 보장)
 
 ## 블로커 / 미결 사항
 - ~~Supabase 프로젝트 생성 필요~~ → 완료 (클라우드, Tokyo 리전)
