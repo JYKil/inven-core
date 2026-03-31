@@ -158,6 +158,7 @@ export function AppSidebar() {
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton
+                        size="lg"
                         isActive={isActive}
                         tooltip={item.title}
                         render={<Link href={item.href} />}
