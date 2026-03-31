@@ -141,6 +141,14 @@
 - [x] 권한 분리 — company_admin은 편집 가능, normal은 읽기 전용
 - [x] 기존 빌드 에러 수정 — warehouse-transfers/route.ts p_notes null→undefined
 
+### 단위 테스트 작성 ✅
+- [x] utils.test.ts — escapeFilterValue (9개 케이스)
+- [x] csv.test.ts — sanitizeCsvCell, buildCsvString, downloadCsv, exportCsv (15개 케이스)
+- [x] api-error.test.ts — ApiError, extractErrorMessage, mapSupabaseError, apiSuccess/apiError (16개 케이스)
+- [x] validations.test.ts — Zod 스키마 10종 (partner, item, warehouse, PO, SO, GR, assembly, BOM, payment, transfer) (36개 케이스)
+- [x] csv.ts 리팩토링 — sanitizeCsvCell, buildCsvString 순수 함수로 분리·export
+- 총 104개 테스트 통과
+
 ### 다크 모드 토글 UI ✅
 - [x] ThemeProvider (next-themes) → providers.tsx 추가
 - [x] TopBar 테마 토글 버튼 (Sun/Moon 아이콘, localStorage 자동 저장)

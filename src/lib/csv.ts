@@ -15,16 +15,16 @@ export function exportCsv<T>(filename: string, columns: CsvColumn<T>[], data: T[
 }
 
 // [C3] CSV formula injection 방어 — 수식 문자로 시작하는 셀 앞에 작은따옴표 추가
-function sanitizeCsvCell(value: string): string {
+export function sanitizeCsvCell(value: string): string {
   if (/^[=+\-@\t\r]/.test(value)) {
     return `'${value}`
   }
   return value
 }
 
-export function downloadCsv(filename: string, headers: string[], rows: (string | number | null | undefined)[][]) {
-  const bom = '\uFEFF' // UTF-8 BOM (엑셀 한글 깨짐 방지)
-  const csvContent = [
+// CSV 문자열 생성 (순수 함수 — 테스트용)
+export function buildCsvString(headers: string[], rows: (string | number | null | undefined)[][]): string {
+  return [
     headers.join(','),
     ...rows.map((row) =>
       row.map((cell) => {
@@ -38,6 +38,11 @@ export function downloadCsv(filename: string, headers: string[], rows: (string |
       }).join(',')
     ),
   ].join('\n')
+}
+
+export function downloadCsv(filename: string, headers: string[], rows: (string | number | null | undefined)[][]) {
+  const bom = '\uFEFF' // UTF-8 BOM (엑셀 한글 깨짐 방지)
+  const csvContent = buildCsvString(headers, rows)
 
   const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)

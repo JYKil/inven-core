@@ -1,0 +1,374 @@
+import { describe, it, expect } from 'vitest'
+import { partnerCreateSchema } from '@/lib/validations/partner'
+import { itemCreateSchema } from '@/lib/validations/item'
+import { warehouseCreateSchema } from '@/lib/validations/warehouse'
+import { poCreateSchema, poLineSchema } from '@/lib/validations/purchase-order'
+import { salesOrderCreateSchema, salesOrderLineSchema } from '@/lib/validations/sales-order'
+import { goodsReceiptCreateSchema } from '@/lib/validations/goods-receipt'
+import { assemblyOrderCreateSchema } from '@/lib/validations/assembly'
+import { bomHeaderCreateSchema, bomLineSchema } from '@/lib/validations/bom'
+import { poPaymentCreateSchema } from '@/lib/validations/po-payment'
+import { warehouseTransferCreateSchema } from '@/lib/validations/warehouse-transfer'
+
+const uuid = '550e8400-e29b-41d4-a716-446655440000'
+const uuid2 = '660e8400-e29b-41d4-a716-446655440000'
+
+// --- 거래처 ---
+describe('partnerCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = partnerCreateSchema.safeParse({
+      name: '테스트 업체',
+      partner_type: 'supplier',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('이름 미입력 시 실패', () => {
+    const result = partnerCreateSchema.safeParse({
+      name: '',
+      partner_type: 'supplier',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('잘못된 partner_type 실패', () => {
+    const result = partnerCreateSchema.safeParse({
+      name: '업체',
+      partner_type: 'invalid',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('빈 이메일은 undefined로 변환', () => {
+    const result = partnerCreateSchema.safeParse({
+      name: '업체',
+      partner_type: 'customer',
+      email: '',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.email).toBeUndefined()
+    }
+  })
+
+  it('잘못된 이메일 형식 실패', () => {
+    const result = partnerCreateSchema.safeParse({
+      name: '업체',
+      partner_type: 'both',
+      email: 'not-email',
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 품목 ---
+describe('itemCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = itemCreateSchema.safeParse({
+      code: 'ITEM-001',
+      name: '테스트 품목',
+      unit: 'EA',
+      item_type: 'basic',
+      min_stock_qty: 0,
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('품목코드 미입력 시 실패', () => {
+    const result = itemCreateSchema.safeParse({
+      code: '',
+      name: '품목',
+      unit: 'EA',
+      item_type: 'basic',
+      min_stock_qty: 0,
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('min_stock_qty 음수 시 실패', () => {
+    const result = itemCreateSchema.safeParse({
+      code: 'ITEM-001',
+      name: '품목',
+      unit: 'EA',
+      item_type: 'basic',
+      min_stock_qty: -1,
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('잘못된 item_type 실패', () => {
+    const result = itemCreateSchema.safeParse({
+      code: 'ITEM-001',
+      name: '품목',
+      unit: 'EA',
+      item_type: 'unknown',
+      min_stock_qty: 0,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 창고 ---
+describe('warehouseCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = warehouseCreateSchema.safeParse({
+      code: 'WH-01',
+      name: '본사 창고',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('창고코드 미입력 시 실패', () => {
+    const result = warehouseCreateSchema.safeParse({
+      code: '',
+      name: '창고',
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 발주서 ---
+describe('poCreateSchema', () => {
+  const validPo = {
+    po_number: 'PO-001',
+    partner_id: uuid,
+    order_date: '2026-03-31',
+    lines: [{ item_id: uuid, ordered_qty: 10, unit_price: 1000 }],
+  }
+
+  it('유효한 데이터 통과', () => {
+    expect(poCreateSchema.safeParse(validPo).success).toBe(true)
+  })
+
+  it('라인 없으면 실패', () => {
+    const result = poCreateSchema.safeParse({ ...validPo, lines: [] })
+    expect(result.success).toBe(false)
+  })
+
+  it('partner_id가 UUID가 아니면 실패', () => {
+    const result = poCreateSchema.safeParse({ ...validPo, partner_id: 'not-uuid' })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('poLineSchema', () => {
+  it('수량 0이면 실패', () => {
+    const result = poLineSchema.safeParse({ item_id: uuid, ordered_qty: 0, unit_price: 100 })
+    expect(result.success).toBe(false)
+  })
+
+  it('단가 음수면 실패', () => {
+    const result = poLineSchema.safeParse({ item_id: uuid, ordered_qty: 10, unit_price: -1 })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 판매주문 ---
+describe('salesOrderCreateSchema', () => {
+  const validSo = {
+    order_number: 'SO-001',
+    partner_id: uuid,
+    order_date: '2026-03-31',
+    lines: [{ item_id: uuid, warehouse_id: uuid2, quantity: 5, unit_price: 2000 }],
+  }
+
+  it('유효한 데이터 통과', () => {
+    expect(salesOrderCreateSchema.safeParse(validSo).success).toBe(true)
+  })
+
+  it('라인 없으면 실패', () => {
+    const result = salesOrderCreateSchema.safeParse({ ...validSo, lines: [] })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('salesOrderLineSchema', () => {
+  it('warehouse_id 누락 시 실패', () => {
+    const result = salesOrderLineSchema.safeParse({
+      item_id: uuid,
+      quantity: 5,
+      unit_price: 1000,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 입고 ---
+describe('goodsReceiptCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = goodsReceiptCreateSchema.safeParse({
+      receipt_number: 'GR-001',
+      warehouse_id: uuid,
+      receipt_date: '2026-03-31',
+      lines: [{ item_id: uuid, quantity: 10, unit_price: 500 }],
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('입고번호 미입력 시 실패', () => {
+    const result = goodsReceiptCreateSchema.safeParse({
+      receipt_number: '',
+      warehouse_id: uuid,
+      receipt_date: '2026-03-31',
+      lines: [{ item_id: uuid, quantity: 10, unit_price: 500 }],
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 조립 ---
+describe('assemblyOrderCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = assemblyOrderCreateSchema.safeParse({
+      order_number: 'ASM-001',
+      bom_header_id: uuid,
+      product_item_id: uuid2,
+      warehouse_id: uuid,
+      quantity: 10,
+      assembly_date: '2026-03-31',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('수량 0이면 실패', () => {
+    const result = assemblyOrderCreateSchema.safeParse({
+      order_number: 'ASM-001',
+      bom_header_id: uuid,
+      product_item_id: uuid2,
+      warehouse_id: uuid,
+      quantity: 0,
+      assembly_date: '2026-03-31',
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- BOM ---
+describe('bomHeaderCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = bomHeaderCreateSchema.safeParse({
+      product_item_id: uuid,
+      version: 1,
+      lines: [{ material_item_id: uuid2, quantity: 2, sort_order: 0 }],
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('version 0이면 실패', () => {
+    const result = bomHeaderCreateSchema.safeParse({
+      product_item_id: uuid,
+      version: 0,
+      lines: [{ material_item_id: uuid2, quantity: 2, sort_order: 0 }],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('재료 없으면 실패', () => {
+    const result = bomHeaderCreateSchema.safeParse({
+      product_item_id: uuid,
+      version: 1,
+      lines: [],
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('bomLineSchema', () => {
+  it('수량 음수면 실패', () => {
+    const result = bomLineSchema.safeParse({
+      material_item_id: uuid,
+      quantity: -1,
+      sort_order: 0,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 지급 ---
+describe('poPaymentCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = poPaymentCreateSchema.safeParse({
+      po_id: uuid,
+      payment_date: '2026-03-31',
+      amount: 50000,
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('금액 0이면 실패', () => {
+    const result = poPaymentCreateSchema.safeParse({
+      po_id: uuid,
+      payment_date: '2026-03-31',
+      amount: 0,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+// --- 창고이동 ---
+describe('warehouseTransferCreateSchema', () => {
+  const validTransfer = {
+    from_warehouse_id: uuid,
+    to_warehouse_id: uuid2,
+    transfer_date: '2026-03-31',
+    lines: [{ item_id: uuid, quantity: 5 }],
+  }
+
+  it('유효한 데이터 통과', () => {
+    expect(warehouseTransferCreateSchema.safeParse(validTransfer).success).toBe(true)
+  })
+
+  it('출발/도착 창고 동일하면 실패', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      to_warehouse_id: uuid, // 출발 창고와 동일
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('라인 없으면 실패', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      lines: [],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('[I3] 중복 품목이면 실패', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      lines: [
+        { item_id: uuid, quantity: 5 },
+        { item_id: uuid, quantity: 3 }, // 같은 품목 중복
+      ],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('[I8] 잘못된 날짜 형식 실패', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      transfer_date: '2026/03/31',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('[I8] 유효하지 않은 날짜 실패', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      transfer_date: '2026-13-99',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('서로 다른 품목이면 통과', () => {
+    const result = warehouseTransferCreateSchema.safeParse({
+      ...validTransfer,
+      lines: [
+        { item_id: uuid, quantity: 5 },
+        { item_id: uuid2, quantity: 3 },
+      ],
+    })
+    expect(result.success).toBe(true)
+  })
+})
