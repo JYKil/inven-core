@@ -1,7 +1,7 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 슬라이스 5 리뷰 수정 진행 중 + CSV 유틸 테스트 완료 → 디자인 리뷰 / 추가 테스트 남음
+- **단계**: 슬라이스 5 QA 완료 (헬스 79→100) / 디자인 리뷰 진행 중
 - **마지막 업데이트**: 2026-03-31
 
 ## 완료된 작업
@@ -98,12 +98,18 @@
 12. ISSUE-003 스켈레톤 깜빡임 수정 — keepPreviousData 10개 훅 적용 완료
 13. 다크 모드 토글 UI — ThemeProvider + TopBar 토글 버튼 완료
 14. CSV 보고서 유틸 — exportCsv 제네릭 + 보고서 3종 전용 함수 (src/lib/csv-reports.ts) 완료
+15. **슬라이스 5 QA** → 완료 (헬스 79→100, 5 이슈 발견/5 수정)
+    - [x] ISSUE-001/002: 설정 페이지 캐시 키 충돌 (Critical) — profile 쿼리 select 통일
+    - [x] ISSUE-003: next-themes hydration mismatch (Medium) — suppressHydrationWarning
+    - [x] ISSUE-004: Base UI nativeButton 경고 (Low) — render prop 시 자동 비활성
+    - [x] ISSUE-005: 모바일 보고서 테이블 잘림 (Low) — overflow-x-auto
 
 ## 리뷰 후 병렬 작업 후보
 1. ~~**settings 페이지 구현**~~ → 완료 (회사 설정 + 사용자 관리 + 사용자 초대 API)
-2. ~~**테스트 작성**~~ → 완료 (utils, api-error, validations 10종 — 총 104개 테스트 통과)
-3. ~~**CSV 보고서 유틸 테스트**~~ → 완료 (csv.ts 13개 테스트: BOM, 이스케이프, formula injection 방어, exportCsv 컬럼 정의)
-4. **롤백/정정 트랜잭션 설계** — RPC 설계 문서 (코드 작성 전 단계)
+2. ~~**테스트 작성**~~ → 완료 (utils, api-error, validations 10종, format — 총 91개)
+3. ~~**CSV 보고서 유틸 테스트**~~ → 완료 (csv.ts 15개 테스트)
+4. ~~**추가 테스트 보강**~~ → 완료 (query-keys 14개, api-auth 7개, api-handler 5개 — 총 118개 테스트)
+5. ~~**롤백/정정 트랜잭션 설계**~~ → 완료 (phase-06-rollback.md, RPC 4종 + 공통 유틸 설계)
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)

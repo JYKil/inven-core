@@ -147,15 +147,34 @@
 - [x] api-error.test.ts — ApiError, extractErrorMessage, mapSupabaseError, apiSuccess/apiError (16개 케이스)
 - [x] validations.test.ts — Zod 스키마 10종 (partner, item, warehouse, PO, SO, GR, assembly, BOM, payment, transfer) (36개 케이스)
 - [x] csv.ts 리팩토링 — sanitizeCsvCell, buildCsvString 순수 함수로 분리·export
-- 총 104개 테스트 통과
+- [x] query-keys.test.ts — queryKeys 팩토리 구조 검증, 도메인 간 키 격리 (14개 케이스)
+- [x] api-auth.test.ts — getAuthenticatedUser (인증/프로필 실패), requireRole (7개 케이스)
+- [x] api-handler.test.ts — withApiHandler ApiError/ZodError/예외 분기 (5개 케이스)
+- 총 118개 테스트 통과
 
 ### 다크 모드 토글 UI ✅
 - [x] ThemeProvider (next-themes) → providers.tsx 추가
 - [x] TopBar 테마 토글 버튼 (Sun/Moon 아이콘, localStorage 자동 저장)
 
+### QA — 슬라이스 5 ✅
+- [x] ISSUE-001/002: 설정·사용자관리 캐시 키 충돌 (Critical) — `['profile','me']` select 필드 통일
+- [x] ISSUE-003: next-themes hydration mismatch (Medium) — `suppressHydrationWarning`
+- [x] ISSUE-004: Base UI nativeButton 경고 (Low) — render prop 시 자동 비활성
+- [x] ISSUE-005: 모바일 보고서 테이블 잘림 (Low) — `overflow-x-auto`
+- 헬스 스코어: 79 → 100
+
 ### 롤백/정정 트랜잭션
-입고 취소, 조립 취소, 출고 정정 등 역방향 트랜잭션 RPC 함수 설계 및 구현.
-FIFO 역전 코스팅(원가 복원) 로직이 복잡하므로 정방향 FIFO가 완성된 후 설계.
+- [x] RPC 설계 문서 완료 (`.planning/phase-06-rollback.md`)
+  - cancel_shipment (출고 취소) — 로트 복원, SO→confirmed
+  - cancel_goods_receipt (입고 취소) — 로트 제거, PO 상태 롤백
+  - cancel_transfer (이동 취소) — 양방향 (출발지 복원 + 도착지 제거)
+  - cancel_assembly (조립 취소) — 재료 복원 + 결과물 제거
+  - restore_lot_consumptions 공통 유틸 함수
+- [ ] DB 마이그레이션 (cancelled_at, cancel_reason 컬럼)
+- [ ] RPC 구현 (순서: shipment → receipt → transfer → assembly)
+- [ ] API Route 4종
+- [ ] UI (취소 버튼 + AlertDialog + 취소 상태 표시)
+- [ ] 보고서 RPC 수정 (cancel 타입 집계)
 
 ---
 
