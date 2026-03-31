@@ -1236,6 +1236,11 @@ export type Database = {
         Returns: string
       }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      dashboard_reorder_alerts: {
+        Args: { p_company_id: string }
+        Returns: Json
+      }
+      dashboard_summary: { Args: { p_company_id: string }; Returns: Json }
       execute_assembly: {
         Args: {
           p_assembly_date: string
@@ -1270,8 +1275,43 @@ export type Database = {
         }
         Returns: Json
       }
+      execute_transfer: {
+        Args: {
+          p_company_id: string
+          p_created_by?: string
+          p_from_warehouse_id: string
+          p_lines?: Json
+          p_notes?: string
+          p_to_warehouse_id: string
+          p_transfer_date: string
+        }
+        Returns: Json
+      }
       get_my_company_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
+      report_inventory_ledger: {
+        Args: {
+          p_company_id: string
+          p_end_date: string
+          p_item_id?: string
+          p_start_date: string
+          p_warehouse_id?: string
+        }
+        Returns: Json
+      }
+      report_sales: {
+        Args: {
+          p_company_id: string
+          p_end_date: string
+          p_partner_id?: string
+          p_start_date: string
+        }
+        Returns: Json
+      }
+      report_warehouse_stock: {
+        Args: { p_company_id: string; p_warehouse_id?: string }
+        Returns: Json
+      }
       update_bom_lines: {
         Args: { p_bom_header_id: string; p_company_id: string; p_lines: Json }
         Returns: undefined

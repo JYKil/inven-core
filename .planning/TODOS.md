@@ -94,19 +94,32 @@
 
 ## P2 — 슬라이스 5: 이동 + 보고서 + 대시보드
 
-### 창고 이동
-- warehouse_transfers CRUD
-- 출발지 FIFO 소비 → 도착지 새 lot 생성
+### 백엔드 인프라 ✅
+- [x] execute_transfer RPC — 출발지 FIFO 소비 → 도착지 새 lot 생성 + inventory_summary UPSERT
+- [x] report_inventory_ledger RPC — 기간별 수불부 (기초잔량, 입출고, 기말잔량)
+- [x] report_warehouse_stock RPC — 창고별 재고 현황
+- [x] report_sales RPC — 매출 보고서 (매출액, 원가, 이익률)
+- [x] dashboard_reorder_alerts RPC — 재발주 필요 품목 (현재고 < min_stock_qty)
+- [x] dashboard_summary RPC — 처리 대기 건수 + 이번 달 매입/매출 + 온보딩 상태
+- [x] API Route — POST /api/warehouse-transfers (이동 실행)
+- [x] Zod 스키마 — warehouseTransferCreateSchema + transferLineSchema
+- [x] TanStack Query 훅 — 이동(목록/상세/실행), 보고서 3종, 대시보드(요약/재발주)
+- [x] Query 키 팩토리 — warehouseTransfers, reports, dashboard
+- [x] TypeScript 타입 체크 통과 (RPC 타입 단언 포함, db push 후 제거 예정)
 
-### 보고서 3종
-- 재고 수불부 (기간별)
-- 창고별 재고
-- 매출 보고서
+### UI 구현 (남은 작업)
+- [ ] 창고 이동 목록/생성/상세 페이지
+- [ ] 보고서: 재고 수불부 (필터 + 테이블 + CSV 내보내기)
+- [ ] 보고서: 창고별 재고 (필터 + 테이블 + CSV 내보내기)
+- [ ] 보고서: 매출 보고서 (필터 + 테이블 + CSV 내보내기)
+- [ ] 대시보드 (재발주 알람 + 처리 대기 + 매입/매출 요약 + 온보딩 위젯)
 
-### 대시보드
-- 재발주 알람 (min_stock_qty 이하)
-- 온보딩 위젯 (기초 데이터 0건일 때)
-- 이번 달 매입/매출 요약
+### 마무리
+- [x] `supabase db push` — 3개 RPC 마이그레이션 클라우드 적용 (execute_transfer, reports, dashboard)
+- [x] `supabase gen types typescript` — RPC 함수 타입 반영
+- [x] `(supabase.rpc as any)` 타입 단언 제거 + nullable→undefined 수정
+- [x] TypeScript 타입 체크 통과
+- [ ] ComingSoon 제거 — 창고이동/보고서 페이지 실제 UI로 교체
 
 ---
 
