@@ -1262,6 +1262,14 @@ export type Database = {
         }
         Returns: string
       }
+      execute_shipment: {
+        Args: {
+          p_company_id: string
+          p_created_by: string
+          p_sales_order_id: string
+        }
+        Returns: Json
+      }
       get_my_company_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
       update_bom_lines: {

@@ -66,12 +66,26 @@
 
 ---
 
-## P1.5 — 슬라이스 4: 영업/출고
+## P1.5 — 슬라이스 4: 영업/출고 ✅
 
-### 판매 주문 CRUD
-- sales_orders 생성/목록/상세
-- 출고 처리 → consume_inventory
-- 매출 원가 자동 계산 (FIFO)
+### 백엔드 인프라 ✅
+- [x] DB 스키마 — sales_orders + sales_order_lines 테이블, RLS 정책
+- [x] execute_shipment RPC — FIFO 로트 소비 + 매출원가 자동 계산 + 상태 갱신
+- [x] API Route — POST /api/sales-orders/[id]/ship (출고 실행)
+- [x] Zod 스키마 — salesOrderCreateSchema, salesOrderUpdateSchema, salesOrderLineSchema
+- [x] TanStack Query 훅 — useSalesOrders, useSalesOrder, useCreateSalesOrder, useUpdateSalesOrderStatus, useExecuteShipment
+- [x] Query 키 팩토리 — salesOrders (all/list/detail)
+
+### UI 구현 ✅
+- [x] 판매주문 목록 페이지 — 검색 + 상태 필터(draft/confirmed/shipped/cancelled) + 페이지네이션
+- [x] 판매주문 생성 페이지 — 거래처(고객) 선택, 라인 인라인 입력(품목/창고/수량/단가), 합계 자동계산
+- [x] 판매주문 상세 페이지 — 라인 목록, 상태 변경(확정/취소), 출고 실행 버튼, 매출원가/이익 표시
+
+### 마무리 ✅
+- [x] `supabase db push` — execute_shipment 마이그레이션 클라우드 적용
+- [x] `supabase gen types typescript` — RPC 함수 타입 반영
+- [x] Next.js 빌드 확인 통과
+- [ ] ComingSoon 제거 — sales-orders/page.tsx 실제 UI로 교체
 
 ---
 

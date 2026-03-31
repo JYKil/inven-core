@@ -57,6 +57,11 @@ export const queryKeys = {
     materialAvailability: (bomHeaderId: string, warehouseId: string, quantity: number) =>
       [...queryKeys.assemblyOrders.all, 'materialAvailability', bomHeaderId, warehouseId, quantity] as const,
   },
+  salesOrders: {
+    all: ['salesOrders'] as const,
+    list: (filters: ListFilters = {}) => [...queryKeys.salesOrders.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.salesOrders.all, 'detail', id] as const,
+  },
   dashboard: {
     all: ['dashboard'] as const,
     summary: () => [...queryKeys.dashboard.all, 'summary'] as const,
