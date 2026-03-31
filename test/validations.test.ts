@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { partnerCreateSchema } from '@/lib/validations/partner'
 import { itemCreateSchema } from '@/lib/validations/item'
 import { warehouseCreateSchema } from '@/lib/validations/warehouse'
-import { poCreateSchema, poLineSchema } from '@/lib/validations/purchase-order'
-import { salesOrderCreateSchema, salesOrderLineSchema } from '@/lib/validations/sales-order'
+import { poCreateSchema, poLineSchema, poUpdateSchema } from '@/lib/validations/purchase-order'
+import { salesOrderCreateSchema, salesOrderLineSchema, salesOrderUpdateSchema } from '@/lib/validations/sales-order'
 import { goodsReceiptCreateSchema } from '@/lib/validations/goods-receipt'
 import { assemblyOrderCreateSchema } from '@/lib/validations/assembly'
 import { bomHeaderCreateSchema, bomLineSchema } from '@/lib/validations/bom'
@@ -370,5 +370,44 @@ describe('warehouseTransferCreateSchema', () => {
       ],
     })
     expect(result.success).toBe(true)
+  })
+})
+
+// --- 취소(cancel) 상태 스키마 검증 ---
+describe('poUpdateSchema — 취소 상태', () => {
+  it('status: cancelled 통과', () => {
+    const result = poUpdateSchema.safeParse({ status: 'cancelled' })
+    expect(result.success).toBe(true)
+  })
+
+  it('status: shipped는 유효하지 않은 enum 값이므로 실패', () => {
+    const result = poUpdateSchema.safeParse({ status: 'shipped' })
+    expect(result.success).toBe(false)
+  })
+
+  it('모든 유효 상태값 통과', () => {
+    const validStatuses = ['draft', 'confirmed', 'partially_received', 'received', 'cancelled']
+    for (const status of validStatuses) {
+      expect(poUpdateSchema.safeParse({ status }).success).toBe(true)
+    }
+  })
+})
+
+describe('salesOrderUpdateSchema — 취소 상태', () => {
+  it('status: cancelled 통과', () => {
+    const result = salesOrderUpdateSchema.safeParse({ status: 'cancelled' })
+    expect(result.success).toBe(true)
+  })
+
+  it('status: partially_received는 유효하지 않은 enum 값이므로 실패', () => {
+    const result = salesOrderUpdateSchema.safeParse({ status: 'partially_received' })
+    expect(result.success).toBe(false)
+  })
+
+  it('모든 유효 상태값 통과', () => {
+    const validStatuses = ['draft', 'confirmed', 'shipped', 'cancelled']
+    for (const status of validStatuses) {
+      expect(salesOrderUpdateSchema.safeParse({ status }).success).toBe(true)
+    }
   })
 })

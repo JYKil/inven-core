@@ -193,6 +193,16 @@
   - [x] goodsReceipts.detail 쿼리 키 + useGoodsReceipt 훅 추가
 - [x] 보고서 RPC 수정 (cancel 타입 집계)
 
+### E2E 테스트 보강 ✅
+- [x] 판매 플로우 (SO 생성 → 확정 → 출고 → 목록) — sales-flow.spec.ts
+- [x] 조립 플로우 (BOM → 재료 가용성 → 실행 → 상세) — assembly-flow.spec.ts
+- [x] 창고 이동 플로우 (생성 → 상세 → 목록) — transfer-flow.spec.ts
+- [x] 취소 플로우 (출고 취소 + 재출고 가능 + 입고 상세) — cancel-flow.spec.ts
+- [x] 보고서 스모크 (수불부/창고재고/매출 + cancel 라벨) — reports.spec.ts
+- [x] 대시보드 위젯 렌더링 — dashboard.spec.ts
+- [x] 설정 페이지 — settings.spec.ts
+- 총 11파일, 31개 E2E 시나리오 (기존 7 + 신규 24)
+
 ---
 
 ## 배포 전 체크리스트
