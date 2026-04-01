@@ -129,8 +129,8 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
             <dd><StatusBadge status={so.status} /></dd>
           </div>
           <div>
-            <dt className="text-muted-foreground text-xs mb-1">거래처</dt>
-            <dd className="font-medium">{(so as any).partner?.name ?? '-'}</dd>
+            <dt className="text-muted-foreground text-xs mb-1">고객</dt>
+            <dd className="font-medium">{(so as any).customer?.name ?? '-'}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground text-xs mb-1">주문일</dt>

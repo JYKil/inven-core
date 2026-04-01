@@ -6,27 +6,25 @@ import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
 
-type Partner = Database['public']['Tables']['partners']['Row']
-type PartnerInsert = Database['public']['Tables']['partners']['Insert']
-type PartnerUpdate = Database['public']['Tables']['partners']['Update']
+type Customer = Database['public']['Tables']['customers']['Row']
+type CustomerInsert = Database['public']['Tables']['customers']['Insert']
+type CustomerUpdate = Database['public']['Tables']['customers']['Update']
 
-export type PartnerFilters = ListFilters & {
-  partnerType?: string
+export type CustomerFilters = ListFilters & {
   includeInactive?: boolean
 }
 
-export function usePartners(filters: PartnerFilters = {}) {
+export function useCustomers(filters: CustomerFilters = {}) {
   const supabase = createClient()
   return useQuery({
-    queryKey: queryKeys.partners.list(filters),
+    queryKey: queryKeys.customers.list(filters),
     queryFn: async () => {
       let query = supabase
-        .from('partners')
+        .from('customers')
         .select('*', { count: 'exact' })
         .order('name')
 
       if (!filters.includeInactive) query = query.eq('is_active', true)
-      if (filters.partnerType) query = query.eq('partner_type', filters.partnerType)
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
         query = query.or(`name.ilike.%${s}%,business_number.ilike.%${s}%`)
@@ -39,35 +37,34 @@ export function usePartners(filters: PartnerFilters = {}) {
 
       const { data, error, count } = await query
       if (error) throw error
-      return { data: data as Partner[], count: count ?? 0, page, pageSize }
+      return { data: data as Customer[], count: count ?? 0, page, pageSize }
     },
     placeholderData: keepPreviousData,
   })
 }
 
-export function usePartner(id: string) {
+export function useCustomer(id: string) {
   const supabase = createClient()
   return useQuery({
-    queryKey: queryKeys.partners.detail(id),
+    queryKey: queryKeys.customers.detail(id),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('partners')
+        .from('customers')
         .select('*')
         .eq('id', id)
         .single()
       if (error) throw error
-      return data as Partner
+      return data as Customer
     },
     enabled: !!id,
   })
 }
 
-export function useCreatePartner() {
+export function useCreateCustomer() {
   const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (input: Omit<PartnerInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
-      // company_id는 RLS가 처리 — JWT의 custom claim에서 자동 주입되지 않으므로 profile에서 조회
+    mutationFn: async (input: Omit<CustomerInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
       const { data: profile } = await supabase
@@ -78,54 +75,53 @@ export function useCreatePartner() {
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
       const { data, error } = await supabase
-        .from('partners')
+        .from('customers')
         .insert({ ...input, company_id: profile.company_id })
         .select()
         .single()
       if (error) throw error
-      return data as Partner
+      return data as Customer
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.partners.all })
+      qc.invalidateQueries({ queryKey: queryKeys.customers.all })
     },
   })
 }
 
-export function useUpdatePartner() {
+export function useUpdateCustomer() {
   const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, ...input }: PartnerUpdate & { id: string }) => {
+    mutationFn: async ({ id, ...input }: CustomerUpdate & { id: string }) => {
       const { data, error } = await supabase
-        .from('partners')
+        .from('customers')
         .update(input)
         .eq('id', id)
         .select()
         .single()
       if (error) throw error
-      return data as Partner
+      return data as Customer
     },
     onSuccess: (data) => {
-      qc.invalidateQueries({ queryKey: queryKeys.partners.all })
-      qc.setQueryData(queryKeys.partners.detail(data.id), data)
+      qc.invalidateQueries({ queryKey: queryKeys.customers.all })
+      qc.setQueryData(queryKeys.customers.detail(data.id), data)
     },
   })
 }
 
-export function useDeletePartner() {
+export function useDeleteCustomer() {
   const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      // 소프트 삭제
       const { error } = await supabase
-        .from('partners')
+        .from('customers')
         .update({ is_active: false })
         .eq('id', id)
       if (error) throw error
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.partners.all })
+      qc.invalidateQueries({ queryKey: queryKeys.customers.all })
     },
   })
 }

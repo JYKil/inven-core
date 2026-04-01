@@ -68,7 +68,8 @@ export function useDashboardSummary() {
           order_count: number
         }
         onboarding: {
-          partner_count: number
+          vendor_count: number
+          customer_count: number
           warehouse_count: number
           item_count: number
         }

@@ -4,22 +4,22 @@ import { queryKeys } from '@/lib/queries/keys'
 // 모든 도메인의 쿼리 키가 올바른 구조를 가지는지 검증
 
 describe('queryKeys', () => {
-  describe('partners', () => {
+  describe('vendors', () => {
     it('all 키는 ["partners"]', () => {
-      expect(queryKeys.partners.all).toEqual(['partners'])
+      expect(queryKeys.vendors.all).toEqual(['vendors'])
     })
 
     it('list 키는 all + "list" + filters', () => {
       const filters = { search: '테스트', page: 2 }
-      expect(queryKeys.partners.list(filters)).toEqual(['partners', 'list', filters])
+      expect(queryKeys.vendors.list(filters)).toEqual(['vendors', 'list', filters])
     })
 
     it('list 기본값은 빈 필터', () => {
-      expect(queryKeys.partners.list()).toEqual(['partners', 'list', {}])
+      expect(queryKeys.vendors.list()).toEqual(['vendors', 'list', {}])
     })
 
     it('detail 키는 all + "detail" + id', () => {
-      expect(queryKeys.partners.detail('abc-123')).toEqual(['partners', 'detail', 'abc-123'])
+      expect(queryKeys.vendors.detail('abc-123')).toEqual(['vendors', 'detail', 'abc-123'])
     })
   })
 
@@ -85,12 +85,12 @@ describe('queryKeys', () => {
 
   describe('키 격리 — 다른 도메인 키가 서로 겹치지 않음', () => {
     it('partners.all과 items.all 프리픽스가 다름', () => {
-      expect(queryKeys.partners.all[0]).not.toBe(queryKeys.items.all[0])
+      expect(queryKeys.vendors.all[0]).not.toBe(queryKeys.items.all[0])
     })
 
     it('같은 필터로 다른 도메인 list를 호출해도 키가 다름', () => {
       const filters = { search: 'test' }
-      const pKey = queryKeys.partners.list(filters)
+      const pKey = queryKeys.vendors.list(filters)
       const iKey = queryKeys.items.list(filters)
       expect(pKey).not.toEqual(iKey)
     })

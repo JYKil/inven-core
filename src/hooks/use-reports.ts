@@ -92,7 +92,7 @@ export function useWarehouseStockReport(warehouseId?: string, options?: { enable
 export function useSalesReport(filters: {
   startDate: string
   endDate: string
-  partnerId?: string
+  customerId?: string
   enabled?: boolean
 }) {
   const supabase = createClient()
@@ -100,7 +100,7 @@ export function useSalesReport(filters: {
     queryKey: queryKeys.reports.sales({
       startDate: filters.startDate,
       endDate: filters.endDate,
-      partnerId: filters.partnerId,
+      customerId: filters.customerId,
     }),
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -116,7 +116,7 @@ export function useSalesReport(filters: {
         p_company_id: profile.company_id,
         p_start_date: filters.startDate,
         p_end_date: filters.endDate,
-        p_partner_id: filters.partnerId || undefined,
+        p_customer_id: filters.customerId || undefined,
       })
       if (error) throw error
       return data as {
@@ -128,7 +128,7 @@ export function useSalesReport(filters: {
         profit_margin: number
         lines: Array<{
           sales_order_id: string; order_number: string; order_date: string
-          partner_name: string; item_code: string; item_name: string; unit: string
+          customer_name: string; item_code: string; item_name: string; unit: string
           quantity: number; unit_price: number; line_amount: number
           cost_of_goods: number; gross_profit: number
         }>

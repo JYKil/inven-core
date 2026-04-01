@@ -17,7 +17,7 @@ import { EmptyState } from '@/components/common/empty-state'
 import { formatAmount, formatQty, formatPercent, formatDate } from '@/lib/format'
 import { downloadCsv } from '@/lib/csv'
 import { useSalesReport } from '@/hooks/use-reports'
-import { usePartners } from '@/hooks/use-partners'
+import { useCustomers } from '@/hooks/use-customers'
 
 function getDefaultDates() {
   const now = new Date()
@@ -30,25 +30,23 @@ export default function SalesReportContent() {
   const defaults = getDefaultDates()
   const [startDate, setStartDate] = useState(defaults.start)
   const [endDate, setEndDate] = useState(defaults.end)
-  const [partnerId, setPartnerId] = useState<string>()
+  const [customerId, setCustomerId] = useState<string>()
 
-  // 고객 거래처 (customer + both)
-  const { data: custData } = usePartners({ partnerType: 'customer', pageSize: 100 })
-  const { data: bothData } = usePartners({ partnerType: 'both', pageSize: 100 })
-  const partners = [...(custData?.data ?? []), ...(bothData?.data ?? [])]
-  const partnerMap = useMemo(() => {
-    const map: Record<string, string> = { all: '전체 거래처' }
-    partners.forEach((p) => { map[p.id] = p.name })
+  const { data: custData } = useCustomers({ pageSize: 100 })
+  const customers = custData?.data ?? []
+  const customerMap = useMemo(() => {
+    const map: Record<string, string> = { all: '전체 고객' }
+    customers.forEach((c) => { map[c.id] = c.name })
     return map
-  }, [partners])
+  }, [customers])
 
-  const { data, isLoading } = useSalesReport({ startDate, endDate, partnerId })
+  const { data, isLoading } = useSalesReport({ startDate, endDate, customerId })
 
   const handleExportCsv = () => {
     if (!data) return
-    const headers = ['주문번호', '주문일', '거래처', '품목코드', '품목명', '수량', '단가', '매출액', '원가', '이익']
+    const headers = ['주문번호', '주문일', '고객', '품목코드', '품목명', '수량', '단가', '매출액', '원가', '이익']
     const rows = data.lines.map((l) => [
-      l.order_number, l.order_date, l.partner_name,
+      l.order_number, l.order_date, l.customer_name,
       l.item_code, l.item_name, l.quantity, l.unit_price,
       l.line_amount, l.cost_of_goods, l.gross_profit,
     ])
@@ -80,19 +78,19 @@ export default function SalesReportContent() {
           <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-40 h-9" />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">거래처</Label>
+          <Label className="text-xs">고객</Label>
           <Select
-            value={partnerId ?? 'all'}
-            onValueChange={(v) => setPartnerId(!v || v === 'all' ? undefined : v)}
-            items={partnerMap}
+            value={customerId ?? 'all'}
+            onValueChange={(v) => setCustomerId(!v || v === 'all' ? undefined : v)}
+            items={customerMap}
           >
             <SelectTrigger className="w-[200px] h-9">
-              <SelectValue placeholder="전체 거래처" />
+              <SelectValue placeholder="전체 고객" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">전체 거래처</SelectItem>
-              {partners.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              <SelectItem value="all">전체 고객</SelectItem>
+              {customers.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -132,7 +130,7 @@ export default function SalesReportContent() {
             <TableRow className="bg-background/50">
               <TableHead>주문번호</TableHead>
               <TableHead>주문일</TableHead>
-              <TableHead>거래처</TableHead>
+              <TableHead>고객</TableHead>
               <TableHead>품목</TableHead>
               <TableHead className="text-right">수량</TableHead>
               <TableHead className="text-right">매출액</TableHead>
@@ -161,7 +159,7 @@ export default function SalesReportContent() {
                   <TableRow key={idx}>
                     <TableCell className="font-data">{l.order_number}</TableCell>
                     <TableCell className="font-data">{formatDate(l.order_date)}</TableCell>
-                    <TableCell>{l.partner_name}</TableCell>
+                    <TableCell>{l.customer_name}</TableCell>
                     <TableCell>{l.item_code} — {l.item_name}</TableCell>
                     <TableCell className="font-data text-right">{formatQty(l.quantity, l.unit)}</TableCell>
                     <TableCell className="font-data text-right">{formatAmount(l.line_amount)}</TableCell>

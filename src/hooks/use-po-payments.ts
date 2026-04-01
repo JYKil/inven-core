@@ -16,7 +16,7 @@ export function usePoPayments(filters: ListFilters = {}) {
         .from('po_payments')
         .select(`
           *,
-          purchase_order:purchase_orders!po_payments_po_id_fkey(id, po_number, total_amount, partner:partners!purchase_orders_partner_id_fkey(name))
+          purchase_order:purchase_orders!po_payments_po_id_fkey(id, po_number, total_amount, vendor:vendors!purchase_orders_vendor_id_fkey(name))
         `, { count: 'exact' })
         .order('payment_date', { ascending: false })
 

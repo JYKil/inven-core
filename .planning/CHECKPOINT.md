@@ -1,8 +1,8 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 디자인 리뷰 2차 완료 (5건 수정, 3건 deferred)
-- **마지막 업데이트**: 2026-03-31
+- **단계**: 기준정보(Reference Codes) 구현 완료
+- **마지막 업데이트**: 2026-04-01
 - **디자인 점수**: B+, AI 슬롭: A
 
 ## 완료된 작업
@@ -180,8 +180,36 @@
     - [x] 이익 행 추가 (매출 - 매출원가)
     - [x] Base UI Select hydration mismatch — Portal 마운트 후 렌더링으로 해결
 
+28. **기준정보(Reference Codes) /plan-eng-review 완료** (2026-04-01)
+    - 디자인 문서 기반 아키텍처 리뷰 6건 이슈 해결
+    - DDL 수정 5건: 트레일링 콤마, NOT NULL, RLS 헬퍼, super_admin bypass, moddatetime 스키마
+    - sort_order: 앱 레벨 MAX+1 유지
+    - 타입 목록/목록 조회: is_active=true 필터
+    - code_type: Zod trim() 적용
+    - 테스트 범위: Zod ~8건 + E2E ~4건
+
+29. **기준정보(Reference Codes) 구현** → 완료 (2026-04-01)
+    - [x] DB 마이그레이션 — reference_codes 테이블 (RLS, moddatetime, partial UNIQUE)
+    - [x] supabase db push + 타입 재생성
+    - [x] Zod 스키마 (create/update, trim 적용)
+    - [x] Query 키 + TanStack Query 훅 5개 (목록/타입목록/생성/수정/삭제)
+    - [x] ReferenceCodeDialog 컴포넌트 (Combobox 타입 선택, code_data1~9)
+    - [x] 페이지 UI (목록/필터/검색/페이지네이션, sticky 컬럼, 수정/삭제 액션)
+    - [x] 사이드바 메뉴 추가 (기초 마스터 > 기준정보)
+    - [x] Zod 단위 테스트 11건 (총 161개 통과)
+    - [x] TypeScript + Next.js 빌드 통과
+
+30. **기준정보 마무리** → 완료 (2026-04-01)
+    - [x] supabase db push — RPC 마이그레이션(get_reference_code_types, create_reference_code) 적용
+    - [x] supabase gen types typescript — src/types/database.ts 갱신
+    - [x] `as any` 타입 단언 제거 (use-reference-codes.ts 2곳)
+    - [x] null→undefined 수정 (optional RPC 파라미터)
+    - [x] TypeScript + Next.js 빌드 통과
+    - [x] E2E 스모크 테스트 4건 (reference-codes.spec.ts)
+    - [x] 단위 테스트 161개 통과
+
 ### 남은 작업
-1. **Vercel 재배포** — 성능 최적화 + 롤백 기능 + QA 수정 + Quick Win + 디자인 마무리 + INFORMATIONAL + 2차 QA + 대시보드 테이블 + Select 수정 반영
+1. **Vercel 재배포** — 기준정보 구현 완료
 2. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항
@@ -217,6 +245,7 @@
 - base-ui Button: render prop 전달 시 자동으로 nativeButton=false (button.tsx 래퍼에서 처리)
 - next-themes: `<html>` 태그에 suppressHydrationWarning 필수 (SSR/클라이언트 class 불일치 방지)
 - 보고서 테이블: overflow-x-auto 사용 (overflow-hidden 금지, 모바일 가로 스크롤 보장)
+- 기준정보: 범용 코드 테이블(code_type 구분), 다이얼로그 CRUD, sort_order 앱 레벨 MAX+1, 타입 자유 입력(Combobox)
 
 ## 블로커 / 미결 사항
 - ~~Supabase 프로젝트 생성 필요~~ → 완료 (클라우드, Tokyo 리전)

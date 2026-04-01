@@ -22,22 +22,20 @@ import { PageHeader } from '@/components/common/page-header'
 import { poCreateSchema, type PoCreate } from '@/lib/validations/purchase-order'
 import { formatAmount } from '@/lib/format'
 import { useCreatePurchaseOrder } from '@/hooks/use-purchase-orders'
-import { usePartners } from '@/hooks/use-partners'
+import { useVendors } from '@/hooks/use-vendors'
 import { useItemSearch } from '@/hooks/use-items'
 
 export default function NewPurchaseOrderPage() {
   const router = useRouter()
   const createPO = useCreatePurchaseOrder()
-  const { data: partnersData } = usePartners({ partnerType: 'supplier', pageSize: 100 })
-  // both 유형도 포함
-  const { data: bothData } = usePartners({ partnerType: 'both', pageSize: 100 })
-  const suppliers = [...(partnersData?.data ?? []), ...(bothData?.data ?? [])]
+  const { data: vendorsData } = useVendors({ pageSize: 100 })
+  const vendors = vendorsData?.data ?? []
 
-  const supplierItemsMap = useMemo(() => {
+  const vendorItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    suppliers.forEach((p) => { map[p.id] = p.name })
+    vendors.forEach((v) => { map[v.id] = v.name })
     return map
-  }, [suppliers])
+  }, [vendors])
 
   const [itemSearch, setItemSearch] = useState('')
   const { data: itemResults } = useItemSearch(itemSearch)
@@ -46,7 +44,7 @@ export default function NewPurchaseOrderPage() {
     resolver: zodResolver(poCreateSchema),
     defaultValues: {
       po_number: '',
-      partner_id: '',
+      vendor_id: '',
       order_date: new Date().toISOString().split('T')[0],
       expected_date: '',
       notes: '',
@@ -107,19 +105,19 @@ export default function NewPurchaseOrderPage() {
               <div className="space-y-1.5">
                 <Label>공급업체 *</Label>
                 <Select
-                  value={form.watch('partner_id') || undefined}
-                  onValueChange={(v) => v && form.setValue('partner_id', v)}
-                  items={supplierItemsMap}
+                  value={form.watch('vendor_id') || undefined}
+                  onValueChange={(v) => v && form.setValue('vendor_id', v)}
+                  items={vendorItemsMap}
                 >
                   <SelectTrigger><SelectValue placeholder="공급업체 선택" /></SelectTrigger>
                   <SelectContent>
-                    {suppliers.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    {vendors.map((v) => (
+                      <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {form.formState.errors.partner_id && (
-                  <p className="text-xs text-destructive">{form.formState.errors.partner_id.message}</p>
+                {form.formState.errors.vendor_id && (
+                  <p className="text-xs text-destructive">{form.formState.errors.vendor_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">

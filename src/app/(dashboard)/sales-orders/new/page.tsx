@@ -22,21 +22,19 @@ import { PageHeader } from '@/components/common/page-header'
 import { salesOrderCreateSchema, type SalesOrderCreate } from '@/lib/validations/sales-order'
 import { formatAmount } from '@/lib/format'
 import { useCreateSalesOrder } from '@/hooks/use-sales-orders'
-import { usePartners } from '@/hooks/use-partners'
+import { useCustomers } from '@/hooks/use-customers'
 import { useItemSearch } from '@/hooks/use-items'
 import { useWarehouses } from '@/hooks/use-warehouses'
 
 export default function NewSalesOrderPage() {
   const router = useRouter()
   const createSO = useCreateSalesOrder()
-  // 고객 거래처 조회 (customer + both)
-  const { data: customersData } = usePartners({ partnerType: 'customer', pageSize: 100 })
-  const { data: bothData } = usePartners({ partnerType: 'both', pageSize: 100 })
-  const customers = [...(customersData?.data ?? []), ...(bothData?.data ?? [])]
+  const { data: customersData } = useCustomers({ pageSize: 100 })
+  const customers = customersData?.data ?? []
 
   const customerItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    customers.forEach((p) => { map[p.id] = p.name })
+    customers.forEach((c) => { map[c.id] = c.name })
     return map
   }, [customers])
 
@@ -55,7 +53,7 @@ export default function NewSalesOrderPage() {
     resolver: zodResolver(salesOrderCreateSchema),
     defaultValues: {
       order_number: '',
-      partner_id: '',
+      customer_id: '',
       order_date: new Date().toISOString().split('T')[0],
       notes: '',
       lines: [],
@@ -114,21 +112,21 @@ export default function NewSalesOrderPage() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label>거래처 *</Label>
+                <Label>고객 *</Label>
                 <Select
-                  value={form.watch('partner_id') || undefined}
-                  onValueChange={(v) => v && form.setValue('partner_id', v)}
+                  value={form.watch('customer_id') || undefined}
+                  onValueChange={(v) => v && form.setValue('customer_id', v)}
                   items={customerItemsMap}
                 >
-                  <SelectTrigger><SelectValue placeholder="거래처 선택" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="고객 선택" /></SelectTrigger>
                   <SelectContent>
-                    {customers.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    {customers.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {form.formState.errors.partner_id && (
-                  <p className="text-xs text-destructive">{form.formState.errors.partner_id.message}</p>
+                {form.formState.errors.customer_id && (
+                  <p className="text-xs text-destructive">{form.formState.errors.customer_id.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">

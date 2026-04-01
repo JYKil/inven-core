@@ -71,7 +71,7 @@ export default function PoPaymentsContent() {
                     {payment.purchase_order?.po_number ?? '-'}
                   </TableCell>
                   <TableCell>
-                    {payment.purchase_order?.partner?.name ?? '-'}
+                    {payment.purchase_order?.vendor?.name ?? '-'}
                   </TableCell>
                   <TableCell className="font-data">{formatDate(payment.payment_date)}</TableCell>
                   <TableCell className="font-data text-right">{formatAmount(payment.amount)}</TableCell>

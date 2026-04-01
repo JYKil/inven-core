@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { partnerCreateSchema } from '@/lib/validations/partner'
+import { vendorCreateSchema } from '@/lib/validations/vendor'
+import { customerCreateSchema } from '@/lib/validations/customer'
 import { itemCreateSchema } from '@/lib/validations/item'
 import { warehouseCreateSchema } from '@/lib/validations/warehouse'
 import { poCreateSchema, poLineSchema, poUpdateSchema } from '@/lib/validations/purchase-order'
@@ -9,55 +10,93 @@ import { assemblyOrderCreateSchema } from '@/lib/validations/assembly'
 import { bomHeaderCreateSchema, bomLineSchema } from '@/lib/validations/bom'
 import { poPaymentCreateSchema } from '@/lib/validations/po-payment'
 import { warehouseTransferCreateSchema } from '@/lib/validations/warehouse-transfer'
+import { referenceCodeCreateSchema, referenceCodeUpdateSchema } from '@/lib/validations/reference-code'
 
 const uuid = '550e8400-e29b-41d4-a716-446655440000'
 const uuid2 = '660e8400-e29b-41d4-a716-446655440000'
 
-// --- 거래처 ---
-describe('partnerCreateSchema', () => {
+// --- 업체 ---
+describe('vendorCreateSchema', () => {
   it('유효한 데이터 통과', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '테스트 업체',
-      partner_type: 'supplier',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor A',
+      payment_currency: 'KRW',
     })
     expect(result.success).toBe(true)
   })
 
   it('이름 미입력 시 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '',
-      partner_type: 'supplier',
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('잘못된 partner_type 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'invalid',
-    })
+    const result = vendorCreateSchema.safeParse({ name: '' })
     expect(result.success).toBe(false)
   })
 
   it('빈 이메일은 undefined로 변환', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'customer',
-      email: '',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor B',
+      payment_currency: 'KRW',
+      contact_email: '',
     })
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.email).toBeUndefined()
+      expect(result.data.contact_email).toBeUndefined()
     }
   })
 
   it('잘못된 이메일 형식 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'both',
-      email: 'not-email',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor C',
+      payment_currency: 'KRW',
+      contact_email: 'not-email',
     })
     expect(result.success).toBe(false)
+  })
+
+  it('은행/계좌 필드 포함 가능', () => {
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor D',
+      bank_name: 'Kookmin',
+      account_number: '12345',
+      payment_currency: 'USD',
+    })
+    expect(result.success).toBe(true)
+  })
+})
+
+// --- 고객 ---
+describe('customerCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = customerCreateSchema.safeParse({
+      name: 'Amazon',
+      receipt_currency: 'USD',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('이름 미입력 시 실패', () => {
+    const result = customerCreateSchema.safeParse({ name: '' })
+    expect(result.success).toBe(false)
+  })
+
+  it('입금통화 필수', () => {
+    const result = customerCreateSchema.safeParse({ name: 'Customer' })
+    expect(result.success).toBe(false)
+  })
+
+  it('입금통화 빈 문자열 실패', () => {
+    const result = customerCreateSchema.safeParse({ name: 'Customer', receipt_currency: '' })
+    expect(result.success).toBe(false)
+  })
+
+  it('빈 이메일은 undefined로 변환', () => {
+    const result = customerCreateSchema.safeParse({
+      name: 'Walmart',
+      receipt_currency: 'USD',
+      contact_email: '',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.contact_email).toBeUndefined()
+    }
   })
 })
 
@@ -131,7 +170,7 @@ describe('warehouseCreateSchema', () => {
 describe('poCreateSchema', () => {
   const validPo = {
     po_number: 'PO-001',
-    partner_id: uuid,
+    vendor_id: uuid,
     order_date: '2026-03-31',
     lines: [{ item_id: uuid, ordered_qty: 10, unit_price: 1000 }],
   }
@@ -145,8 +184,8 @@ describe('poCreateSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('partner_id가 UUID가 아니면 실패', () => {
-    const result = poCreateSchema.safeParse({ ...validPo, partner_id: 'not-uuid' })
+  it('vendor_id가 UUID가 아니면 실패', () => {
+    const result = poCreateSchema.safeParse({ ...validPo, vendor_id: 'not-uuid' })
     expect(result.success).toBe(false)
   })
 })
@@ -167,7 +206,7 @@ describe('poLineSchema', () => {
 describe('salesOrderCreateSchema', () => {
   const validSo = {
     order_number: 'SO-001',
-    partner_id: uuid,
+    customer_id: uuid,
     order_date: '2026-03-31',
     lines: [{ item_id: uuid, warehouse_id: uuid2, quantity: 5, unit_price: 2000 }],
   }
@@ -408,6 +447,97 @@ describe('salesOrderUpdateSchema — 취소 상태', () => {
     const validStatuses = ['draft', 'confirmed', 'shipped', 'cancelled']
     for (const status of validStatuses) {
       expect(salesOrderUpdateSchema.safeParse({ status }).success).toBe(true)
+    }
+  })
+})
+
+// --- 기준정보 ---
+describe('referenceCodeCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: 'DHL Express',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('code_type 미입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '',
+      code_data1: 'DHL',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_data1 미입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: '',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_type 공백만 입력 시 trim 후 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '   ',
+      code_data1: 'DHL',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_data1 공백만 입력 시 trim 후 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: '   ',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('보조 데이터 2~9 선택 입력 통과', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: 'Shipping Package',
+      code_data1: 'Box A',
+      code_data2: '30x20x15',
+      code_data3: '1.5kg',
+      sort_order: 1,
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.code_data2).toBe('30x20x15')
+      expect(result.data.code_data4).toBeUndefined()
+    }
+  })
+
+  it('sort_order 소수 입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: 'DHL',
+      sort_order: 1.5,
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_type trim 동작 확인', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '  운송수단  ',
+      code_data1: '  DHL Express  ',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.code_type).toBe('운송수단')
+      expect(result.data.code_data1).toBe('DHL Express')
+    }
+  })
+})
+
+describe('referenceCodeUpdateSchema', () => {
+  it('code_type 필드가 없어야 함', () => {
+    const result = referenceCodeUpdateSchema.safeParse({
+      code_data1: '수정된 데이터',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect('code_type' in result.data).toBe(false)
     }
   })
 })
