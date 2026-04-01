@@ -20,6 +20,7 @@ describe('vendorCreateSchema', () => {
   it('유효한 데이터 통과', () => {
     const result = vendorCreateSchema.safeParse({
       name: 'Vendor A',
+      payment_currency: 'KRW',
     })
     expect(result.success).toBe(true)
   })
@@ -32,6 +33,7 @@ describe('vendorCreateSchema', () => {
   it('빈 이메일은 undefined로 변환', () => {
     const result = vendorCreateSchema.safeParse({
       name: 'Vendor B',
+      payment_currency: 'KRW',
       contact_email: '',
     })
     expect(result.success).toBe(true)
@@ -43,6 +45,7 @@ describe('vendorCreateSchema', () => {
   it('잘못된 이메일 형식 실패', () => {
     const result = vendorCreateSchema.safeParse({
       name: 'Vendor C',
+      payment_currency: 'KRW',
       contact_email: 'not-email',
     })
     expect(result.success).toBe(false)
@@ -64,6 +67,7 @@ describe('customerCreateSchema', () => {
   it('유효한 데이터 통과', () => {
     const result = customerCreateSchema.safeParse({
       name: 'Amazon',
+      receipt_currency: 'USD',
     })
     expect(result.success).toBe(true)
   })
@@ -73,17 +77,20 @@ describe('customerCreateSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('기본 입금통화 USD', () => {
+  it('입금통화 필수', () => {
     const result = customerCreateSchema.safeParse({ name: 'Customer' })
-    expect(result.success).toBe(true)
-    if (result.success) {
-      expect(result.data.receipt_currency).toBe('USD')
-    }
+    expect(result.success).toBe(false)
+  })
+
+  it('입금통화 빈 문자열 실패', () => {
+    const result = customerCreateSchema.safeParse({ name: 'Customer', receipt_currency: '' })
+    expect(result.success).toBe(false)
   })
 
   it('빈 이메일은 undefined로 변환', () => {
     const result = customerCreateSchema.safeParse({
       name: 'Walmart',
+      receipt_currency: 'USD',
       contact_email: '',
     })
     expect(result.success).toBe(true)
