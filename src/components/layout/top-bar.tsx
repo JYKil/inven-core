@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import {
   Popover,
@@ -26,6 +26,9 @@ export function TopBar() {
   const supabase = createClient()
 
   const { theme, setTheme } = useTheme()
+  const { state, isMobile } = useSidebar()
+  // 데스크톱에서 사이드바 펼쳐져 있으면 토글 버튼 숨김 (접기는 사이드바 헤더에서)
+  const showTrigger = isMobile || state === 'collapsed'
 
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me'],
@@ -56,8 +59,12 @@ export function TopBar() {
 
   return (
     <header className="h-12 flex items-center gap-2 border-b border-border bg-card px-4 shrink-0">
-      <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
-      <Separator orientation="vertical" className="h-4" />
+      {showTrigger && (
+        <>
+          <SidebarTrigger className="-ml-1 min-h-[44px] min-w-[44px]" />
+          <Separator orientation="vertical" className="h-4" />
+        </>
+      )}
       <div className="flex-1" />
       <button
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
