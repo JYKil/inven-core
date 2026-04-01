@@ -132,7 +132,7 @@ export default function ReferenceCodesContent() {
 
       {/* 테이블 */}
       <div className="border border-border rounded-lg overflow-x-auto">
-        <Table className="table-fixed w-full">
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow className="bg-background/50">
               <TableHead className="w-[12%] whitespace-nowrap truncate">타입</TableHead>
