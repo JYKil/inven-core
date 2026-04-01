@@ -132,20 +132,20 @@ export default function ReferenceCodesContent() {
 
       {/* 테이블 */}
       <div className="border border-border rounded-lg overflow-x-auto">
-        <Table>
+        <Table className="table-fixed w-full">
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="sticky left-0 z-10 bg-background/95 whitespace-nowrap">타입</TableHead>
-              <TableHead className="sticky left-[100px] z-10 bg-background/95 whitespace-nowrap">데이터 1</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 2</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 3</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 4</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 5</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 6</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 7</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 8</TableHead>
-              <TableHead className="whitespace-nowrap">데이터 9</TableHead>
-              <TableHead className="w-[80px] whitespace-nowrap">액션</TableHead>
+              <TableHead className="whitespace-nowrap truncate">타입</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 1</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 2</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 3</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 4</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 5</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 6</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 7</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 8</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 9</TableHead>
+              <TableHead className="w-[70px] whitespace-nowrap">액션</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -176,20 +176,20 @@ export default function ReferenceCodesContent() {
                   onClick={() => handleEdit(row)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(row) }}
                 >
-                  <TableCell className="sticky left-0 z-10 bg-background/95 font-medium whitespace-nowrap">
+                  <TableCell className="font-medium truncate">
                     {row.code_type}
                   </TableCell>
-                  <TableCell className="sticky left-[100px] z-10 bg-background/95 whitespace-nowrap">
+                  <TableCell className="truncate">
                     {row.code_data1}
                   </TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data2 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data3 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data4 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data5 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data6 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data7 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data8 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary whitespace-nowrap">{row.code_data9 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data2 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data3 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data4 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data5 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data6 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data7 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data8 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate">{row.code_data9 || '-'}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     <div className="flex items-center gap-1">
                       <Button
