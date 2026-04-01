@@ -32,10 +32,9 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
   const startEdit = () => {
     if (!wh) return
     form.reset({
-      code: wh.code,
       name: wh.name,
-      location: wh.location ?? '',
-      phone: wh.phone ?? '',
+      address: wh.address ?? '',
+      contact: wh.contact ?? '',
       notes: wh.notes ?? '',
     })
     setEditing(true)
@@ -81,7 +80,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div>
-      <PageHeader title={editing ? '창고 수정' : `${wh.code} — ${wh.name}`}>
+      <PageHeader title={editing ? '창고 수정' : wh.name}>
         {!editing && (
           <>
             <Button variant="outline" size="sm" onClick={startEdit}>
@@ -98,25 +97,17 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
         <CardContent className="pt-6">
           {editing ? (
             <form onSubmit={onSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>창고코드 *</Label>
-                  <Input {...form.register('code')} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>창고명 *</Label>
-                  <Input {...form.register('name')} />
-                </div>
+              <div className="space-y-1.5">
+                <Label>창고명 *</Label>
+                <Input {...form.register('name')} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>위치</Label>
-                  <Input {...form.register('location')} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>연락처</Label>
-                  <Input {...form.register('phone')} />
-                </div>
+              <div className="space-y-1.5">
+                <Label>창고주소</Label>
+                <Input {...form.register('address')} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>연락처</Label>
+                <Input {...form.register('contact')} />
               </div>
               <div className="space-y-1.5">
                 <Label>비고</Label>
@@ -131,21 +122,17 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             </form>
           ) : (
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-              <div>
-                <dt className="text-muted-foreground text-xs mb-1">창고코드</dt>
-                <dd className="font-data font-medium">{wh.code}</dd>
-              </div>
-              <div>
+              <div className="col-span-2">
                 <dt className="text-muted-foreground text-xs mb-1">창고명</dt>
                 <dd className="font-medium">{wh.name}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground text-xs mb-1">위치</dt>
-                <dd>{wh.location || '-'}</dd>
+                <dt className="text-muted-foreground text-xs mb-1">창고주소</dt>
+                <dd>{wh.address || '-'}</dd>
               </div>
               <div>
                 <dt className="text-muted-foreground text-xs mb-1">연락처</dt>
-                <dd>{wh.phone || '-'}</dd>
+                <dd>{wh.contact || '-'}</dd>
               </div>
               <div className="col-span-2">
                 <dt className="text-muted-foreground text-xs mb-1">비고</dt>

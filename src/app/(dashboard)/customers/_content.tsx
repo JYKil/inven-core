@@ -77,6 +77,7 @@ export default function CustomersContent() {
                   key={customer.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`고객 ${customer.name} 상세보기`}
                   onClick={() => router.push(`/customers/${customer.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/customers/${customer.id}`) }}
                 >

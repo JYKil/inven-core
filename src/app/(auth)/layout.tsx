@@ -9,10 +9,10 @@ export default function AuthLayout({
       <div className="w-full max-w-[400px]">
         {/* 로고 영역 */}
         <div className="text-center mb-8">
-          <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
+          <h1 className="font-heading text-h1 font-bold tracking-[-0.02em] text-foreground">
             inven-core
           </h1>
-          <p className="text-[14px] text-text-secondary mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             재고수불관리 시스템
           </p>
         </div>

@@ -3,7 +3,7 @@
 ## 현재 상태
 - **단계**: v0.2.0.0 프로덕션 배포 완료 (기준정보 + 거래처 분리)
 - **마지막 업데이트**: 2026-04-01
-- **디자인 점수**: B+, AI 슬롭: A
+- **디자인 점수**: A-, AI 슬롭: A
 - **프로덕션 URL**: https://inven-core.vercel.app
 
 ## 완료된 작업
@@ -228,11 +228,32 @@
     - [x] E2E CRUD 테스트 3건 추가 (생성/수정/삭제 플로우)
     - [x] TODO 2건 추가 (중복 에러 한글화, is_active DB 보호)
 
+33. **디자인 리뷰 3차 (기준정보 + 거래처 분리)** → 완료 (2026-04-01)
+    - [x] FINDING-001,002: 기준정보 액션 버튼 aria-label + 터치타겟 확대
+    - [x] FINDING-003: SidebarHeader hydration mismatch 수정
+    - [x] FINDING-004: 업체/고객 사이드바 아이콘 구분 (Users→UserCheck)
+    - [x] FINDING-005: SidebarProvider SSR/CSR 쿠키 동기화
+    - [x] FINDING-006: SO 목록 헤더 "거래처"→"고객" 수정
+    - 디자인 점수: B+ → A-, AI 슬롭: A
+
+34. **디자인 리뷰 3차 Deferred 수정** → 완료 (2026-04-02)
+    - [x] SO 거래처 "-": RLS 수정(20260402000002)으로 이미 해결 확인
+    - [x] 클릭 가능 테이블 행 aria-label 추가 (10개 목록 페이지)
+    - [x] goods-receipts: tabIndex + onKeyDown + router.push 전환
+
+35. **타이포그래피 토큰화** → 완료 (2026-04-02)
+    - [x] globals.css @theme에 커스텀 fontSize 4종 추가 (h1/h3/cell/2xs)
+    - [x] text-[Npx] 170개소 → Tailwind 토큰 일괄 치환 (31개 파일)
+    - [x] text-[32px] 장식 1건만 유지
+    - [x] database.ts CLI 버전 메시지 오염 수정
+    - [x] TypeScript + Next.js 빌드 통과
+
 ### 남은 작업
 1. ~~**supabase db push**~~ → 완료 (v0.2.0.0 배포)
 2. ~~**supabase gen types typescript**~~ → 완료
 3. ~~**Vercel 재배포**~~ → 완료 (2026-04-01, PR #1 머지 후 자동 배포)
 4. **엑셀 업로드** — 고객 샘플 확보 후
+5. **SO 거래처 데이터 "-"** — 기존 SO의 customer_id NULL (마이그레이션 데이터 이슈)
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
@@ -269,6 +290,7 @@
 - 보고서 테이블: overflow-x-auto 사용 (overflow-hidden 금지, 모바일 가로 스크롤 보장)
 - 기준정보: 범용 코드 테이블(code_type 구분), 다이얼로그 CRUD, sort_order 앱 레벨 MAX+1, 타입 자유 입력(Combobox)
 - 거래처 분리: partners 단일 테이블 → vendors(은행/계좌/지급통화) + customers(입금통화) 분리, FK 전환 포함
+- 사이드바: push 방식 (defaultOpen=true), 쿠키 기반 SSR 상태 동기화 필수 (hydration mismatch 방지)
 
 ## 블로커 / 미결 사항
 - ~~Supabase 프로젝트 생성 필요~~ → 완료 (클라우드, Tokyo 리전)

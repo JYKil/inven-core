@@ -42,7 +42,7 @@ export default function NewSalesOrderPage() {
   const warehouses = warehousesData?.data ?? []
   const warehouseItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    warehouses.forEach((w) => { map[w.id] = `${w.code} — ${w.name}` })
+    warehouses.forEach((w) => { map[w.id] = w.name })
     return map
   }, [warehouses])
 
@@ -143,7 +143,7 @@ export default function NewSalesOrderPage() {
             {/* 라인 입력 */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-heading font-semibold text-[15px]">판매 품목</h2>
+                <h2 className="font-heading font-semibold text-h3">판매 품목</h2>
               </div>
 
               {/* 품목 검색 + 추가 */}
@@ -209,7 +209,7 @@ export default function NewSalesOrderPage() {
                                 <SelectContent>
                                   {warehouses.map((w) => (
                                     <SelectItem key={w.id} value={w.id}>
-                                      {w.code} — {w.name}
+                                      {w.name}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>

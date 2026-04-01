@@ -173,10 +173,10 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div>
-        <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
+        <h1 className="font-heading text-h1 font-bold tracking-[-0.02em] text-foreground">
           전체 사용자 관리
         </h1>
-        <p className="text-[14px] text-text-secondary mt-1">
+        <p className="text-sm text-text-secondary mt-1">
           모든 회사의 사용자를 조회하고 역할/회사를 변경합니다.
         </p>
       </div>
@@ -187,7 +187,7 @@ export default function AdminUsersPage() {
           placeholder="이메일 또는 이름으로 검색..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm h-9 text-[14px]"
+          className="max-w-sm h-9 text-sm"
         />
         {pendingCount > 0 && (
           <Button
@@ -195,8 +195,8 @@ export default function AdminUsersPage() {
             size="sm"
             onClick={() => setFilterPending(!filterPending)}
             className={filterPending
-              ? 'h-9 bg-warning hover:bg-warning/90 text-white text-[13px]'
-              : 'h-9 border-warning text-warning hover:bg-warning/10 text-[13px]'
+              ? 'h-9 bg-warning hover:bg-warning/90 text-white text-cell'
+              : 'h-9 border-warning text-warning hover:bg-warning/10 text-cell'
             }
           >
             승인대기 {pendingCount}명
@@ -206,7 +206,7 @@ export default function AdminUsersPage() {
 
       {/* 테이블 */}
       {isLoading ? (
-        <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
+        <p className="text-sm text-muted-foreground">불러오는 중...</p>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden">
           <Table>
@@ -223,7 +223,7 @@ export default function AdminUsersPage() {
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-[14px] text-muted-foreground py-8">
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
                     {search ? '검색 결과가 없습니다.' : '등록된 사용자가 없습니다.'}
                   </TableCell>
                 </TableRow>
@@ -239,7 +239,7 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-sm border-[1.5px] ${
+                        className={`text-xs rounded-sm border-[1.5px] ${
                           roleBadgeStyles[user.role] || roleBadgeStyles.normal
                         }`}
                       >
@@ -252,7 +252,7 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-sm border-[1.5px] ${
+                        className={`text-xs rounded-sm border-[1.5px] ${
                           user.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -268,7 +268,7 @@ export default function AdminUsersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => openEdit(user)}
-                            className="h-7 text-[12px] text-warning hover:text-warning font-medium"
+                            className="h-7 text-xs text-warning hover:text-warning font-medium"
                           >
                             승인
                           </Button>
@@ -278,7 +278,7 @@ export default function AdminUsersPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => openEdit(user)}
-                              className="h-7 text-[12px] text-text-secondary hover:text-foreground"
+                              className="h-7 text-xs text-text-secondary hover:text-foreground"
                             >
                               수정
                             </Button>
@@ -289,7 +289,7 @@ export default function AdminUsersPage() {
                                 id: user.id,
                                 isActive: user.is_active,
                               })}
-                              className={`h-7 text-[12px] ${
+                              className={`h-7 text-xs ${
                                 user.is_active
                                   ? 'text-destructive hover:text-destructive'
                                   : 'text-secondary hover:text-secondary'
@@ -313,7 +313,7 @@ export default function AdminUsersPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-popover border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               {editingUser?.role === 'pending' ? '사용자 승인' : '사용자 수정'}
             </DialogTitle>
           </DialogHeader>
@@ -321,20 +321,20 @@ export default function AdminUsersPage() {
           {editingUser && (
             <form onSubmit={handleSubmit} className="space-y-4">
               {updateMutation.error && (
-                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+                <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                   {updateMutation.error.message}
                 </div>
               )}
 
-              <div className="text-[14px] text-text-secondary">
+              <div className="text-sm text-text-secondary">
                 <span className="font-medium text-foreground">{editingUser.display_name}</span>
                 {' '}({editingUser.email})
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-[13px]">역할</Label>
+                <Label className="text-cell">역할</Label>
                 <Select value={editRole} onValueChange={(v) => { if (v) setEditRole(v) }} items={{ company_admin: '회사관리자', normal: '일반', super_admin: '슈퍼관리자' }}>
-                  <SelectTrigger className="h-9 text-[14px]">
+                  <SelectTrigger className="h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -347,18 +347,18 @@ export default function AdminUsersPage() {
 
               {editRole !== 'super_admin' && (
                 <div className="space-y-1.5">
-                  <Label className="text-[13px]">
+                  <Label className="text-cell">
                     소속 회사 <span className="text-destructive">*</span>
                   </Label>
                   {!editCompanyId && (
-                    <p className="text-[12px] text-destructive">회사를 선택해야 저장할 수 있습니다</p>
+                    <p className="text-xs text-destructive">회사를 선택해야 저장할 수 있습니다</p>
                   )}
                   <Select
                     value={editCompanyId || ''}
                     onValueChange={(v) => setEditCompanyId(v || null)}
                     items={companyItemsMap}
                   >
-                    <SelectTrigger className="h-9 text-[14px]">
+                    <SelectTrigger className="h-9 text-sm">
                       <SelectValue placeholder="회사 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -377,14 +377,14 @@ export default function AdminUsersPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
-                  className="h-9 text-[14px] border-border"
+                  className="h-9 text-sm border-border"
                 >
                   취소
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateMutation.isPending}
-                  className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                  className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
                 >
                   {updateMutation.isPending ? '저장 중...' : '저장'}
                 </Button>

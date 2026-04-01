@@ -1,10 +1,9 @@
 import { z } from 'zod'
 
 export const warehouseCreateSchema = z.object({
-  code: z.string().min(1, '창고코드를 입력해주세요'),
   name: z.string().min(1, '창고명을 입력해주세요'),
-  location: z.string().optional(),
-  phone: z.string().optional(),
+  address: z.string().optional(),
+  contact: z.string().optional(),
   notes: z.string().optional(),
 })
 

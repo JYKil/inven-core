@@ -204,7 +204,7 @@ export default function UsersSettingsContent() {
         {isAdmin && (
           <Button
             onClick={() => setInviteOpen(true)}
-            className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+            className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
           >
             <UserPlus className="h-4 w-4 mr-1.5" />
             사용자 초대
@@ -222,7 +222,7 @@ export default function UsersSettingsContent() {
         {pendingCount > 0 && (
           <Badge
             variant="outline"
-            className="text-[12px] rounded-sm border-[1.5px] border-warning text-warning bg-warning/10 px-2.5 py-1"
+            className="text-xs rounded-sm border-[1.5px] border-warning text-warning bg-warning/10 px-2.5 py-1"
           >
             승인 대기 {pendingCount}명
           </Badge>
@@ -231,7 +231,7 @@ export default function UsersSettingsContent() {
 
       {/* 사용자 테이블 */}
       {isLoading ? (
-        <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
+        <p className="text-sm text-muted-foreground">불러오는 중...</p>
       ) : (
         <div className="border border-border rounded-lg overflow-x-auto">
           <Table>
@@ -248,7 +248,7 @@ export default function UsersSettingsContent() {
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={isAdmin ? 6 : 5} className="text-center text-[14px] text-muted-foreground py-8">
+                  <TableCell colSpan={isAdmin ? 6 : 5} className="text-center text-sm text-muted-foreground py-8">
                     {search ? '검색 결과가 없습니다.' : '등록된 사용자가 없습니다.'}
                   </TableCell>
                 </TableRow>
@@ -261,7 +261,7 @@ export default function UsersSettingsContent() {
                     <TableCell className="text-foreground font-medium">
                       {user.display_name || '-'}
                       {user.id === profile?.id && (
-                        <span className="text-[11px] text-muted-foreground ml-1.5">(나)</span>
+                        <span className="text-2xs text-muted-foreground ml-1.5">(나)</span>
                       )}
                     </TableCell>
                     <TableCell className="text-text-secondary">
@@ -270,7 +270,7 @@ export default function UsersSettingsContent() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-sm border-[1.5px] ${
+                        className={`text-xs rounded-sm border-[1.5px] ${
                           roleBadgeStyles[user.role] || roleBadgeStyles.normal
                         }`}
                       >
@@ -280,7 +280,7 @@ export default function UsersSettingsContent() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-sm border-[1.5px] ${
+                        className={`text-xs rounded-sm border-[1.5px] ${
                           user.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -289,7 +289,7 @@ export default function UsersSettingsContent() {
                         {user.is_active ? '활성' : '비활성'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-text-secondary text-[13px]">
+                    <TableCell className="text-text-secondary text-cell">
                       {formatDate(user.created_at)}
                     </TableCell>
                     {isAdmin && (
@@ -301,7 +301,7 @@ export default function UsersSettingsContent() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openEdit(user)}
-                                className="h-7 text-[12px] text-warning hover:text-warning font-medium"
+                                className="h-7 text-xs text-warning hover:text-warning font-medium"
                               >
                                 승인
                               </Button>
@@ -311,7 +311,7 @@ export default function UsersSettingsContent() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => openEdit(user)}
-                                  className="h-7 text-[12px] text-text-secondary hover:text-foreground"
+                                  className="h-7 text-xs text-text-secondary hover:text-foreground"
                                 >
                                   수정
                                 </Button>
@@ -322,7 +322,7 @@ export default function UsersSettingsContent() {
                                     id: user.id,
                                     isActive: user.is_active,
                                   })}
-                                  className={`h-7 text-[12px] ${
+                                  className={`h-7 text-xs ${
                                     user.is_active
                                       ? 'text-destructive hover:text-destructive'
                                       : 'text-secondary hover:text-secondary'
@@ -345,7 +345,7 @@ export default function UsersSettingsContent() {
       )}
 
       {!isAdmin && (
-        <p className="text-[12px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           회사 관리자만 사용자를 초대하거나 역할을 변경할 수 있습니다.
         </p>
       )}
@@ -354,32 +354,32 @@ export default function UsersSettingsContent() {
       <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
         <DialogContent className="bg-popover border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               사용자 초대
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); inviteMutation.mutate() }} className="space-y-4">
             {inviteMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+              <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {extractErrorMessage(inviteMutation.error)}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 이름 <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 required
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="홍길동"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 이메일 <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -387,13 +387,13 @@ export default function UsersSettingsContent() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 required
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="user@example.com"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 초기 비밀번호 <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -402,19 +402,19 @@ export default function UsersSettingsContent() {
                 onChange={(e) => setInvitePassword(e.target.value)}
                 required
                 minLength={6}
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="6자 이상"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">역할</Label>
+              <Label className="text-cell">역할</Label>
               <Select
                 value={inviteRole}
                 onValueChange={(v) => { if (v) setInviteRole(v) }}
                 items={roleItems}
               >
-                <SelectTrigger className="h-9 text-[14px]">
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -429,14 +429,14 @@ export default function UsersSettingsContent() {
                 type="button"
                 variant="outline"
                 onClick={closeInviteDialog}
-                className="h-9 text-[14px] border-border"
+                className="h-9 text-sm border-border"
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 disabled={inviteMutation.isPending}
-                className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
               >
                 {inviteMutation.isPending ? '생성 중...' : '초대'}
               </Button>
@@ -449,7 +449,7 @@ export default function UsersSettingsContent() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="bg-popover border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               {editingUser?.role === 'pending' ? '사용자 승인' : '역할 변경'}
             </DialogTitle>
           </DialogHeader>
@@ -457,24 +457,24 @@ export default function UsersSettingsContent() {
           {editingUser && (
             <form onSubmit={(e) => { e.preventDefault(); updateRoleMutation.mutate() }} className="space-y-4">
               {updateRoleMutation.error && (
-                <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+                <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                   {extractErrorMessage(updateRoleMutation.error)}
                 </div>
               )}
 
-              <div className="text-[14px] text-text-secondary">
+              <div className="text-sm text-text-secondary">
                 <span className="font-medium text-foreground">{editingUser.display_name || '-'}</span>
                 {' '}({editingUser.email})
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-[13px]">역할</Label>
+                <Label className="text-cell">역할</Label>
                 <Select
                   value={editRole}
                   onValueChange={(v) => { if (v) setEditRole(v) }}
                   items={roleItems}
                 >
-                  <SelectTrigger className="h-9 text-[14px]">
+                  <SelectTrigger className="h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -489,14 +489,14 @@ export default function UsersSettingsContent() {
                   type="button"
                   variant="outline"
                   onClick={() => setEditOpen(false)}
-                  className="h-9 text-[14px] border-border"
+                  className="h-9 text-sm border-border"
                 >
                   취소
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateRoleMutation.isPending}
-                  className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                  className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
                 >
                   {updateRoleMutation.isPending ? '저장 중...' : '저장'}
                 </Button>

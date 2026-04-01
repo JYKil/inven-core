@@ -37,7 +37,7 @@ export default function WarehousesContent() {
         <SearchInput
           value={filters.search ?? ''}
           onChange={handleSearch}
-          placeholder="창고코드, 창고명 검색..."
+          placeholder="창고명, 주소 검색..."
         />
       </div>
 
@@ -45,9 +45,8 @@ export default function WarehousesContent() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="sticky left-0 z-20 bg-background w-[100px] min-w-[100px]">코드</TableHead>
-              <TableHead className="sticky left-[100px] z-20 bg-background min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">창고명</TableHead>
-              <TableHead>위치</TableHead>
+              <TableHead className="sticky left-0 z-20 bg-background min-w-[160px]">창고명</TableHead>
+              <TableHead>창고주소</TableHead>
               <TableHead>연락처</TableHead>
             </TableRow>
           </TableHeader>
@@ -55,14 +54,14 @@ export default function WarehousesContent() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 4 }).map((_, j) => (
+                  {Array.from({ length: 3 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={3}>
                   <EmptyState
                     title="창고가 없습니다"
                     actionLabel="첫 창고 등록하기"
@@ -76,13 +75,13 @@ export default function WarehousesContent() {
                   key={wh.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`창고 ${wh.name} 상세보기`}
                   onClick={() => router.push(`/warehouses/${wh.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/warehouses/${wh.id}`) }}
                 >
-                  <TableCell className="font-data font-medium sticky left-0 z-10 bg-card w-[100px] min-w-[100px]">{wh.code}</TableCell>
-                  <TableCell className="font-medium sticky left-[100px] z-10 bg-card min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">{wh.name}</TableCell>
-                  <TableCell className="text-text-secondary">{wh.location || '-'}</TableCell>
-                  <TableCell className="text-text-secondary">{wh.phone || '-'}</TableCell>
+                  <TableCell className="font-medium sticky left-0 z-10 bg-card min-w-[160px]">{wh.name}</TableCell>
+                  <TableCell className="text-text-secondary">{wh.address || '-'}</TableCell>
+                  <TableCell className="text-text-secondary">{wh.contact || '-'}</TableCell>
                 </TableRow>
               ))
             )}

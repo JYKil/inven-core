@@ -101,7 +101,7 @@ export default function WarehouseTransferDetailPage({ params }: { params: Promis
 
       {/* 이동 라인 */}
       <section>
-        <h3 className="font-heading font-semibold text-[15px] mb-3">이동 품목</h3>
+        <h3 className="font-heading font-semibold text-h3 mb-3">이동 품목</h3>
         <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>

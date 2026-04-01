@@ -177,7 +177,7 @@ export default function SalesOrderDetailPage({ params }: { params: Promise<{ id:
 
       {/* 판매 라인 */}
       <section>
-        <h3 className="font-heading font-semibold text-[15px] mb-3">판매 품목</h3>
+        <h3 className="font-heading font-semibold text-h3 mb-3">판매 품목</h3>
           <Table>
             <TableHeader>
               <TableRow className="bg-background/50">

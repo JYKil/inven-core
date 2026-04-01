@@ -173,6 +173,7 @@ export default function ReferenceCodesContent() {
                   key={row.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`기준정보 ${row.code_type} ${row.code_data1} 편집`}
                   onClick={() => handleEdit(row)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(row) }}
                 >

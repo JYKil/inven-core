@@ -137,7 +137,7 @@ export default function NewPurchaseOrderPage() {
             {/* 라인 입력 */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-heading font-semibold text-[15px]">발주 품목</h2>
+                <h2 className="font-heading font-semibold text-h3">발주 품목</h2>
               </div>
 
               {/* 품목 검색 + 추가 */}

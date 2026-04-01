@@ -20,7 +20,7 @@ export default function NewWarehousePage() {
 
   const form = useForm<WarehouseCreate>({
     resolver: zodResolver(warehouseCreateSchema),
-    defaultValues: { code: '', name: '', location: '', phone: '', notes: '' },
+    defaultValues: { name: '', address: '', contact: '', notes: '' },
   })
 
   const onSubmit = form.handleSubmit(async (data) => {
@@ -39,31 +39,20 @@ export default function NewWarehousePage() {
       <form onSubmit={onSubmit}>
         <Card className="border-border max-w-2xl">
           <CardContent className="pt-6 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="code">창고코드 *</Label>
-                <Input id="code" {...form.register('code')} placeholder="WH-001" />
-                {form.formState.errors.code && (
-                  <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>
-                )}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="name">창고명 *</Label>
-                <Input id="name" {...form.register('name')} placeholder="제1창고" />
-                {form.formState.errors.name && (
-                  <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
-                )}
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="name">창고명 *</Label>
+              <Input id="name" {...form.register('name')} placeholder="제1창고" />
+              {form.formState.errors.name && (
+                <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
+              )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="location">위치</Label>
-                <Input id="location" {...form.register('location')} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="phone">연락처</Label>
-                <Input id="phone" {...form.register('phone')} />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="address">창고주소</Label>
+              <Input id="address" {...form.register('address')} placeholder="서울시 강남구..." />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="contact">연락처</Label>
+              <Input id="contact" {...form.register('contact')} placeholder="02-1234-5678 또는 email@example.com" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="notes">비고</Label>

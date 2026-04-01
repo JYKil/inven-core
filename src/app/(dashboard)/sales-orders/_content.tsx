@@ -98,6 +98,7 @@ export default function SalesOrdersContent() {
                   key={so.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`주문 ${so.order_number} 상세보기`}
                   onClick={() => router.push(`/sales-orders/${so.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/sales-orders/${so.id}`) }}
                 >

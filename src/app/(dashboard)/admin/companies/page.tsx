@@ -238,16 +238,16 @@ export default function AdminCompaniesPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
+          <h1 className="font-heading text-h1 font-bold tracking-[-0.02em] text-foreground">
             회사 관리
           </h1>
-          <p className="text-[14px] text-text-secondary mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             등록된 회사를 관리하고 회사 관리자를 추가합니다.
           </p>
         </div>
         <Button
           onClick={openCreate}
-          className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+          className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
         >
           회사 추가
         </Button>
@@ -255,7 +255,7 @@ export default function AdminCompaniesPage() {
 
       {/* 테이블 */}
       {isLoading ? (
-        <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
+        <p className="text-sm text-muted-foreground">불러오는 중...</p>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden">
           <Table>
@@ -273,7 +273,7 @@ export default function AdminCompaniesPage() {
             <TableBody>
               {companies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-[14px] text-muted-foreground py-8">
+                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
                     등록된 회사가 없습니다.
                   </TableCell>
                 </TableRow>
@@ -290,14 +290,14 @@ export default function AdminCompaniesPage() {
                       {company.phone || '-'}
                     </TableCell>
                     <TableCell>
-                      <span className="font-data text-[13px] text-foreground">
+                      <span className="font-data text-cell text-foreground">
                         {company.costing_method}
                       </span>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`text-[12px] rounded-sm border-[1.5px] ${
+                        className={`text-xs rounded-sm border-[1.5px] ${
                           company.is_active
                             ? 'border-secondary text-secondary'
                             : 'border-text-disabled text-text-muted'
@@ -307,7 +307,7 @@ export default function AdminCompaniesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <code className="font-data text-[11px] text-muted-foreground bg-background px-1.5 py-0.5 rounded">
+                      <code className="font-data text-2xs text-muted-foreground bg-background px-1.5 py-0.5 rounded">
                         {company.id.slice(0, 8)}...
                       </code>
                     </TableCell>
@@ -317,7 +317,7 @@ export default function AdminCompaniesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openAdmins(company)}
-                          className="h-7 text-[12px] text-info hover:text-info"
+                          className="h-7 text-xs text-info hover:text-info"
                         >
                           사용자
                         </Button>
@@ -325,7 +325,7 @@ export default function AdminCompaniesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openEdit(company)}
-                          className="h-7 text-[12px] text-text-secondary hover:text-foreground"
+                          className="h-7 text-xs text-text-secondary hover:text-foreground"
                         >
                           수정
                         </Button>
@@ -336,7 +336,7 @@ export default function AdminCompaniesPage() {
                             id: company.id,
                             isActive: company.is_active,
                           })}
-                          className={`h-7 text-[12px] ${
+                          className={`h-7 text-xs ${
                             company.is_active
                               ? 'text-destructive hover:text-destructive'
                               : 'text-secondary hover:text-secondary'
@@ -358,56 +358,56 @@ export default function AdminCompaniesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-popover border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               {editing ? '회사 수정' : '회사 추가'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {(createMutation.error || updateMutation.error) && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+              <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {(createMutation.error || updateMutation.error)?.message}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 회사명 <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 사업자등록번호
               </Label>
               <Input
                 value={businessNumber}
                 onChange={(e) => setBusinessNumber(e.target.value)}
                 placeholder="000-00-00000"
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">주소</Label>
+              <Label className="text-cell">주소</Label>
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">연락처</Label>
+              <Label className="text-cell">연락처</Label>
               <Input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
               />
             </div>
 
@@ -416,14 +416,14 @@ export default function AdminCompaniesPage() {
                 type="button"
                 variant="outline"
                 onClick={closeDialog}
-                className="h-9 text-[14px] border-border"
+                className="h-9 text-sm border-border"
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
               >
                 {isSaving ? '저장 중...' : editing ? '수정' : '추가'}
               </Button>
@@ -436,7 +436,7 @@ export default function AdminCompaniesPage() {
       <Dialog open={adminsDialogOpen} onOpenChange={setAdminsDialogOpen}>
         <DialogContent className="bg-popover border-border max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               {adminsCompany?.name} — 사용자
             </DialogTitle>
           </DialogHeader>
@@ -445,16 +445,16 @@ export default function AdminCompaniesPage() {
             <div className="flex justify-end">
               <Button
                 onClick={() => adminsCompany && openInvite(adminsCompany)}
-                className="h-8 bg-primary hover:bg-primary-hover text-white text-[13px]"
+                className="h-8 bg-primary hover:bg-primary-hover text-white text-cell"
               >
                 관리자 추가
               </Button>
             </div>
 
             {adminsLoading ? (
-              <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
+              <p className="text-sm text-muted-foreground">불러오는 중...</p>
             ) : companyAdmins.length === 0 ? (
-              <p className="text-center text-[14px] text-muted-foreground py-4">
+              <p className="text-center text-sm text-muted-foreground py-4">
                 등록된 사용자가 없습니다.
               </p>
             ) : (
@@ -480,7 +480,7 @@ export default function AdminCompaniesPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={`text-[12px] rounded-sm border-[1.5px] ${
+                            className={`text-xs rounded-sm border-[1.5px] ${
                               roleBadgeStyles[admin.role] || roleBadgeStyles.normal
                             }`}
                           >
@@ -490,7 +490,7 @@ export default function AdminCompaniesPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={`text-[12px] rounded-sm border-[1.5px] ${
+                            className={`text-xs rounded-sm border-[1.5px] ${
                               admin.is_active
                                 ? 'border-secondary text-secondary'
                                 : 'border-text-disabled text-text-muted'
@@ -513,32 +513,32 @@ export default function AdminCompaniesPage() {
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="bg-popover border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-[20px] font-semibold tracking-[-0.01em]">
+            <DialogTitle className="font-heading text-xl font-semibold tracking-[-0.01em]">
               관리자 추가 — {inviteCompany?.name}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleInviteSubmit} className="space-y-4">
             {inviteMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+              <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {inviteMutation.error.message}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 이름 <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 required
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="홍길동"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 이메일 <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -546,13 +546,13 @@ export default function AdminCompaniesPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 required
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="admin@company.com"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 초기 비밀번호 <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -561,10 +561,10 @@ export default function AdminCompaniesPage() {
                 onChange={(e) => setInvitePassword(e.target.value)}
                 required
                 minLength={6}
-                className="h-9 text-[14px]"
+                className="h-9 text-sm"
                 placeholder="6자 이상"
               />
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 회사 관리자(company_admin) 역할로 생성됩니다.
               </p>
             </div>
@@ -574,14 +574,14 @@ export default function AdminCompaniesPage() {
                 type="button"
                 variant="outline"
                 onClick={closeInviteDialog}
-                className="h-9 text-[14px] border-border"
+                className="h-9 text-sm border-border"
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 disabled={inviteMutation.isPending}
-                className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
               >
                 {inviteMutation.isPending ? '생성 중...' : '추가'}
               </Button>

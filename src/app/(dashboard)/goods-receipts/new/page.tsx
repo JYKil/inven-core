@@ -46,7 +46,7 @@ function NewGoodsReceiptContent() {
 
   const warehouseItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    warehouses.forEach((wh) => { map[wh.id] = wh.name })
     return map
   }, [warehouses])
 
@@ -139,7 +139,7 @@ function NewGoodsReceiptContent() {
                   <SelectTrigger><SelectValue placeholder="창고 선택" /></SelectTrigger>
                   <SelectContent>
                     {warehouses.map((wh) => (
-                      <SelectItem key={wh.id} value={wh.id}>{wh.code} — {wh.name}</SelectItem>
+                      <SelectItem key={wh.id} value={wh.id}>{wh.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -165,7 +165,7 @@ function NewGoodsReceiptContent() {
 
             {/* 입고 라인 */}
             <div>
-              <h2 className="font-heading font-semibold text-[15px] mb-3">입고 품목</h2>
+              <h2 className="font-heading font-semibold text-h3 mb-3">입고 품목</h2>
 
               {!poId && (
                 <div className="relative mb-3 max-w-md">

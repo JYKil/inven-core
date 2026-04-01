@@ -33,7 +33,7 @@ export default function NewWarehouseTransferPage() {
 
   const warehouseItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    warehouses.forEach((w) => { map[w.id] = `${w.code} — ${w.name}` })
+    warehouses.forEach((w) => { map[w.id] = w.name })
     return map
   }, [warehouses])
 
@@ -102,7 +102,7 @@ export default function NewWarehouseTransferPage() {
                   <SelectTrigger><SelectValue placeholder="출발 창고 선택" /></SelectTrigger>
                   <SelectContent>
                     {warehouses.map((w) => (
-                      <SelectItem key={w.id} value={w.id}>{w.code} — {w.name}</SelectItem>
+                      <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -120,7 +120,7 @@ export default function NewWarehouseTransferPage() {
                   <SelectTrigger><SelectValue placeholder="도착 창고 선택" /></SelectTrigger>
                   <SelectContent>
                     {warehouses.map((w) => (
-                      <SelectItem key={w.id} value={w.id}>{w.code} — {w.name}</SelectItem>
+                      <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -142,7 +142,7 @@ export default function NewWarehouseTransferPage() {
             {/* 라인 입력 */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-heading font-semibold text-[15px]">이동 품목</h2>
+                <h2 className="font-heading font-semibold text-h3">이동 품목</h2>
               </div>
 
               {/* 품목 검색 + 추가 */}

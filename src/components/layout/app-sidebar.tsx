@@ -172,7 +172,7 @@ export function AppSidebar() {
         {groups.map((group) => (
           <SidebarGroup key={group.label || 'home'}>
             {group.label && (
-              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</SidebarGroupLabel>
             )}
             <SidebarGroupContent>
               <SidebarMenu>

@@ -322,6 +322,22 @@
 
 ---
 
+## 디자인 리뷰 3차 Deferred (2026-04-01)
+
+- [x] **HIGH**: text-[Npx] 임의 텍스트 크기 170개소 → Tailwind fontSize 토큰화 완료
+  - 커스텀 토큰 4종: text-h1(28px), text-h3(15px), text-cell(13px), text-2xs(11px)
+  - 표준 토큰 3종: text-xl(20px), text-sm(14px), text-xs(12px)
+  - text-[32px] 장식 1건만 유지
+- [x] **MEDIUM**: SO 거래처 데이터 "-" — RLS 정책 수정(20260402000002)으로 해결됨. customer_id는 NOT NULL, join 정상 동작
+- [x] **MEDIUM**: 클릭 가능 테이블 행 aria-label 추가 — 10개 목록 페이지 완료
+  - customers, vendors, warehouses, items, purchase-orders, sales-orders
+  - warehouse-transfers, inventory, reference-codes, goods-receipts
+  - goods-receipts: tabIndex + onKeyDown + router.push 추가 (window.location 제거)
+- [ ] **POLISH**: EmptyState 컴포넌트 아이콘 속성 추가 (현재 텍스트+버튼만)
+- [ ] **POLISH**: 기준정보 모바일 12컬럼 테이블 개선 (반응형 컬럼 숨김 등)
+
+---
+
 ## P4 — 참고 사항
 
 ### 일정 가이드라인

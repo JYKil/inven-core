@@ -22,12 +22,12 @@ export function useWarehouses(filters: WarehouseFilters = {}) {
       let query = supabase
         .from('warehouses')
         .select('*', { count: 'exact' })
-        .order('code')
+        .order('name')
 
       if (!filters.includeInactive) query = query.eq('is_active', true)
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.or(`name.ilike.%${s}%,code.ilike.%${s}%`)
+        query = query.or(`name.ilike.%${s}%,address.ilike.%${s}%`)
       }
 
       const page = filters.page ?? 1

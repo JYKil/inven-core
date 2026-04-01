@@ -156,7 +156,7 @@ export default function AssemblyOrderDetailPage({
         {/* 원가 정보 */}
         {order.total_cost != null && (
           <section className="pb-6 border-b border-border">
-            <h2 className="font-heading font-semibold text-[15px] mb-3">원가 정보</h2>
+            <h2 className="font-heading font-semibold text-h3 mb-3">원가 정보</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div>
                 <p className="text-xs text-text-secondary mb-1">총 원가</p>
@@ -176,7 +176,7 @@ export default function AssemblyOrderDetailPage({
 
         {/* 재료 소비 내역 */}
         <section>
-          <h2 className="font-heading font-semibold text-[15px] mb-3">재료 소비 내역</h2>
+          <h2 className="font-heading font-semibold text-h3 mb-3">재료 소비 내역</h2>
           <div className="border border-border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>

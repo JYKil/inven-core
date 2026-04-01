@@ -124,7 +124,7 @@ export default function SettingsContent() {
     return (
       <div className="space-y-6">
         <PageHeader title="회사 설정" description="회사 기본 정보를 관리합니다." />
-        <p className="text-[14px] text-muted-foreground">불러오는 중...</p>
+        <p className="text-sm text-muted-foreground">불러오는 중...</p>
       </div>
     )
   }
@@ -133,7 +133,7 @@ export default function SettingsContent() {
     return (
       <div className="space-y-6">
         <PageHeader title="회사 설정" description="회사 기본 정보를 관리합니다." />
-        <p className="text-[14px] text-muted-foreground">회사 정보를 찾을 수 없습니다.</p>
+        <p className="text-sm text-muted-foreground">회사 정보를 찾을 수 없습니다.</p>
       </div>
     )
   }
@@ -147,25 +147,25 @@ export default function SettingsContent() {
         <div className="border border-border rounded-lg bg-card">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
             <Building2 className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] text-foreground">
               기본 정보
             </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {updateMutation.error && (
-              <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+              <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
                 {extractErrorMessage(updateMutation.error)}
               </div>
             )}
             {updateMutation.isSuccess && (
-              <div className="text-[13px] text-secondary bg-secondary/10 border border-secondary/20 rounded-md px-3 py-2">
+              <div className="text-cell text-secondary bg-secondary/10 border border-secondary/20 rounded-md px-3 py-2">
                 저장되었습니다.
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">
+              <Label className="text-cell">
                 회사명 <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -173,38 +173,38 @@ export default function SettingsContent() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 disabled={!isAdmin}
-                className="h-9 text-[14px] max-w-md"
+                className="h-9 text-sm max-w-md"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">사업자등록번호</Label>
+              <Label className="text-cell">사업자등록번호</Label>
               <Input
                 value={businessNumber}
                 onChange={(e) => setBusinessNumber(e.target.value)}
                 placeholder="000-00-00000"
                 disabled={!isAdmin}
-                className="h-9 text-[14px] max-w-md"
+                className="h-9 text-sm max-w-md"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">주소</Label>
+              <Label className="text-cell">주소</Label>
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 disabled={!isAdmin}
-                className="h-9 text-[14px] max-w-md"
+                className="h-9 text-sm max-w-md"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[13px]">연락처</Label>
+              <Label className="text-cell">연락처</Label>
               <Input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={!isAdmin}
-                className="h-9 text-[14px] max-w-md"
+                className="h-9 text-sm max-w-md"
               />
             </div>
 
@@ -213,7 +213,7 @@ export default function SettingsContent() {
                 <Button
                   type="submit"
                   disabled={updateMutation.isPending || !hasChanges}
-                  className="h-9 bg-primary hover:bg-primary-hover text-white text-[14px]"
+                  className="h-9 bg-primary hover:bg-primary-hover text-white text-sm"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
                   {updateMutation.isPending ? '저장 중...' : '저장'}
@@ -222,7 +222,7 @@ export default function SettingsContent() {
             )}
 
             {!isAdmin && (
-              <p className="text-[12px] text-muted-foreground pt-1">
+              <p className="text-xs text-muted-foreground pt-1">
                 회사 관리자만 정보를 수정할 수 있습니다.
               </p>
             )}
@@ -232,7 +232,7 @@ export default function SettingsContent() {
         {/* 원가 계산 방식 (읽기 전용) */}
         <div className="border border-border rounded-lg bg-card">
           <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] text-foreground">
               원가 계산 방식
             </h2>
           </div>
@@ -240,11 +240,11 @@ export default function SettingsContent() {
             <div className="flex items-center gap-3">
               <Badge
                 variant="outline"
-                className="text-[13px] rounded-sm border-[1.5px] border-primary text-primary px-3 py-1"
+                className="text-cell rounded-sm border-[1.5px] border-primary text-primary px-3 py-1"
               >
                 {costingMethodLabels[company.costing_method] || company.costing_method}
               </Badge>
-              <span className="text-[13px] text-muted-foreground">
+              <span className="text-cell text-muted-foreground">
                 현재 적용 중인 원가 계산 방식입니다.
               </span>
             </div>
@@ -254,15 +254,15 @@ export default function SettingsContent() {
         {/* 초대 코드 */}
         <div className="border border-border rounded-lg bg-card">
           <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] text-foreground">
               초대 코드
             </h2>
           </div>
           <div className="p-6 space-y-2">
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-cell text-muted-foreground">
               아래 코드를 새 사용자에게 전달하면, 회원가입 시 이 회사에 소속됩니다.
             </p>
-            <code className="block font-data text-[14px] text-foreground bg-muted px-4 py-2.5 rounded-md select-all">
+            <code className="block font-data text-sm text-foreground bg-muted px-4 py-2.5 rounded-md select-all">
               {company.id}
             </code>
           </div>

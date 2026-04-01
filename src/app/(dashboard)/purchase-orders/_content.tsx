@@ -100,6 +100,7 @@ export default function PurchaseOrdersContent() {
                   key={po.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`발주서 ${po.po_number} 상세보기`}
                   onClick={() => router.push(`/purchase-orders/${po.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/purchase-orders/${po.id}`) }}
                 >

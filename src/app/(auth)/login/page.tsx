@@ -42,19 +42,19 @@ export default function LoginPage() {
 
   return (
     <form onSubmit={handleLogin} className="space-y-4">
-      <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+      <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] text-foreground">
         로그인
       </h2>
 
       {error && (
-        <div className="text-[13px] text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+        <div className="text-cell text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
           {error}
         </div>
       )}
 
       <div className="space-y-3">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-[13px] text-foreground">
+          <Label htmlFor="email" className="text-cell text-foreground">
             이메일
           </Label>
           <Input
@@ -65,12 +65,12 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoFocus
-            className="h-9 text-[14px]"
+            className="h-9 text-sm"
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-[13px] text-foreground">
+          <Label htmlFor="password" className="text-cell text-foreground">
             비밀번호
           </Label>
           <Input
@@ -81,7 +81,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="h-9 text-[14px]"
+            className="h-9 text-sm"
           />
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function LoginPage() {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-9 bg-primary hover:bg-primary-hover text-white text-[14px] font-medium"
+        className="w-full h-9 bg-primary hover:bg-primary-hover text-white text-sm font-medium"
       >
         {loading ? '로그인 중...' : '로그인'}
       </Button>
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-card px-3 text-[12px] text-muted-foreground">또는</span>
+          <span className="bg-card px-3 text-xs text-muted-foreground">또는</span>
         </div>
       </div>
 
@@ -114,7 +114,7 @@ export default function LoginPage() {
             },
           })
         }}
-        className="w-full h-9 text-[14px] font-medium border-border text-foreground hover:bg-background"
+        className="w-full h-9 text-sm font-medium border-border text-foreground hover:bg-background"
       >
         <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -125,7 +125,7 @@ export default function LoginPage() {
         Google로 계속하기
       </Button>
 
-      <p className="text-center text-[13px] text-text-secondary">
+      <p className="text-center text-cell text-text-secondary">
         계정이 없으신가요?{' '}
         <Link
           href="/signup"

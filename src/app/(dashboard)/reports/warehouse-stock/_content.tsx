@@ -25,7 +25,7 @@ export default function WarehouseStockContent() {
   const warehouses = whData?.data ?? []
   const whMap = useMemo(() => {
     const map: Record<string, string> = { all: '전체 창고' }
-    warehouses.forEach((w) => { map[w.id] = `${w.code} — ${w.name}` })
+    warehouses.forEach((w) => { map[w.id] = w.name })
     return map
   }, [warehouses])
 
@@ -36,9 +36,9 @@ export default function WarehouseStockContent() {
 
   const handleExportCsv = () => {
     if (!data) return
-    const headers = ['창고코드', '창고명', '품목코드', '품목명', '단위', '수량', '재고가치', '평균단가']
+    const headers = ['창고명', '품목코드', '품목명', '단위', '수량', '재고가치', '평균단가']
     const rows = data.map((r) => [
-      r.warehouse_code, r.warehouse_name,
+      r.warehouse_name,
       r.item_code, r.item_name, r.unit,
       r.total_qty, r.total_value, r.avg_unit_cost,
     ])
@@ -74,7 +74,7 @@ export default function WarehouseStockContent() {
             <SelectContent>
               <SelectItem value="all">전체 창고</SelectItem>
               {warehouses.map((w) => (
-                <SelectItem key={w.id} value={w.id}>{w.code} — {w.name}</SelectItem>
+                <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>

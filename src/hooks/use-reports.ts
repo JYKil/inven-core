@@ -80,7 +80,7 @@ export function useWarehouseStockReport(warehouseId?: string, options?: { enable
       })
       if (error) throw error
       return data as Array<{
-        warehouse_id: string; warehouse_code: string; warehouse_name: string
+        warehouse_id: string; warehouse_name: string
         item_id: string; item_code: string; item_name: string; unit: string
         total_qty: number; total_value: number; avg_unit_cost: number
       }>

@@ -78,7 +78,7 @@ function NewAssemblyContent() {
 
   const warehouseItemsMap = useMemo(() => {
     const map: Record<string, string> = {}
-    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    warehouses.forEach((wh) => { map[wh.id] = wh.name })
     return map
   }, [warehouses])
 
@@ -212,7 +212,7 @@ function NewAssemblyContent() {
                   <SelectTrigger><SelectValue placeholder="창고 선택" /></SelectTrigger>
                   <SelectContent>
                     {warehouses.map((wh) => (
-                      <SelectItem key={wh.id} value={wh.id}>{wh.code} — {wh.name}</SelectItem>
+                      <SelectItem key={wh.id} value={wh.id}>{wh.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -239,7 +239,7 @@ function NewAssemblyContent() {
             {/* 재료 가용성 사전확인 테이블 */}
             {selectedBomId && watchWarehouseId && watchQuantity > 0 && (
               <div>
-                <h2 className="font-heading font-semibold text-[15px] mb-3">재료 가용성 확인</h2>
+                <h2 className="font-heading font-semibold text-h3 mb-3">재료 가용성 확인</h2>
                 <div className="border border-border rounded-lg overflow-hidden">
                   <Table>
                     <TableHeader>

@@ -287,7 +287,7 @@ function BomTab({ itemId }: { itemId: string }) {
           </div>
         ) : isCreating ? (
           <div className="space-y-4">
-            <h3 className="font-heading font-semibold text-[15px]">새 BOM 생성</h3>
+            <h3 className="font-heading font-semibold text-h3">새 BOM 생성</h3>
 
             {/* 재료 검색 */}
             <div className="relative">
@@ -364,7 +364,7 @@ function BomTab({ itemId }: { itemId: string }) {
           boms?.map((bom: any) => (
             <div key={bom.id} className="mb-6 last:mb-0">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-heading font-semibold text-[15px]">
+                <h3 className="font-heading font-semibold text-h3">
                   BOM v{bom.version}
                   {!bom.is_active && <span className="text-muted-foreground ml-2">(비활성)</span>}
                 </h3>
@@ -426,7 +426,7 @@ function StockTab({ itemId, unit }: { itemId: string; unit: string }) {
               {lots.map((lot: any) => (
                 <TableRow key={lot.id}>
                   <TableCell>
-                    {lot.warehouse?.code} — {lot.warehouse?.name}
+                    {lot.warehouse?.name}
                   </TableCell>
                   <TableCell className="font-data">{formatDate(lot.lot_date)}</TableCell>
                   <TableCell className="text-text-secondary">{lot.source_type}</TableCell>

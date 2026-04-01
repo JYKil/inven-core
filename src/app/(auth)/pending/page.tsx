@@ -50,10 +50,10 @@ export default function PendingPage() {
   return (
     <div className="space-y-4 text-center">
       <Clock className="h-8 w-8 text-warning mx-auto" />
-      <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+      <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] text-foreground">
         승인 대기 중
       </h2>
-      <p className="text-[14px] text-text-secondary leading-relaxed">
+      <p className="text-sm text-text-secondary leading-relaxed">
         관리자가 가입 요청을 확인하고 있습니다.
         <br />
         승인이 완료되면 시스템을 사용할 수 있습니다.
@@ -63,7 +63,7 @@ export default function PendingPage() {
         <Button
           onClick={handleCheckApproval}
           disabled={checking}
-          className="w-full h-9 bg-primary hover:bg-primary-hover text-white text-[14px] font-medium"
+          className="w-full h-9 bg-primary hover:bg-primary-hover text-white text-sm font-medium"
         >
           {checking ? '확인 중...' : '승인 확인'}
         </Button>
@@ -71,7 +71,7 @@ export default function PendingPage() {
         <Button
           variant="outline"
           onClick={handleLogout}
-          className="w-full h-9 text-[14px] border-border text-text-secondary hover:text-foreground"
+          className="w-full h-9 text-sm border-border text-text-secondary hover:text-foreground"
         >
           로그아웃
         </Button>

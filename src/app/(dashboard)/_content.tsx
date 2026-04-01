@@ -23,10 +23,10 @@ export default function DashboardContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-heading text-[28px] font-bold tracking-[-0.02em] text-foreground">
+        <h1 className="font-heading text-h1 font-bold tracking-[-0.02em] text-foreground">
           대시보드
         </h1>
-        <p className="text-[14px] text-text-secondary mt-1">
+        <p className="text-sm text-text-secondary mt-1">
           재고수불관리 시스템
         </p>
       </div>
@@ -34,8 +34,8 @@ export default function DashboardContent() {
       {/* 온보딩 위젯 — 기초 데이터가 없을 때만 */}
       {showOnboarding && (
         <section className="border border-border rounded-lg p-6">
-          <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-4">시작하기</h2>
-          <p className="text-[13px] text-muted-foreground mb-4">
+          <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] mb-4">시작하기</h2>
+          <p className="text-cell text-muted-foreground mb-4">
             기초 데이터를 등록하면 재고 관리를 시작할 수 있습니다.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -69,7 +69,7 @@ export default function DashboardContent() {
 
       {/* 업무 현황 — 테이블 레이아웃 */}
       <section>
-        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">업무 현황</h2>
+        <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] mb-3">업무 현황</h2>
         <div className="border border-border rounded-lg overflow-x-auto">
           <table className="w-full min-w-[480px] text-sm">
             <thead>
@@ -132,7 +132,7 @@ export default function DashboardContent() {
 
       {/* 재발주 알림 */}
       <section>
-        <h2 className="font-heading text-[20px] font-semibold tracking-[-0.01em] mb-3">재발주 알림</h2>
+        <h2 className="font-heading text-xl font-semibold tracking-[-0.01em] mb-3">재발주 알림</h2>
         {alertsLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}

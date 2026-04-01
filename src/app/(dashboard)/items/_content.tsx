@@ -105,6 +105,7 @@ export default function ItemsContent() {
                     key={item.id}
                     className="cursor-pointer hover:bg-background/30"
                     tabIndex={0}
+                    aria-label={`품목 ${item.code} ${item.name} 상세보기`}
                     onClick={() => router.push(`/items/${item.id}`)}
                     onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/items/${item.id}`) }}
                   >

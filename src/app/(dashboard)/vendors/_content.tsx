@@ -78,6 +78,7 @@ export default function VendorsContent() {
                   key={vendor.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`업체 ${vendor.name} 상세보기`}
                   onClick={() => router.push(`/vendors/${vendor.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/vendors/${vendor.id}`) }}
                 >

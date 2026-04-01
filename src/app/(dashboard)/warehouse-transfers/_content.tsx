@@ -79,6 +79,7 @@ export default function WarehouseTransfersContent() {
                   key={t.id}
                   className="cursor-pointer hover:bg-background/30"
                   tabIndex={0}
+                  aria-label={`이동 ${t.transfer_number} 상세보기`}
                   onClick={() => router.push(`/warehouse-transfers/${t.id}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/warehouse-transfers/${t.id}`) }}
                 >

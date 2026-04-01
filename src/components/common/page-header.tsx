@@ -14,7 +14,7 @@ export function PageHeader({
   return (
     <div className={cn('flex items-center justify-between mb-6', className)}>
       <div>
-        <h1 className="font-heading font-bold text-[28px] tracking-[-0.02em] text-foreground">
+        <h1 className="font-heading font-bold text-h1 tracking-[-0.02em] text-foreground">
           {title}
         </h1>
         {description && (

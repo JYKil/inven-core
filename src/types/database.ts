@@ -1304,39 +1304,36 @@ export type Database = {
       }
       warehouses: {
         Row: {
-          code: string
+          address: string | null
           company_id: string
+          contact: string | null
           created_at: string
           id: string
           is_active: boolean
-          location: string | null
           name: string
           notes: string | null
-          phone: string | null
           updated_at: string
         }
         Insert: {
-          code: string
+          address?: string | null
           company_id: string
+          contact?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
-          location?: string | null
           name: string
           notes?: string | null
-          phone?: string | null
           updated_at?: string
         }
         Update: {
-          code?: string
+          address?: string | null
           company_id?: string
+          contact?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
-          location?: string | null
           name?: string
           notes?: string | null
-          phone?: string | null
           updated_at?: string
         }
         Relationships: [

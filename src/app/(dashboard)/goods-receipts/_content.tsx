@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import { formatDate } from '@/lib/format'
 import { useGoodsReceipts, type GrFilters } from '@/hooks/use-goods-receipts'
 
 export default function GoodsReceiptsContent() {
+  const router = useRouter()
   const [filters, setFilters] = useState<GrFilters>({ page: 1, pageSize: 20 })
   const { data, isLoading } = useGoodsReceipts(filters)
 
@@ -73,7 +75,14 @@ export default function GoodsReceiptsContent() {
               </TableRow>
             ) : (
               data?.data.map((gr: any) => (
-                <TableRow key={gr.id} className="cursor-pointer hover:bg-muted/50" onClick={() => window.location.href = `/goods-receipts/${gr.id}`}>
+                <TableRow
+                  key={gr.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  tabIndex={0}
+                  aria-label={`입고 ${gr.receipt_number} 상세보기`}
+                  onClick={() => router.push(`/goods-receipts/${gr.id}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/goods-receipts/${gr.id}`) }}
+                >
                   <TableCell className="font-data font-medium">{gr.receipt_number}</TableCell>
                   <TableCell className="font-data text-text-secondary">
                     {gr.purchase_order?.po_number ?? '-'}

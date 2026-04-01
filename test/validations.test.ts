@@ -151,18 +151,34 @@ describe('itemCreateSchema', () => {
 describe('warehouseCreateSchema', () => {
   it('유효한 데이터 통과', () => {
     const result = warehouseCreateSchema.safeParse({
-      code: 'WH-01',
       name: '본사 창고',
     })
     expect(result.success).toBe(true)
   })
 
-  it('창고코드 미입력 시 실패', () => {
+  it('창고명 미입력 시 실패', () => {
     const result = warehouseCreateSchema.safeParse({
-      code: '',
-      name: '창고',
+      name: '',
     })
     expect(result.success).toBe(false)
+  })
+
+  it('address/contact 선택 필드 통과', () => {
+    const result = warehouseCreateSchema.safeParse({
+      name: '광저우 창고',
+      address: '중국 광저우시',
+      contact: 'guangzhou@gmail.com',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('빈 address/contact 통과', () => {
+    const result = warehouseCreateSchema.safeParse({
+      name: '임시 창고',
+      address: '',
+      contact: '',
+    })
+    expect(result.success).toBe(true)
   })
 })
 

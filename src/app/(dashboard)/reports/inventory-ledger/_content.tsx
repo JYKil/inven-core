@@ -66,7 +66,7 @@ export default function InventoryLedgerContent() {
   const warehouses = whData?.data ?? []
   const whMap = useMemo(() => {
     const map: Record<string, string> = { all: '전체 창고' }
-    warehouses.forEach((w) => { map[w.id] = `${w.code} — ${w.name}` })
+    warehouses.forEach((w) => { map[w.id] = w.name })
     return map
   }, [warehouses])
 
@@ -144,7 +144,7 @@ export default function InventoryLedgerContent() {
             <SelectContent>
               <SelectItem value="all">전체 창고</SelectItem>
               {warehouses.map((w) => (
-                <SelectItem key={w.id} value={w.id}>{w.code} — {w.name}</SelectItem>
+                <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -154,7 +154,7 @@ export default function InventoryLedgerContent() {
       {/* 요약 */}
       {data && data.summary.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-heading font-semibold text-[15px] mb-3">기간 요약</h3>
+          <h3 className="font-heading font-semibold text-h3 mb-3">기간 요약</h3>
           <div className="border border-border rounded-lg overflow-x-auto">
             <Table>
               <TableHeader>
@@ -187,7 +187,7 @@ export default function InventoryLedgerContent() {
       )}
 
       {/* 거래 내역 */}
-      <h3 className="font-heading font-semibold text-[15px] mb-3">거래 내역</h3>
+      <h3 className="font-heading font-semibold text-h3 mb-3">거래 내역</h3>
       <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>

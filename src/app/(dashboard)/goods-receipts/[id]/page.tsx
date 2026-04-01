@@ -108,7 +108,7 @@ export default function GoodsReceiptDetailPage({ params }: { params: Promise<{ i
 
       {/* 입고 라인 */}
       <section>
-        <h3 className="font-heading font-semibold text-[15px] mb-3">입고 품목</h3>
+        <h3 className="font-heading font-semibold text-h3 mb-3">입고 품목</h3>
         <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>

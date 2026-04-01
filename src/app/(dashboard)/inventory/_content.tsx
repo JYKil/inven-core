@@ -33,7 +33,7 @@ export default function InventoryContent() {
 
   const warehouseItems = useMemo(() => {
     const map: Record<string, string> = { all: '전체 창고' }
-    warehouses.forEach((wh) => { map[wh.id] = `${wh.code} — ${wh.name}` })
+    warehouses.forEach((wh) => { map[wh.id] = wh.name })
     return map
   }, [warehouses])
 
@@ -74,7 +74,7 @@ export default function InventoryContent() {
           <SelectContent>
             <SelectItem value="all">전체 창고</SelectItem>
             {warehouses.map((wh) => (
-              <SelectItem key={wh.id} value={wh.id}>{wh.code} — {wh.name}</SelectItem>
+              <SelectItem key={wh.id} value={wh.id}>{wh.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -119,6 +119,7 @@ export default function InventoryContent() {
                       key={row.item_id}
                       className="cursor-pointer hover:bg-background/30"
                       tabIndex={0}
+                      aria-label={`품목 ${row.code} ${row.name} 로트 상세`}
                       onClick={() => {
                         setSelectedItemId(selectedItemId === row.item_id ? null : row.item_id)
                         setSelectedItemUnit(row.unit ?? 'EA')
@@ -228,7 +229,7 @@ function LotDrilldown({ itemId, unit }: { itemId: string; unit: string }) {
   return (
     <Card className="border-border mt-4">
       <CardContent className="pt-4">
-        <h3 className="font-heading font-semibold text-[15px] mb-3">로트 상세</h3>
+        <h3 className="font-heading font-semibold text-h3 mb-3">로트 상세</h3>
         {!lots || lots.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">로트가 없습니다</p>
         ) : (
