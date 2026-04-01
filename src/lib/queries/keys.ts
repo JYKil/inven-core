@@ -74,6 +74,11 @@ export const queryKeys = {
     warehouseStock: (warehouseId?: string) => [...queryKeys.reports.all, 'warehouseStock', warehouseId] as const,
     sales: (filters: Record<string, unknown> = {}) => [...queryKeys.reports.all, 'sales', filters] as const,
   },
+  referenceCodes: {
+    all: ['referenceCodes'] as const,
+    list: (filters: ListFilters = {}) => [...queryKeys.referenceCodes.all, 'list', filters] as const,
+    types: () => [...queryKeys.referenceCodes.all, 'types'] as const,
+  },
   dashboard: {
     all: ['dashboard'] as const,
     summary: () => [...queryKeys.dashboard.all, 'summary'] as const,

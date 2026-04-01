@@ -253,6 +253,34 @@
 
 ---
 
+## P2.8 — 기준정보 (Reference Codes)
+
+> 디자인 문서: `~/.gstack/projects/JYKil-inven-core/kilga-main-design-20260401-215211.md`
+> Eng Review: 2026-04-01, CLEAR (6건 이슈 해결, 0 critical gap)
+
+### DB 마이그레이션 ✅
+- [x] `reference_codes` 테이블 생성 (DDL 수정 반영)
+- [x] `supabase db push`
+- [x] `supabase gen types typescript` — DB 타입 재생성
+
+### 프론트엔드 구현 ✅
+- [x] Zod 스키마 — `src/lib/validations/reference-code.ts`
+- [x] Query 키 — `src/lib/queries/keys.ts`에 `referenceCodes` 추가
+- [x] TanStack Query 훅 — `src/hooks/use-reference-codes.ts` (5개 훅)
+- [x] 다이얼로그 — `src/components/reference-codes/reference-code-dialog.tsx`
+- [x] 페이지 — `page.tsx` + `_content.tsx` + `loading.tsx`
+- [x] 사이드바 메뉴 — 기초 마스터 > 기준정보 추가
+
+### 테스트 ✅
+- [x] Zod 스키마 단위 테스트 11건 (`validations.test.ts`에 추가, 총 161개)
+- [ ] E2E 스모크 테스트 ~4건 (`reference-codes.spec.ts`) — 별도 진행 예정
+
+### 마무리 ✅
+- [x] TypeScript + Next.js 빌드 통과
+- [x] CHECKPOINT.md + TODOS.md 업데이트
+
+---
+
 ## P3 — 참고 사항
 
 ### 일정 가이드라인

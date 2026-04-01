@@ -20,6 +20,7 @@ import {
   Building2,
   UserCog,
   Shield,
+  BookOpen,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
@@ -45,6 +46,7 @@ const navGroups = [
   {
     label: '기초 마스터',
     items: [
+      { title: '기준정보', href: '/reference-codes', icon: BookOpen },
       { title: '거래처', href: '/partners', icon: Users },
       { title: '창고', href: '/warehouses', icon: Warehouse },
       { title: '품목 관리', href: '/items', icon: Package },

@@ -9,6 +9,7 @@ import { assemblyOrderCreateSchema } from '@/lib/validations/assembly'
 import { bomHeaderCreateSchema, bomLineSchema } from '@/lib/validations/bom'
 import { poPaymentCreateSchema } from '@/lib/validations/po-payment'
 import { warehouseTransferCreateSchema } from '@/lib/validations/warehouse-transfer'
+import { referenceCodeCreateSchema, referenceCodeUpdateSchema } from '@/lib/validations/reference-code'
 
 const uuid = '550e8400-e29b-41d4-a716-446655440000'
 const uuid2 = '660e8400-e29b-41d4-a716-446655440000'
@@ -408,6 +409,97 @@ describe('salesOrderUpdateSchema — 취소 상태', () => {
     const validStatuses = ['draft', 'confirmed', 'shipped', 'cancelled']
     for (const status of validStatuses) {
       expect(salesOrderUpdateSchema.safeParse({ status }).success).toBe(true)
+    }
+  })
+})
+
+// --- 기준정보 ---
+describe('referenceCodeCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: 'DHL Express',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('code_type 미입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '',
+      code_data1: 'DHL',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_data1 미입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: '',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_type 공백만 입력 시 trim 후 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '   ',
+      code_data1: 'DHL',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_data1 공백만 입력 시 trim 후 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: '   ',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('보조 데이터 2~9 선택 입력 통과', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: 'Shipping Package',
+      code_data1: 'Box A',
+      code_data2: '30x20x15',
+      code_data3: '1.5kg',
+      sort_order: 1,
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.code_data2).toBe('30x20x15')
+      expect(result.data.code_data4).toBeUndefined()
+    }
+  })
+
+  it('sort_order 소수 입력 시 실패', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '운송수단',
+      code_data1: 'DHL',
+      sort_order: 1.5,
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('code_type trim 동작 확인', () => {
+    const result = referenceCodeCreateSchema.safeParse({
+      code_type: '  운송수단  ',
+      code_data1: '  DHL Express  ',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.code_type).toBe('운송수단')
+      expect(result.data.code_data1).toBe('DHL Express')
+    }
+  })
+})
+
+describe('referenceCodeUpdateSchema', () => {
+  it('code_type 필드가 없어야 함', () => {
+    const result = referenceCodeUpdateSchema.safeParse({
+      code_data1: '수정된 데이터',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect('code_type' in result.data).toBe(false)
     }
   })
 })

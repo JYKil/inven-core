@@ -400,6 +400,7 @@ export type Database = {
           consumed_qty: number
           created_at: string
           id: string
+          is_reversed: boolean
           lot_id: string
           transaction_id: string
         }
@@ -407,6 +408,7 @@ export type Database = {
           consumed_qty: number
           created_at?: string
           id?: string
+          is_reversed?: boolean
           lot_id: string
           transaction_id: string
         }
@@ -414,6 +416,7 @@ export type Database = {
           consumed_qty?: number
           created_at?: string
           id?: string
+          is_reversed?: boolean
           lot_id?: string
           transaction_id?: string
         }
@@ -936,6 +939,71 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_codes: {
+        Row: {
+          code_data1: string
+          code_data2: string | null
+          code_data3: string | null
+          code_data4: string | null
+          code_data5: string | null
+          code_data6: string | null
+          code_data7: string | null
+          code_data8: string | null
+          code_data9: string | null
+          code_type: string
+          company_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          code_data1: string
+          code_data2?: string | null
+          code_data3?: string | null
+          code_data4?: string | null
+          code_data5?: string | null
+          code_data6?: string | null
+          code_data7?: string | null
+          code_data8?: string | null
+          code_data9?: string | null
+          code_type: string
+          company_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          code_data1?: string
+          code_data2?: string | null
+          code_data3?: string | null
+          code_data4?: string | null
+          code_data5?: string | null
+          code_data6?: string | null
+          code_data7?: string | null
+          code_data8?: string | null
+          code_data9?: string | null
+          code_type?: string
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_codes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]

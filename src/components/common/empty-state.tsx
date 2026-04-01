@@ -7,11 +7,13 @@ export function EmptyState({
   description,
   actionLabel,
   actionHref,
+  onAction,
 }: {
   title: string
   description?: string
   actionLabel?: string
   actionHref?: string
+  onAction?: () => void
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -21,6 +23,12 @@ export function EmptyState({
       )}
       {actionLabel && actionHref && (
         <Button render={<Link href={actionHref} />} size="sm" className="mt-4 bg-primary hover:bg-primary-hover">
+            <Plus className="h-4 w-4 mr-1" />
+            {actionLabel}
+        </Button>
+      )}
+      {actionLabel && onAction && !actionHref && (
+        <Button onClick={onAction} size="sm" className="mt-4 bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-1" />
             {actionLabel}
         </Button>
