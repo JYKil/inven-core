@@ -154,7 +154,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-12 flex flex-row items-center border-b border-border px-2">
+      <SidebarHeader className="h-12 flex flex-row items-center border-b border-border group-data-[collapsible=icon]:border-b-0 px-2">
         <Link href="/" className="flex items-center gap-2 px-2 min-w-0">
           <Building2 className="h-5 w-5 text-primary shrink-0" />
           <span className="font-heading font-semibold text-sm truncate group-data-[collapsible=icon]:hidden">
