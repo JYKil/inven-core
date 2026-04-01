@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   Warehouse,
   Package,
   ClipboardList,
@@ -49,7 +50,7 @@ const navGroups = [
     items: [
       { title: '기준정보', href: '/reference-codes', icon: BookOpen },
       { title: '업체정보', href: '/vendors', icon: Users },
-      { title: '고객정보', href: '/customers', icon: Users },
+      { title: '고객정보', href: '/customers', icon: UserCheck },
       { title: '창고', href: '/warehouses', icon: Warehouse },
       { title: '품목 관리', href: '/items', icon: Package },
     ],
