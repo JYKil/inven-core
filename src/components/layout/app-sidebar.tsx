@@ -31,7 +31,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -154,7 +153,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-12 flex flex-row items-center border-b border-border group-data-[collapsible=icon]:border-b-0 px-2">
+      <div
+        data-slot="sidebar-header"
+        data-sidebar="header"
+        className="flex flex-row gap-0 p-2 h-12 items-center border-b border-border group-data-[collapsible=icon]:border-b-0 px-2"
+      >
         <Link href="/" className="flex items-center gap-2 px-2 min-w-0">
           <Building2 className="h-5 w-5 text-primary shrink-0" />
           <span className="font-heading font-semibold text-sm truncate group-data-[collapsible=icon]:hidden">
@@ -162,7 +165,7 @@ export function AppSidebar() {
           </span>
         </Link>
         <SidebarCollapseButton />
-      </SidebarHeader>
+      </div>
       <SidebarContent>
         <nav aria-label="메인 메뉴">
         {groups.map((group) => (
