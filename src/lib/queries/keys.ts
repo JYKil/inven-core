@@ -8,10 +8,15 @@ export type ListFilters = {
 }
 
 export const queryKeys = {
-  partners: {
-    all: ['partners'] as const,
-    list: (filters: ListFilters = {}) => [...queryKeys.partners.all, 'list', filters] as const,
-    detail: (id: string) => [...queryKeys.partners.all, 'detail', id] as const,
+  vendors: {
+    all: ['vendors'] as const,
+    list: (filters: ListFilters = {}) => [...queryKeys.vendors.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.vendors.all, 'detail', id] as const,
+  },
+  customers: {
+    all: ['customers'] as const,
+    list: (filters: ListFilters = {}) => [...queryKeys.customers.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.customers.all, 'detail', id] as const,
   },
   warehouses: {
     all: ['warehouses'] as const,

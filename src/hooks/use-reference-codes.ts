@@ -50,17 +50,10 @@ export function useReferenceCodeTypes() {
   return useQuery({
     queryKey: queryKeys.referenceCodes.types(),
     queryFn: async () => {
-      // is_active=true 레코드의 고유 code_type 목록
-      const { data, error } = await supabase
-        .from('reference_codes')
-        .select('code_type')
-        .eq('is_active', true)
-        .order('code_type')
-
+      // DB에서 DISTINCT 처리 (1000행 제한 회피)
+      const { data, error } = await supabase.rpc('get_reference_code_types')
       if (error) throw error
-      // DISTINCT 대신 클라이언트에서 중복 제거
-      const types = [...new Set((data ?? []).map((r) => r.code_type))]
-      return types
+      return (data ?? []).map((r) => r.code_type)
     },
   })
 }
@@ -70,37 +63,22 @@ export function useCreateReferenceCode() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<ReferenceCodeInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
-
-      // sort_order 자동 증가: 해당 타입의 MAX(sort_order) + 1
-      let sortOrder = input.sort_order
-      if (sortOrder == null) {
-        const { data: maxRow } = await supabase
-          .from('reference_codes')
-          .select('sort_order')
-          .eq('company_id', profile.company_id)
-          .eq('code_type', input.code_type!)
-          .eq('is_active', true)
-          .order('sort_order', { ascending: false })
-          .limit(1)
-          .single()
-        sortOrder = (maxRow?.sort_order ?? 0) + 1
-      }
-
-      const { data, error } = await supabase
-        .from('reference_codes')
-        .insert({ ...input, company_id: profile.company_id, sort_order: sortOrder })
-        .select()
-        .single()
+      // DB RPC로 원자적 생성 (sort_order MAX+1 포함)
+      const { data, error } = await supabase.rpc('create_reference_code', {
+        p_code_type: input.code_type,
+        p_code_data1: input.code_data1,
+        p_code_data2: input.code_data2 ?? undefined,
+        p_code_data3: input.code_data3 ?? undefined,
+        p_code_data4: input.code_data4 ?? undefined,
+        p_code_data5: input.code_data5 ?? undefined,
+        p_code_data6: input.code_data6 ?? undefined,
+        p_code_data7: input.code_data7 ?? undefined,
+        p_code_data8: input.code_data8 ?? undefined,
+        p_code_data9: input.code_data9 ?? undefined,
+        p_sort_order: input.sort_order ?? undefined,
+      })
       if (error) throw error
-      return data as ReferenceCode
+      return data as string // RPC returns uuid
     },
     retry: 0,
     onSuccess: () => {
@@ -114,9 +92,11 @@ export function useUpdateReferenceCode() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: ReferenceCodeUpdate & { id: string }) => {
+      // 허용 필드만 추출 (company_id, is_active 등 보호)
+      const { code_data1, code_data2, code_data3, code_data4, code_data5, code_data6, code_data7, code_data8, code_data9, sort_order } = input
       const { data, error } = await supabase
         .from('reference_codes')
-        .update(input)
+        .update({ code_data1, code_data2, code_data3, code_data4, code_data5, code_data6, code_data7, code_data8, code_data9, sort_order })
         .eq('id', id)
         .select()
         .single()

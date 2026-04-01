@@ -1359,6 +1359,22 @@ export type Database = {
         }
         Returns: string
       }
+      create_reference_code: {
+        Args: {
+          p_code_data1: string
+          p_code_data2?: string
+          p_code_data3?: string
+          p_code_data4?: string
+          p_code_data5?: string
+          p_code_data6?: string
+          p_code_data7?: string
+          p_code_data8?: string
+          p_code_data9?: string
+          p_code_type: string
+          p_sort_order?: number
+        }
+        Returns: string
+      }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       dashboard_reorder_alerts: {
         Args: { p_company_id: string }
@@ -1413,6 +1429,12 @@ export type Database = {
       }
       get_my_company_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
+      get_reference_code_types: {
+        Args: never
+        Returns: {
+          code_type: string
+        }[]
+      }
       report_inventory_ledger: {
         Args: {
           p_company_id: string
