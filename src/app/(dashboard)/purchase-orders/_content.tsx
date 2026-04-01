@@ -104,7 +104,7 @@ export default function PurchaseOrdersContent() {
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/purchase-orders/${po.id}`) }}
                 >
                   <TableCell className="font-data font-medium">{po.po_number}</TableCell>
-                  <TableCell>{po.partner?.name ?? '-'}</TableCell>
+                  <TableCell>{po.vendor?.name ?? '-'}</TableCell>
                   <TableCell><StatusBadge status={po.status} /></TableCell>
                   <TableCell className="font-data text-right">{formatAmount(po.total_amount)}</TableCell>
                   <TableCell className="font-data">{formatDate(po.order_date)}</TableCell>

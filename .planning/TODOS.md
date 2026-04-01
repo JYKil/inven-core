@@ -281,7 +281,48 @@
 
 ---
 
-## P3 — 참고 사항
+## P2.9 — 거래처 분리 (partners → vendors + customers) ✅
+
+> 디자인 문서: `~/.gstack/projects/JYKil-inven-core/kilga-feature/reference-codes-design-20260401-225613.md`
+
+### DB 마이그레이션 ✅
+- [x] vendors + customers 테이블 생성 (RLS, moddatetime, 초기 데이터)
+- [x] FK 전환 — purchase_orders(partner_id→vendor_id), sales_orders(partner_id→customer_id)
+- [x] RPC 수정 — report_sales, dashboard_summary
+- [x] partners DROP CASCADE
+
+### 프론트엔드 구현 ✅
+- [x] Zod 스키마 — vendor.ts(은행/계좌 필드), customer.ts(입금통화)
+- [x] Query 키 — partners → vendors + customers
+- [x] TanStack Query 훅 — use-vendors.ts, use-customers.ts
+- [x] 페이지 UI — /vendors(목록/등록/상세), /customers(목록/등록/상세)
+- [x] 기존 참조 수정 (~20개 파일) — PO/SO/지급/보고서/대시보드/사이드바/E2E
+
+### 삭제 ✅
+- [x] /partners 디렉토리 (5개 파일)
+- [x] use-partners.ts
+- [x] validations/partner.ts
+
+### 테스트 ✅
+- [x] 단위 테스트 수정 — vendorCreateSchema 5건 + customerCreateSchema 5건 (총 166개 통과)
+- [x] E2E navigation 수정 — /partners → /vendors + /customers
+
+### 마무리 ✅
+- [x] `supabase db push` — moddatetime 스키마 수정(extensions.), report_sales DROP 선행 추가
+- [x] `supabase gen types typescript` — DB 타입 재생성
+- [x] TypeScript + Next.js 빌드 통과
+
+---
+
+## P3 — 기준정보 후속 작업
+
+### TODO (Eng Review 발견)
+- [ ] **중복 에러 메시지 한글화**: UNIQUE 위반 시 DB 원문 에러 대신 '이미 등록된 코드입니다' 표시
+- [ ] **is_active DB 레벨 보호**: update를 RPC로 변경해서 is_active 직접 변경 차단 (Outside voice 발견)
+
+---
+
+## P4 — 참고 사항
 
 ### 일정 가이드라인
 각 슬라이스의 Week 단위 일정은 가이드라인이지 기한이 아님.

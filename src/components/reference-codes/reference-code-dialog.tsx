@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronsUpDown, Check } from 'lucide-react'
@@ -47,6 +47,8 @@ export function ReferenceCodeDialog({
   isPending,
 }: ReferenceCodeDialogProps) {
   const [typeOpen, setTypeOpen] = useState(false)
+  // cmdk CommandInput이 내부적으로 값을 소문자화하므로 원본 입력값을 별도 추적
+  const originalInputRef = useRef('')
 
   // 항상 createSchema 사용 — 수정 모드에서는 code_type을 UI에서만 읽기전용 처리
   const form = useForm<ReferenceCodeCreate>({
@@ -147,9 +149,13 @@ export function ReferenceCodeDialog({
                   <Command>
                     <CommandInput
                       placeholder="타입 검색 또는 새 타입 입력..."
-                      onValueChange={(v) => {
-                        // 자유 입력 허용 — 검색어를 code_type으로도 설정
-                        form.setValue('code_type', v, { shouldValidate: true })
+                      onInput={(e) => {
+                        // cmdk가 소문자화하기 전에 원본 값 저장
+                        originalInputRef.current = (e.target as HTMLInputElement).value
+                      }}
+                      onValueChange={() => {
+                        // cmdk가 소문자화된 값을 전달하므로 원본 ref 사용
+                        form.setValue('code_type', originalInputRef.current, { shouldValidate: true })
                       }}
                     />
                     <CommandList>

@@ -1,6 +1,5 @@
--- 기준정보 RPC: DISTINCT 타입 목록 + 원자적 생성
+-- reference-codes RPC: SET search_path = public 추가 (SECURITY DEFINER 보안 강화)
 
--- 1. 타입 목록 조회 (DISTINCT)
 CREATE OR REPLACE FUNCTION get_reference_code_types()
 RETURNS TABLE(code_type varchar) AS $$
 BEGIN
@@ -11,13 +10,11 @@ BEGIN
       AND rc.is_active = true
     ORDER BY rc.code_type;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
--- authenticated만 호출 가능
 REVOKE ALL ON FUNCTION get_reference_code_types() FROM public;
 GRANT EXECUTE ON FUNCTION get_reference_code_types() TO authenticated;
 
--- 2. 기준정보 생성 (sort_order 원자적 MAX+1)
 CREATE OR REPLACE FUNCTION create_reference_code(
   p_code_type varchar,
   p_code_data1 varchar,
@@ -37,12 +34,7 @@ DECLARE
   v_sort_order int;
   v_id uuid;
 BEGIN
-  -- 인증 확인
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION '인증이 필요합니다';
-  END IF;
-
-  -- 회사 확인
+  -- 인증 + 회사 확인
   v_company_id := public.get_my_company_id();
   IF v_company_id IS NULL THEN
     RAISE EXCEPTION '회사 정보를 찾을 수 없습니다';
@@ -73,7 +65,7 @@ BEGIN
 
   RETURN v_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 REVOKE ALL ON FUNCTION create_reference_code(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, int) FROM public;
 GRANT EXECUTE ON FUNCTION create_reference_code(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, int) TO authenticated;

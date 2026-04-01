@@ -1,23 +1,6 @@
--- 기준정보 RPC: DISTINCT 타입 목록 + 원자적 생성
+-- create_reference_code RPC에 auth.uid() 검증 추가
+-- 기존 CREATE OR REPLACE로 함수 재정의
 
--- 1. 타입 목록 조회 (DISTINCT)
-CREATE OR REPLACE FUNCTION get_reference_code_types()
-RETURNS TABLE(code_type varchar) AS $$
-BEGIN
-  RETURN QUERY
-    SELECT DISTINCT rc.code_type
-    FROM reference_codes rc
-    WHERE rc.company_id = public.get_my_company_id()
-      AND rc.is_active = true
-    ORDER BY rc.code_type;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- authenticated만 호출 가능
-REVOKE ALL ON FUNCTION get_reference_code_types() FROM public;
-GRANT EXECUTE ON FUNCTION get_reference_code_types() TO authenticated;
-
--- 2. 기준정보 생성 (sort_order 원자적 MAX+1)
 CREATE OR REPLACE FUNCTION create_reference_code(
   p_code_type varchar,
   p_code_data1 varchar,
@@ -74,6 +57,3 @@ BEGIN
   RETURN v_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
-REVOKE ALL ON FUNCTION create_reference_code(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, int) FROM public;
-GRANT EXECUTE ON FUNCTION create_reference_code(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar, int) TO authenticated;

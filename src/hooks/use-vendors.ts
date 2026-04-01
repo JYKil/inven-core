@@ -93,9 +93,10 @@ export function useUpdateVendor() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: VendorUpdate & { id: string }) => {
+      const { name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes } = input
       const { data, error } = await supabase
         .from('vendors')
-        .update(input)
+        .update({ name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes })
         .eq('id', id)
         .select()
         .single()

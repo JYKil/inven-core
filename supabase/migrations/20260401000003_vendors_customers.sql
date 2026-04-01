@@ -46,7 +46,7 @@ CREATE POLICY vendors_super_admin ON vendors FOR ALL
 -- moddatetime
 CREATE TRIGGER set_vendors_updated_at
   BEFORE UPDATE ON vendors
-  FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
+  FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime(updated_at);
 
 -- =====================
 -- 2. customers 테이블
@@ -87,7 +87,7 @@ CREATE POLICY customers_super_admin ON customers FOR ALL
 -- moddatetime
 CREATE TRIGGER set_customers_updated_at
   BEFORE UPDATE ON customers
-  FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
+  FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime(updated_at);
 
 -- =====================
 -- 3. 초기 데이터 적재 (t1 테넌트 + kilga naver 회사)
@@ -171,6 +171,7 @@ ALTER TABLE sales_orders ADD CONSTRAINT sales_orders_customer_id_fkey
 -- =====================
 -- 5. report_sales RPC 수정 (partner → customer)
 -- =====================
+DROP FUNCTION IF EXISTS report_sales(uuid, date, date, uuid);
 CREATE OR REPLACE FUNCTION report_sales(
   p_company_id uuid,
   p_start_date date,

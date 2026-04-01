@@ -102,7 +102,7 @@ export default function SalesOrdersContent() {
                   onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/sales-orders/${so.id}`) }}
                 >
                   <TableCell className="font-data font-medium">{so.order_number}</TableCell>
-                  <TableCell>{so.partner?.name ?? '-'}</TableCell>
+                  <TableCell>{so.customer?.name ?? '-'}</TableCell>
                   <TableCell><StatusBadge status={so.status} /></TableCell>
                   <TableCell className="font-data text-right">{formatAmount(so.total_amount)}</TableCell>
                   <TableCell className="font-data">{formatDate(so.order_date)}</TableCell>
