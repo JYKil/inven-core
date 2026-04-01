@@ -67,7 +67,7 @@ export default function SalesOrdersContent() {
           <TableHeader>
             <TableRow className="bg-background/50">
               <TableHead>주문번호</TableHead>
-              <TableHead>거래처</TableHead>
+              <TableHead>고객</TableHead>
               <TableHead>상태</TableHead>
               <TableHead className="text-right">매출 금액</TableHead>
               <TableHead>주문일</TableHead>
