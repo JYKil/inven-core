@@ -92,16 +92,21 @@ export function useUpdateReferenceCode() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: ReferenceCodeUpdate & { id: string }) => {
-      // 허용 필드만 추출 (company_id, is_active 등 보호)
-      const { code_data1, code_data2, code_data3, code_data4, code_data5, code_data6, code_data7, code_data8, code_data9, sort_order } = input
-      const { data, error } = await supabase
-        .from('reference_codes')
-        .update({ code_data1, code_data2, code_data3, code_data4, code_data5, code_data6, code_data7, code_data8, code_data9, sort_order })
-        .eq('id', id)
-        .select()
-        .single()
+      // RPC로 is_active, company_id 등 DB 레벨 보호
+      const { error } = await supabase.rpc('update_reference_code', {
+        p_id: id,
+        p_code_data1: input.code_data1 ?? undefined,
+        p_code_data2: input.code_data2 ?? undefined,
+        p_code_data3: input.code_data3 ?? undefined,
+        p_code_data4: input.code_data4 ?? undefined,
+        p_code_data5: input.code_data5 ?? undefined,
+        p_code_data6: input.code_data6 ?? undefined,
+        p_code_data7: input.code_data7 ?? undefined,
+        p_code_data8: input.code_data8 ?? undefined,
+        p_code_data9: input.code_data9 ?? undefined,
+        p_sort_order: input.sort_order ?? undefined,
+      })
       if (error) throw error
-      return data as ReferenceCode
     },
     retry: 0,
     onSuccess: () => {
@@ -115,11 +120,8 @@ export function useDeleteReferenceCode() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      // 소프트 삭제
-      const { error } = await supabase
-        .from('reference_codes')
-        .update({ is_active: false })
-        .eq('id', id)
+      // RPC로 소프트 삭제 (DB 레벨 보호)
+      const { error } = await supabase.rpc('soft_delete_reference_code', { p_id: id })
       if (error) throw error
     },
     retry: 0,

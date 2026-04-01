@@ -1522,8 +1522,25 @@ export type Database = {
           unit_cost: number
         }[]
       }
+      soft_delete_reference_code: { Args: { p_id: string }; Returns: undefined }
       update_bom_lines: {
         Args: { p_bom_header_id: string; p_company_id: string; p_lines: Json }
+        Returns: undefined
+      }
+      update_reference_code: {
+        Args: {
+          p_code_data1?: string
+          p_code_data2?: string
+          p_code_data3?: string
+          p_code_data4?: string
+          p_code_data5?: string
+          p_code_data6?: string
+          p_code_data7?: string
+          p_code_data8?: string
+          p_code_data9?: string
+          p_id: string
+          p_sort_order?: number
+        }
         Returns: undefined
       }
     }
