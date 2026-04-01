@@ -97,9 +97,9 @@ export function ReferenceCodeDialog({
   }, [open, initialData, mode, form])
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    // 빈 문자열 → undefined 변환 (optional 필드)
+    // 빈 문자열 → null 변환 (optional 필드, undefined는 Supabase에서 생략되므로 null 사용)
     const cleaned = Object.fromEntries(
-      Object.entries(data).map(([k, v]) => [k, v === '' ? undefined : v])
+      Object.entries(data).map(([k, v]) => [k, v === '' ? null : v])
     ) as ReferenceCodeCreate
     await onSubmit(cleaned)
     onOpenChange(false)
@@ -167,8 +167,8 @@ export function ReferenceCodeDialog({
                           <CommandItem
                             key={type}
                             value={type}
-                            onSelect={(v) => {
-                              form.setValue('code_type', v, { shouldValidate: true })
+                            onSelect={() => {
+                              form.setValue('code_type', type, { shouldValidate: true })
                               setTypeOpen(false)
                             }}
                           >

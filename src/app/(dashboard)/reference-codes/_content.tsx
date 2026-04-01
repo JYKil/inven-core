@@ -229,7 +229,7 @@ export default function ReferenceCodesContent() {
       {/* 추가/수정 다이얼로그 */}
       <ReferenceCodeDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(v) => { if (!v) setEditTarget(null); setDialogOpen(v) }}
         mode={dialogMode}
         initialData={editTarget}
         existingTypes={types ?? []}
