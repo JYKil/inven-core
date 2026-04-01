@@ -195,7 +195,8 @@ export default function ReferenceCodesContent() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
+                        aria-label={`${row.code_data1} 수정`}
                         onClick={(e) => { e.stopPropagation(); handleEdit(row) }}
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -203,7 +204,8 @@ export default function ReferenceCodesContent() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        aria-label={`${row.code_data1} 삭제`}
                         onClick={(e) => { e.stopPropagation(); handleDelete(row) }}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
