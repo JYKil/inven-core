@@ -135,8 +135,8 @@ export default function ReferenceCodesContent() {
         <Table className="table-fixed w-full">
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="whitespace-nowrap truncate">타입</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 1</TableHead>
+              <TableHead className="w-[12%] whitespace-nowrap truncate">타입</TableHead>
+              <TableHead className="w-[18%] whitespace-nowrap truncate">데이터 1</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 2</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 3</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 4</TableHead>
