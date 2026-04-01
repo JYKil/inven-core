@@ -273,7 +273,7 @@
 
 ### 테스트 ✅
 - [x] Zod 스키마 단위 테스트 11건 (`validations.test.ts`에 추가, 총 161개)
-- [ ] E2E 스모크 테스트 ~4건 (`reference-codes.spec.ts`) — 별도 진행 예정
+- [x] E2E 스모크 테스트 4건 (`reference-codes.spec.ts`) — 목록/다이얼로그/필터/사이드바 메뉴
 
 ### 마무리 ✅
 - [x] TypeScript + Next.js 빌드 통과

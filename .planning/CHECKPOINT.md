@@ -199,6 +199,15 @@
     - [x] Zod 단위 테스트 11건 (총 161개 통과)
     - [x] TypeScript + Next.js 빌드 통과
 
+30. **기준정보 마무리** → 완료 (2026-04-01)
+    - [x] supabase db push — RPC 마이그레이션(get_reference_code_types, create_reference_code) 적용
+    - [x] supabase gen types typescript — src/types/database.ts 갱신
+    - [x] `as any` 타입 단언 제거 (use-reference-codes.ts 2곳)
+    - [x] null→undefined 수정 (optional RPC 파라미터)
+    - [x] TypeScript + Next.js 빌드 통과
+    - [x] E2E 스모크 테스트 4건 (reference-codes.spec.ts)
+    - [x] 단위 테스트 161개 통과
+
 ### 남은 작업
 1. **Vercel 재배포** — 기준정보 구현 완료
 2. **엑셀 업로드** — 고객 샘플 확보 후
