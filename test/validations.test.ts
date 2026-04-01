@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { partnerCreateSchema } from '@/lib/validations/partner'
+import { vendorCreateSchema } from '@/lib/validations/vendor'
+import { customerCreateSchema } from '@/lib/validations/customer'
 import { itemCreateSchema } from '@/lib/validations/item'
 import { warehouseCreateSchema } from '@/lib/validations/warehouse'
 import { poCreateSchema, poLineSchema, poUpdateSchema } from '@/lib/validations/purchase-order'
@@ -14,51 +15,81 @@ import { referenceCodeCreateSchema, referenceCodeUpdateSchema } from '@/lib/vali
 const uuid = '550e8400-e29b-41d4-a716-446655440000'
 const uuid2 = '660e8400-e29b-41d4-a716-446655440000'
 
-// --- 거래처 ---
-describe('partnerCreateSchema', () => {
+// --- 업체 ---
+describe('vendorCreateSchema', () => {
   it('유효한 데이터 통과', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '테스트 업체',
-      partner_type: 'supplier',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor A',
     })
     expect(result.success).toBe(true)
   })
 
   it('이름 미입력 시 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '',
-      partner_type: 'supplier',
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('잘못된 partner_type 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'invalid',
-    })
+    const result = vendorCreateSchema.safeParse({ name: '' })
     expect(result.success).toBe(false)
   })
 
   it('빈 이메일은 undefined로 변환', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'customer',
-      email: '',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor B',
+      contact_email: '',
     })
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.email).toBeUndefined()
+      expect(result.data.contact_email).toBeUndefined()
     }
   })
 
   it('잘못된 이메일 형식 실패', () => {
-    const result = partnerCreateSchema.safeParse({
-      name: '업체',
-      partner_type: 'both',
-      email: 'not-email',
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor C',
+      contact_email: 'not-email',
     })
     expect(result.success).toBe(false)
+  })
+
+  it('은행/계좌 필드 포함 가능', () => {
+    const result = vendorCreateSchema.safeParse({
+      name: 'Vendor D',
+      bank_name: 'Kookmin',
+      account_number: '12345',
+      payment_currency: 'USD',
+    })
+    expect(result.success).toBe(true)
+  })
+})
+
+// --- 고객 ---
+describe('customerCreateSchema', () => {
+  it('유효한 데이터 통과', () => {
+    const result = customerCreateSchema.safeParse({
+      name: 'Amazon',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('이름 미입력 시 실패', () => {
+    const result = customerCreateSchema.safeParse({ name: '' })
+    expect(result.success).toBe(false)
+  })
+
+  it('기본 입금통화 USD', () => {
+    const result = customerCreateSchema.safeParse({ name: 'Customer' })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.receipt_currency).toBe('USD')
+    }
+  })
+
+  it('빈 이메일은 undefined로 변환', () => {
+    const result = customerCreateSchema.safeParse({
+      name: 'Walmart',
+      contact_email: '',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.contact_email).toBeUndefined()
+    }
   })
 })
 
@@ -132,7 +163,7 @@ describe('warehouseCreateSchema', () => {
 describe('poCreateSchema', () => {
   const validPo = {
     po_number: 'PO-001',
-    partner_id: uuid,
+    vendor_id: uuid,
     order_date: '2026-03-31',
     lines: [{ item_id: uuid, ordered_qty: 10, unit_price: 1000 }],
   }
@@ -146,8 +177,8 @@ describe('poCreateSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('partner_id가 UUID가 아니면 실패', () => {
-    const result = poCreateSchema.safeParse({ ...validPo, partner_id: 'not-uuid' })
+  it('vendor_id가 UUID가 아니면 실패', () => {
+    const result = poCreateSchema.safeParse({ ...validPo, vendor_id: 'not-uuid' })
     expect(result.success).toBe(false)
   })
 })
@@ -168,7 +199,7 @@ describe('poLineSchema', () => {
 describe('salesOrderCreateSchema', () => {
   const validSo = {
     order_number: 'SO-001',
-    partner_id: uuid,
+    customer_id: uuid,
     order_date: '2026-03-31',
     lines: [{ item_id: uuid, warehouse_id: uuid2, quantity: 5, unit_price: 2000 }],
   }

@@ -9,14 +9,14 @@ export const salesOrderLineSchema = z.object({
 
 export const salesOrderCreateSchema = z.object({
   order_number: z.string().min(1, '주문번호를 입력해주세요'),
-  partner_id: z.string().uuid('거래처를 선택해주세요'),
+  customer_id: z.string().uuid('고객을 선택해주세요'),
   order_date: z.string().min(1, '주문일을 입력해주세요'),
   notes: z.string().optional(),
   lines: z.array(salesOrderLineSchema).min(1, '최소 1개의 품목을 추가해주세요'),
 })
 
 export const salesOrderUpdateSchema = z.object({
-  partner_id: z.string().uuid().optional(),
+  customer_id: z.string().uuid().optional(),
   order_date: z.string().optional(),
   notes: z.string().optional(),
   status: z.enum(['draft', 'confirmed', 'shipped', 'cancelled']).optional(),

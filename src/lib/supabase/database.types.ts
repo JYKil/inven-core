@@ -686,111 +686,55 @@ export type Database = {
           },
         ]
       }
-      vendors: {
+      partners: {
         Row: {
-          id: string
-          company_id: string
-          name: string
-          business_number: string | null
           address: string | null
-          bank_name: string | null
-          bank_code: string | null
-          account_number: string | null
-          account_holder: string | null
-          payment_currency: string
-          contact_email: string | null
-          notes: string | null
-          is_active: boolean
+          business_number: string | null
+          company_id: string
+          contact_name: string | null
           created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          partner_type: string
+          phone: string | null
           updated_at: string
         }
         Insert: {
-          id?: string
-          company_id: string
-          name: string
-          business_number?: string | null
           address?: string | null
-          bank_name?: string | null
-          bank_code?: string | null
-          account_number?: string | null
-          account_holder?: string | null
-          payment_currency?: string
-          contact_email?: string | null
-          notes?: string | null
-          is_active?: boolean
+          business_number?: string | null
+          company_id: string
+          contact_name?: string | null
           created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          partner_type?: string
+          phone?: string | null
           updated_at?: string
         }
         Update: {
-          id?: string
-          company_id?: string
-          name?: string
-          business_number?: string | null
           address?: string | null
-          bank_name?: string | null
-          bank_code?: string | null
-          account_number?: string | null
-          account_holder?: string | null
-          payment_currency?: string
-          contact_email?: string | null
-          notes?: string | null
-          is_active?: boolean
+          business_number?: string | null
+          company_id?: string
+          contact_name?: string | null
           created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          partner_type?: string
+          phone?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "vendors_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      customers: {
-        Row: {
-          id: string
-          company_id: string
-          name: string
-          business_number: string | null
-          address: string | null
-          receipt_currency: string
-          contact_email: string | null
-          notes: string | null
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          company_id: string
-          name: string
-          business_number?: string | null
-          address?: string | null
-          receipt_currency?: string
-          contact_email?: string | null
-          notes?: string | null
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          company_id?: string
-          name?: string
-          business_number?: string | null
-          address?: string | null
-          receipt_currency?: string
-          contact_email?: string | null
-          notes?: string | null
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "customers_company_id_fkey"
+            foreignKeyName: "partners_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -941,7 +885,7 @@ export type Database = {
           id: string
           notes: string | null
           order_date: string
-          vendor_id: string
+          partner_id: string
           po_number: string
           status: string
           total_amount: number
@@ -955,7 +899,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_date: string
-          vendor_id: string
+          partner_id: string
           po_number: string
           status?: string
           total_amount?: number
@@ -969,7 +913,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_date?: string
-          vendor_id?: string
+          partner_id?: string
           po_number?: string
           status?: string
           total_amount?: number
@@ -991,10 +935,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "purchase_orders_vendor_id_fkey"
-            columns: ["vendor_id"]
+            foreignKeyName: "purchase_orders_partner_id_fkey"
+            columns: ["partner_id"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "partners"
             referencedColumns: ["id"]
           },
         ]
@@ -1130,7 +1074,7 @@ export type Database = {
           notes: string | null
           order_date: string
           order_number: string
-          customer_id: string
+          partner_id: string
           status: string
           total_amount: number
           updated_at: string
@@ -1145,7 +1089,7 @@ export type Database = {
           notes?: string | null
           order_date: string
           order_number: string
-          customer_id: string
+          partner_id: string
           status?: string
           total_amount?: number
           updated_at?: string
@@ -1160,7 +1104,7 @@ export type Database = {
           notes?: string | null
           order_date?: string
           order_number?: string
-          customer_id?: string
+          partner_id?: string
           status?: string
           total_amount?: number
           updated_at?: string
@@ -1181,10 +1125,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sales_orders_customer_id_fkey"
-            columns: ["customer_id"]
+            foreignKeyName: "sales_orders_partner_id_fkey"
+            columns: ["partner_id"]
             isOneToOne: false
-            referencedRelation: "customers"
+            referencedRelation: "partners"
             referencedColumns: ["id"]
           },
         ]
@@ -1505,7 +1449,7 @@ export type Database = {
         Args: {
           p_company_id: string
           p_end_date: string
-          p_customer_id?: string
+          p_partner_id?: string
           p_start_date: string
         }
         Returns: Json

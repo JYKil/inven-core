@@ -93,7 +93,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
           </div>
           <div>
             <dt className="text-muted-foreground text-xs mb-1">공급업체</dt>
-            <dd className="font-medium">{(po as any).partner?.name ?? '-'}</dd>
+            <dd className="font-medium">{(po as any).vendor?.name ?? '-'}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground text-xs mb-1">발주일</dt>

@@ -21,7 +21,7 @@ export function useSalesOrders(filters: SoFilters = {}) {
     queryFn: async () => {
       let query = supabase
         .from('sales_orders')
-        .select('*, partner:partners!sales_orders_partner_id_fkey(id, name)', { count: 'exact' })
+        .select('*, customer:customers!sales_orders_customer_id_fkey(id, name)', { count: 'exact' })
         .order('created_at', { ascending: false })
 
       if (filters.status) query = query.eq('status', filters.status)
@@ -53,7 +53,7 @@ export function useSalesOrder(id: string) {
         .from('sales_orders')
         .select(`
           *,
-          partner:partners!sales_orders_partner_id_fkey(id, name),
+          customer:customers!sales_orders_customer_id_fkey(id, name),
           sales_order_lines(
             *,
             item:items!sales_order_lines_item_id_fkey(id, code, name, unit),
@@ -76,7 +76,7 @@ export function useCreateSalesOrder() {
   return useMutation({
     mutationFn: async (input: {
       order_number: string
-      partner_id: string
+      customer_id: string
       order_date: string
       notes?: string
       lines: { item_id: string; warehouse_id: string; quantity: number; unit_price: number }[]
@@ -98,7 +98,7 @@ export function useCreateSalesOrder() {
         .insert({
           company_id: profile.company_id,
           order_number: input.order_number,
-          partner_id: input.partner_id,
+          customer_id: input.customer_id,
           order_date: input.order_date,
           notes: input.notes || null,
           total_amount: totalAmount,

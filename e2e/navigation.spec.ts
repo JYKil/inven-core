@@ -9,7 +9,8 @@ test.describe('페이지 네비게이션', () => {
 
   const pages = [
     { path: '/', title: '대시보드' },
-    { path: '/partners', title: '거래처' },
+    { path: '/vendors', title: '업체정보' },
+    { path: '/customers', title: '고객정보' },
     { path: '/warehouses', title: '창고' },
     { path: '/items', title: '품목 관리' },
     { path: '/purchase-orders', title: '발주서' },

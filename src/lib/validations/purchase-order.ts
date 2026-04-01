@@ -8,7 +8,7 @@ export const poLineSchema = z.object({
 
 export const poCreateSchema = z.object({
   po_number: z.string().min(1, 'PO 번호를 입력해주세요'),
-  partner_id: z.string().uuid('공급업체를 선택해주세요'),
+  vendor_id: z.string().uuid('공급업체를 선택해주세요'),
   order_date: z.string().min(1, '발주일을 입력해주세요'),
   expected_date: z.string().optional(),
   notes: z.string().optional(),
@@ -16,7 +16,7 @@ export const poCreateSchema = z.object({
 })
 
 export const poUpdateSchema = z.object({
-  partner_id: z.string().uuid().optional(),
+  vendor_id: z.string().uuid().optional(),
   order_date: z.string().optional(),
   expected_date: z.string().optional(),
   notes: z.string().optional(),

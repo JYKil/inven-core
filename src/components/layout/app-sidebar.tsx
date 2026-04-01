@@ -47,7 +47,8 @@ const navGroups = [
     label: '기초 마스터',
     items: [
       { title: '기준정보', href: '/reference-codes', icon: BookOpen },
-      { title: '거래처', href: '/partners', icon: Users },
+      { title: '업체정보', href: '/vendors', icon: Users },
+      { title: '고객정보', href: '/customers', icon: Users },
       { title: '창고', href: '/warehouses', icon: Warehouse },
       { title: '품목 관리', href: '/items', icon: Package },
     ],

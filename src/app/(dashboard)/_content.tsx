@@ -15,7 +15,7 @@ export default function DashboardContent() {
   const { data: alerts, isLoading: alertsLoading } = useReorderAlerts()
 
   const showOnboarding = summary && (
-    summary.onboarding.partner_count === 0 ||
+    (summary.onboarding.vendor_count === 0 && summary.onboarding.customer_count === 0) ||
     summary.onboarding.warehouse_count === 0 ||
     summary.onboarding.item_count === 0
   )
@@ -38,12 +38,18 @@ export default function DashboardContent() {
           <p className="text-[13px] text-muted-foreground mb-4">
             기초 데이터를 등록하면 재고 관리를 시작할 수 있습니다.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <OnboardingItem
               icon={Users}
-              title="거래처"
-              count={summary.onboarding.partner_count}
-              href="/partners/new"
+              title="업체"
+              count={summary.onboarding.vendor_count}
+              href="/vendors/new"
+            />
+            <OnboardingItem
+              icon={Users}
+              title="고객"
+              count={summary.onboarding.customer_count}
+              href="/customers/new"
             />
             <OnboardingItem
               icon={Warehouse}

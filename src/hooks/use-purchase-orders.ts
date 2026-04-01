@@ -20,7 +20,7 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
     queryFn: async () => {
       let query = supabase
         .from('purchase_orders')
-        .select('*, partner:partners!purchase_orders_partner_id_fkey(id, name)', { count: 'exact' })
+        .select('*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', { count: 'exact' })
         .order('created_at', { ascending: false })
 
       if (filters.status) query = query.eq('status', filters.status)
@@ -51,7 +51,7 @@ export function usePurchaseOrder(id: string) {
         .from('purchase_orders')
         .select(`
           *,
-          partner:partners!purchase_orders_partner_id_fkey(id, name),
+          vendor:vendors!purchase_orders_vendor_id_fkey(id, name),
           purchase_order_lines(
             *,
             item:items!purchase_order_lines_item_id_fkey(id, code, name, unit)
@@ -72,7 +72,7 @@ export function useCreatePurchaseOrder() {
   return useMutation({
     mutationFn: async (input: {
       po_number: string
-      partner_id: string
+      vendor_id: string
       order_date: string
       expected_date?: string
       notes?: string
@@ -95,7 +95,7 @@ export function useCreatePurchaseOrder() {
         .insert({
           company_id: profile.company_id,
           po_number: input.po_number,
-          partner_id: input.partner_id,
+          vendor_id: input.vendor_id,
           order_date: input.order_date,
           expected_date: input.expected_date || null,
           notes: input.notes || null,
