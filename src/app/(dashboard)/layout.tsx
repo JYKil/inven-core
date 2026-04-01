@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
@@ -13,8 +14,14 @@ export default async function DashboardLayout({
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  // 사이드바 쿠키 읽어서 SSR/CSR 상태 일치 (hydration mismatch 방지)
+  const cookieStore = await cookies()
+  const sidebarCookie = cookieStore.get('sidebar_state')?.value
+  const defaultOpen = sidebarCookie !== undefined ? sidebarCookie === 'true' : true
+
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
         <TopBar />
