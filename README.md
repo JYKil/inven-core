@@ -20,9 +20,9 @@ https://inven-core.vercel.app/
 
 ## 주요 기능
 
-- **기초 마스터**: 거래처, 창고, 품목, BOM 관리
-- **구매/입고**: 발주서 생성, 입고 처리 (초과 입고 방지), 지급 관리
-- **영업/출고**: 판매주문, FIFO 기반 자동 출고, 매출원가/이익 자동계산
+- **기초 마스터**: 매입처(Vendor), 고객사(Customer), 창고, 품목, BOM, 기준정보(Reference Codes) 관리
+- **구매/입고**: 매입처 선택, 발주서 생성, 입고 처리 (초과 입고 방지), 지급 관리
+- **영업/출고**: 고객사 선택, 판매주문, FIFO 기반 자동 출고, 매출원가/이익 자동계산
 - **조립**: BOM 기반 재료 소비 + 결과물 생성, 재료 가용성 사전확인
 - **창고 이동**: 창고 간 재고 이동, FIFO 로트 단위 추적
 - **취소/정정**: 출고·입고·조립·이동 취소 (역분개 방식, 감사 추적 보존)
@@ -42,7 +42,7 @@ inven-core/
 │   ├── stores/         # Zustand 스토어
 │   ├── types/          # TypeScript 타입 (Supabase 자동생성 포함)
 │   └── proxy.ts        # 인증 미들웨어
-├── test/               # Vitest 단위 테스트 (118개)
+├── test/               # 단위 테스트 (164개)
 ├── supabase/           # Supabase 설정 + 마이그레이션
 ├── .planning/          # 설계 문서
 └── .doc/               # 프로젝트 참고 문서
@@ -51,7 +51,7 @@ inven-core/
 ## 설계 문서
 
 - [아키텍처](.planning/phase-01-arch.md)
-- [DB 설계](.planning/phase-02-db.md) — 22개 테이블, FIFO 로트 추적
+- [DB 설계](.planning/phase-02-db.md) — 24개 테이블, FIFO 로트 추적
 - [API 설계](.planning/phase-03-api.md) — Hybrid 패턴, 65개 엔드포인트
 - [UI/UX 설계](.planning/phase-04-ui.md) — 화면별 명세, 보고서 3종
 - [롤백/정정 설계](.planning/phase-06-rollback.md) — 취소 RPC 4종, 역분개 방식

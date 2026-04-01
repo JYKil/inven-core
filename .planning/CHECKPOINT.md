@@ -1,15 +1,16 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: 기준정보(Reference Codes) 구현 완료
+- **단계**: v0.2.0.0 프로덕션 배포 완료 (기준정보 + 거래처 분리)
 - **마지막 업데이트**: 2026-04-01
 - **디자인 점수**: B+, AI 슬롭: A
+- **프로덕션 URL**: https://inven-core.vercel.app
 
 ## 완료된 작업
 - [x] .planning 디렉토리 구조 생성
 - [x] 프로젝트 목적 및 요구사항 정의
 - [x] 기술 스택 검토 및 확정 (phase-01-arch.md)
-- [x] DB 설계 완료 (phase-02-db.md) - 22개 테이블, FIFO 로트 추적 구조
+- [x] DB 설계 완료 (phase-02-db.md) - 24개 테이블, FIFO 로트 추적 구조
 - [x] API 설계 완료 (phase-03-api.md) - Hybrid 패턴, API Route 10개 + Supabase 직접 55개
 - [x] 디자인 문서 승인 (office-hours) - 수직 슬라이스 5+1단계
 - [x] `/plan-eng-review` 완료 — 8개 이슈 해결, 외부 의견 8건 중 6건 수용
@@ -101,7 +102,7 @@
 14. ~~CSV 보고서 유틸~~ → 완료 (exportCsv 제네릭 + 보고서 3종 전용 함수)
 15. ~~슬라이스 5 QA~~ → 완료 (헬스 79→100, 5 이슈 발견/5 수정)
 16. ~~settings 페이지~~ → 완료 (회사 설정 + 사용자 관리 + 초대 API)
-17. ~~단위 테스트~~ → 완료 (총 118개 통과)
+17. ~~단위 테스트~~ → 완료 (총 164개 통과)
 18. ~~롤백/정정 트랜잭션 설계~~ → 완료 (phase-06-rollback.md)
 
 19. ~~슬라이스 5 디자인 리뷰~~ → 완료 (6.5→8.3, 4 FINDING 수정, 1 deferred)
@@ -208,9 +209,30 @@
     - [x] E2E 스모크 테스트 4건 (reference-codes.spec.ts)
     - [x] 단위 테스트 161개 통과
 
+31. **거래처 분리 (partners → vendors + customers)** → 완료 (2026-04-01)
+    - [x] DB 마이그레이션 — vendors/customers CREATE TABLE, RLS, moddatetime, 초기 데이터
+    - [x] FK 마이그레이션 — purchase_orders(partner_id→vendor_id), sales_orders(partner_id→customer_id)
+    - [x] RPC 수정 — report_sales(partner→customer), dashboard_summary(partner_count→vendor_count+customer_count)
+    - [x] partners 테이블 DROP CASCADE
+    - [x] Zod 스키마 — vendorCreateSchema(은행/계좌 필드), customerCreateSchema(입금통화)
+    - [x] TanStack Query 훅 — use-vendors.ts, use-customers.ts (각 CRUD 5개)
+    - [x] 페이지 UI — /vendors(목록/등록/상세), /customers(목록/등록/상세)
+    - [x] 기존 참조 수정 — PO/SO/지급/보고서/대시보드 등 ~20개 파일
+    - [x] partners 관련 파일 삭제 — 페이지/훅/스키마
+    - [x] 테스트 수정 — 단위 테스트 166개 통과
+    - [x] TypeScript + Next.js 빌드 통과
+
+32. **기준정보 Eng Review 반영** → 완료 (2026-04-01)
+    - [x] create_reference_code RPC에 auth.uid() IS NULL 검증 추가
+    - [x] cmdk CommandInput lowercase 버그 수정 (onInput ref로 원본값 추적)
+    - [x] E2E CRUD 테스트 3건 추가 (생성/수정/삭제 플로우)
+    - [x] TODO 2건 추가 (중복 에러 한글화, is_active DB 보호)
+
 ### 남은 작업
-1. **Vercel 재배포** — 기준정보 구현 완료
-2. **엑셀 업로드** — 고객 샘플 확보 후
+1. ~~**supabase db push**~~ → 완료 (v0.2.0.0 배포)
+2. ~~**supabase gen types typescript**~~ → 완료
+3. ~~**Vercel 재배포**~~ → 완료 (2026-04-01, PR #1 머지 후 자동 배포)
+4. **엑셀 업로드** — 고객 샘플 확보 후
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)
@@ -246,6 +268,7 @@
 - next-themes: `<html>` 태그에 suppressHydrationWarning 필수 (SSR/클라이언트 class 불일치 방지)
 - 보고서 테이블: overflow-x-auto 사용 (overflow-hidden 금지, 모바일 가로 스크롤 보장)
 - 기준정보: 범용 코드 테이블(code_type 구분), 다이얼로그 CRUD, sort_order 앱 레벨 MAX+1, 타입 자유 입력(Combobox)
+- 거래처 분리: partners 단일 테이블 → vendors(은행/계좌/지급통화) + customers(입금통화) 분리, FK 전환 포함
 
 ## 블로커 / 미결 사항
 - ~~Supabase 프로젝트 생성 필요~~ → 완료 (클라우드, Tokyo 리전)
