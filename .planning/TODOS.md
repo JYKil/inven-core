@@ -314,11 +314,11 @@
 
 ---
 
-## P3 — 기준정보 후속 작업
+## P3 — 기준정보 후속 작업 ✅
 
-### TODO (Eng Review 발견)
-- [ ] **중복 에러 메시지 한글화**: UNIQUE 위반 시 DB 원문 에러 대신 '이미 등록된 코드입니다' 표시
-- [ ] **is_active DB 레벨 보호**: update를 RPC로 변경해서 is_active 직접 변경 차단 (Outside voice 발견)
+### TODO (Eng Review 발견) ✅
+- [x] **중복 에러 메시지 한글화**: create/update RPC에서 UNIQUE 위반 시 '이미 등록된 코드입니다' RAISE
+- [x] **is_active DB 레벨 보호**: update_reference_code + soft_delete_reference_code RPC로 변경, 직접 테이블 접근 차단
 
 ---
 
