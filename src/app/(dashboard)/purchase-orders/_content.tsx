@@ -17,6 +17,7 @@ import { SearchInput } from '@/components/common/search-input'
 import { EmptyState } from '@/components/common/empty-state'
 import { DataTablePagination } from '@/components/common/data-table-pagination'
 import { formatAmount, formatDate } from '@/lib/format'
+import { StatusBadge } from '@/components/common/status-badge'
 import { usePurchaseOrders, type PoFilters } from '@/hooks/use-purchase-orders'
 
 export default function PurchaseOrdersContent() {
@@ -66,9 +67,10 @@ export default function PurchaseOrdersContent() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="w-1/5">계약일자</TableHead>
-              <TableHead className="w-1/5">계약번호</TableHead>
-              <TableHead className="w-1/5">업체명</TableHead>
+              <TableHead className="w-[14%]">계약일자</TableHead>
+              <TableHead className="w-[14%]">계약번호</TableHead>
+              <TableHead className="w-[14%]">계약상태</TableHead>
+              <TableHead className="w-[14%]">업체명</TableHead>
               <TableHead>비고</TableHead>
               <TableHead className="text-right">합계</TableHead>
             </TableRow>
@@ -77,14 +79,14 @@ export default function PurchaseOrdersContent() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 5 }).map((_, j) => (
+                  {Array.from({ length: 6 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : !data?.data.length ? (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   <EmptyState
                     title="발주가 없습니다"
                     actionLabel="첫 발주 등록하기"
@@ -104,6 +106,7 @@ export default function PurchaseOrdersContent() {
                 >
                   <TableCell className="font-data">{formatDate(po.order_date)}</TableCell>
                   <TableCell className="font-data font-medium">{po.po_number}</TableCell>
+                  <TableCell><StatusBadge status={po.status} /></TableCell>
                   <TableCell>{po.vendor?.name ?? '-'}</TableCell>
                   <TableCell className="text-text-secondary">{po.notes || ''}</TableCell>
                   <TableCell className="font-data text-right font-medium">{formatAmount(po.total_amount)}</TableCell>
