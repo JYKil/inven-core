@@ -125,7 +125,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         </TabsList>
 
         <TabsContent value="lines">
-          <div className="pt-2">
+          <div className="pt-2 border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
