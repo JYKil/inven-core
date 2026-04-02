@@ -48,11 +48,11 @@
   --color-text-muted: var(--text-muted);
   --color-primary-hover: var(--primary-hover);
   --color-surface-elevated: var(--surface-elevated);
-  /* DESIGN.md 타이포그래피 스케일 — 표준 토큰에 없는 사이즈 */
-  --font-size-h1: 1.75rem;    /* 28px — H1 Page Title */
-  --font-size-h3: 0.9375rem;  /* 15px — H3 Card Title */
-  --font-size-cell: 0.8125rem; /* 13px — Table Cell */
-  --font-size-2xs: 0.6875rem;  /* 11px — Sidebar Label */
+  /* DESIGN.md 타이포그래피 스케일 — Tailwind v4 @theme 호환 네이밍 */
+  --text-h1: 1.75rem;    /* 28px — H1 Page Title */
+  --text-h3: 0.9375rem;  /* 15px — H3 Card Title */
+  --text-cell: 0.8125rem; /* 13px — Table Cell */
+  --text-2xs: 0.6875rem;  /* 11px — Sidebar Label */
   /* DESIGN.md: sm=3px, md=6px, lg=8px, xl=10px */
   --radius-sm: 3px;
   --radius-md: 6px;
