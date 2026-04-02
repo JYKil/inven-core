@@ -86,7 +86,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
 
       {/* PO 헤더 정보 */}
       <section className="pb-6 mb-6 border-b border-border">
-        <dl className="grid grid-cols-4 gap-x-6 gap-y-3 text-sm">
+        <dl className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
           <div>
             <dt className="text-muted-foreground text-xs mb-1">상태</dt>
             <dd><StatusBadge status={po.status} /></dd>
@@ -108,7 +108,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
             <dd className="font-data font-medium">{formatAmount(po.total_amount)}</dd>
           </div>
           {po.notes && (
-            <div className="col-span-3">
+            <div className="col-span-2 md:col-span-3">
               <dt className="text-muted-foreground text-xs mb-1">비고</dt>
               <dd>{po.notes}</dd>
             </div>
@@ -263,7 +263,7 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
   return (
     <div className="pt-2">
       {/* 지급 요약 */}
-        <div className="flex items-center gap-6 mb-4 text-sm">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4 text-sm">
           <div>
             <span className="text-muted-foreground">총 금액: </span>
             <span className="font-data font-medium">{formatAmount(totalAmount)}</span>
@@ -289,7 +289,7 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
         {/* 지급 등록 폼 */}
         {showForm && (
           <div className="border border-border rounded-md p-4 mb-4 bg-background/30">
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">지급일</Label>
                 <Input
