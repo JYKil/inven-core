@@ -37,11 +37,6 @@ function MaterialTypeBadge({ type }: { type: string | null }) {
   )
 }
 
-function AssemblableBadge({ hasBom }: { hasBom: boolean }) {
-  return hasBom
-    ? <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-secondary/10 text-secondary font-semibold text-xs">Y</span>
-    : <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-muted/50 text-muted-foreground font-medium text-xs">N</span>
-}
 
 export default function BomContent() {
   const [filters, setFilters] = useState<BomFilters>({ page: 1, pageSize: 50 })
@@ -110,24 +105,23 @@ export default function BomContent() {
           <TableHeader>
             <TableRow className="bg-background/50">
               <TableHead className="w-8"></TableHead>
-              <TableHead className="sticky left-0 bg-background/50 z-10 min-w-[200px]">Material</TableHead>
-              <TableHead className="w-[150px]">Material Type</TableHead>
-              <TableHead className="min-w-[200px]">설명</TableHead>
-              <TableHead className="text-center w-[90px]">조립가능</TableHead>
+              <TableHead className="sticky left-0 bg-background/50 z-10 w-[20%]">Material</TableHead>
+              <TableHead className="w-[20%]">Material Type</TableHead>
+              <TableHead>Material Describe</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 5 }).map((_, j) => (
+                  {Array.from({ length: 4 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={4}>
                   <EmptyState
                     title="조립 가능한 품목이 없습니다"
                     description="BOM이 등록된 품목만 표시됩니다"
@@ -164,15 +158,12 @@ export default function BomContent() {
                       <TableCell className="text-text-secondary text-cell">
                         {item.description || '-'}
                       </TableCell>
-                      <TableCell className="text-center">
-                        <AssemblableBadge hasBom={true} />
-                      </TableCell>
                     </TableRow>
 
                     {/* 1단계: BOM 구성품 */}
                     {isExpanded && item.activeBom && (
                       <TableRow className="bg-background/20">
-                        <TableCell colSpan={5} className="p-0">
+                        <TableCell colSpan={4} className="p-0">
                           <div className="pl-10 pr-4 py-2">
                             <table className="w-full text-sm">
                               <thead>
@@ -181,7 +172,6 @@ export default function BomContent() {
                                   <th className="text-left py-1.5 font-medium min-w-[180px]">구성품</th>
                                   <th className="text-left py-1.5 font-medium w-[140px]">Material Type</th>
                                   <th className="text-right py-1.5 font-medium w-[80px]">수량</th>
-                                  <th className="text-center py-1.5 font-medium w-[80px]">조립가능</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -210,15 +200,12 @@ export default function BomContent() {
                                         <td className="py-1.5 font-data text-right">
                                           {formatQty(line.quantity, mat?.unit)}
                                         </td>
-                                        <td className="py-1.5 text-center">
-                                          <AssemblableBadge hasBom={matHasBom} />
-                                        </td>
                                       </tr>
 
                                       {/* 2단계: 하위 BOM 구성품 */}
                                       {isSubExpanded && matHasBom && (
                                         <tr>
-                                          <td colSpan={5} className="p-0">
+                                          <td colSpan={4} className="p-0">
                                             <SubBomLines itemId={mat.id} />
                                           </td>
                                         </tr>
@@ -268,7 +255,6 @@ function SubBomLines({ itemId }: { itemId: string }) {
             <th className="text-left py-1 font-medium min-w-[180px]">구성품</th>
             <th className="text-left py-1 font-medium w-[140px]">Material Type</th>
             <th className="text-right py-1 font-medium w-[80px]">수량</th>
-            <th className="text-center py-1 font-medium w-[80px]">조립가능</th>
           </tr>
         </thead>
         <tbody>
@@ -282,9 +268,6 @@ function SubBomLines({ itemId }: { itemId: string }) {
                 </td>
                 <td className="py-1 font-data text-right">
                   {formatQty(line.quantity, mat?.unit)}
-                </td>
-                <td className="py-1 text-center">
-                  <AssemblableBadge hasBom={false} />
                 </td>
               </tr>
             )
