@@ -188,7 +188,11 @@ function ReceiptsTab({ poId }: { poId: string }) {
   return (
     <div className="pt-2">
       {!receipts || receipts.length === 0 ? (
-        <p className="text-center py-8 text-sm text-muted-foreground">입고 이력이 없습니다</p>
+        <div className="text-center py-12">
+          <PackageCheck className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+          <p className="text-sm text-muted-foreground">아직 입고된 내역이 없습니다</p>
+          <p className="text-xs text-text-muted mt-1">발주서를 확정한 후 입고 처리를 진행할 수 있습니다</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {receipts.map((gr: any) => (
@@ -331,7 +335,11 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
 
         {/* 지급 목록 */}
         {!payments || payments.length === 0 ? (
-          <p className="text-center py-8 text-sm text-muted-foreground">지급 이력이 없습니다</p>
+          <div className="text-center py-12">
+            <CreditCard className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+            <p className="text-sm text-muted-foreground">아직 지급된 내역이 없습니다</p>
+            <p className="text-xs text-text-muted mt-1">위의 "지급 등록" 버튼으로 지급 내역을 추가하세요</p>
+          </div>
         ) : (
           <Table>
             <TableHeader>
