@@ -85,7 +85,7 @@ export default function ItemsContent() {
                   >
                     <TableCell className="font-data font-medium sticky left-0 z-10 bg-card">{item.code}</TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-text-secondary">{item.material_type || '-'}</TableCell>
+                    <TableCell className="text-text-secondary text-cell">{item.material_type || '-'}</TableCell>
                     <TableCell className="text-text-secondary text-cell">{item.description || '-'}</TableCell>
                     <TableCell className="text-center">
                       {isAssembly
