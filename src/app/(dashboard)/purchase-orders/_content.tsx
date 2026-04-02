@@ -69,7 +69,7 @@ export default function PurchaseOrdersContent() {
               <TableHead>계약일자</TableHead>
               <TableHead>계약번호</TableHead>
               <TableHead>업체명</TableHead>
-              <TableHead>계약노트</TableHead>
+              <TableHead>비고</TableHead>
               <TableHead className="text-right">합계</TableHead>
             </TableRow>
           </TableHeader>
