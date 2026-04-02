@@ -162,8 +162,8 @@ export default function BomContent() {
                       <TableCell className="font-data">v{bom.version}</TableCell>
                       <TableCell>
                         {bom.is_active
-                          ? <StatusBadge status="confirmed" />
-                          : <StatusBadge status="cancelled" />
+                          ? <StatusBadge status="active" />
+                          : <StatusBadge status="inactive" />
                         }
                       </TableCell>
                       <TableCell className="font-data">{bom.bom_lines?.length ?? 0}</TableCell>

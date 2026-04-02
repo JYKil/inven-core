@@ -10,6 +10,8 @@ const statusStyles: Record<string, string> = {
   completed: 'border-[1.5px] border-secondary text-secondary bg-transparent',
   shipped: 'border-[1.5px] border-secondary text-secondary bg-transparent',
   cancelled: 'border-[1.5px] border-destructive text-destructive bg-transparent',
+  active: 'border-[1.5px] border-secondary text-secondary bg-transparent',
+  inactive: 'border-[1.5px] border-muted-foreground text-text-secondary bg-transparent',
 }
 
 const statusLabels: Record<string, string> = {
@@ -20,6 +22,8 @@ const statusLabels: Record<string, string> = {
   completed: '완료',
   shipped: '출고완료',
   cancelled: '취소',
+  active: '활성',
+  inactive: '비활성',
 }
 
 export function StatusBadge({
