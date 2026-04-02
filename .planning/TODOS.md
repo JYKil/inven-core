@@ -338,6 +338,56 @@
 
 ---
 
+## P3.5 — BOM 디자인 리뷰 (2026-04-03)
+
+> 디자인 리뷰: plan-design-review, 4/10 → 9/10
+> 승인된 목업: B 아코디언 테이블 (~/.gstack/projects/JYKil-inven-core/designs/bom-management-20260403/)
+> 외부 의견: Claude subagent + Codex (GPT-5.4)
+
+### 디자인 결정 확정
+
+| # | 결정 | 선택 |
+|---|------|------|
+| 1 | BOM 네비게이션 | 사이드바 BOM → /bom 전용 페이지 (품목 상세 BOM 탭도 유지) |
+| 2 | BOM 생성 | /bom/new 별도 페이지 (PO/SO 패턴 재활용) |
+| 3 | BOM 편집 | 아코디언 인라인 편집 (수량 변경, 재료 추가/삭제) |
+| 4 | 버전 관리 | 새 버전 버튼 (기존 재료 복사 + 구버전 자동 비활성) |
+| 5 | BOM 삭제 | 비활성화 (soft delete, 기존 useDeleteBom 훅) |
+| 6 | 재료 검색 | cmdk Combobox 전환 (기준정보 패턴 재활용) |
+| 7 | 상태 커버리지 | ListLoading + EmptyState + 에러 배너 + 토스트 (전체) |
+
+### 구현 TODO
+
+#### Critical ✅
+- [x] **순환 BOM 방지**: /bom/new에서 결과품목≠재료 클라이언트 검증 구현
+- [x] **버전 번호 충돌 방지**: useCreateBom + useCreateBomVersion에서 최대 버전+1 자동 부여
+
+#### High ✅
+- [x] **결과품목 선택 UI**: /bom/new에서 검색 Combobox (assembly 유형만 필터)
+- [x] **중복 재료 피드백**: 토스트 "이미 추가된 재료입니다"
+- [x] **soft delete 캐시 무효화 버그**: useDeleteBom에 bom.all + bom.byItem 모두 invalidate
+- [x] **수량 입력 검증 강화**: 빈값/0/음수 → 빨간 테두리 + 저장 불가
+- [ ] **인라인 편집 dirty state**: 변경 마커, batch save/cancel, 미저장 경고 (네비게이션 이탈 시) — 후속 작업
+
+#### Medium ✅
+- [x] **bom_lines sort_order 정렬**: useBomList, useBomByItem, useBomDetail 모두 적용
+- [x] **아코디언 멀티 열기**: Set<string>으로 여러 행 동시 펼치기 가능
+- [x] **비활성 BOM 필터**: 상태 필터 (전체/활성/비활성) + StatusBadge (활성=확정, 비활성=취소 스타일)
+- [x] **BOM 헤더 메타데이터**: 수정일(updated_at) 표시
+
+#### UI 구현 (전용 페이지) ✅
+- [x] `/bom` 전용 페이지 — 아코디언 테이블 (검색+상태필터+페이지네이션)
+- [x] `/bom/new` 생성 페이지 — 결과품목 Combobox + 재료 인라인 테이블
+- [x] 사이드바 BOM href `/items` → `/bom` 변경 + 품목 메뉴 별도 분리
+- [x] StatusBadge 적용 (활성/비활성)
+- [x] sticky 컬럼 (결과품목코드)
+- [x] 테이블 행 높이 h-9 (36px) 명시
+- [x] 전체 상태 커버리지 (ListLoading, EmptyState, 검색 빈 결과)
+- [x] 모바일 반응형 (overflow-x-auto, 수정일 컬럼 숨김)
+- [x] 접근성 (aria-expanded, aria-label, 키보드 내비)
+
+---
+
 ## P4 — 참고 사항
 
 ### 일정 가이드라인

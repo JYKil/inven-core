@@ -2,8 +2,8 @@
 
 ## 현재 상태
 - **단계**: v0.2.0.0 프로덕션 배포 완료 (기준정보 + 거래처 분리)
-- **마지막 업데이트**: 2026-04-01
-- **디자인 점수**: A-, AI 슬롭: A
+- **마지막 업데이트**: 2026-04-03
+- **디자인 점수**: A-, AI 슬롭: A (발주서 디자인 리뷰 4차 완료)
 - **프로덕션 URL**: https://inven-core.vercel.app
 
 ## 완료된 작업
@@ -248,12 +248,42 @@
     - [x] database.ts CLI 버전 메시지 오염 수정
     - [x] TypeScript + Next.js 빌드 통과
 
+36. **BOM 디자인 리뷰** → 완료 (2026-04-03)
+    - [x] plan-design-review 7개 차원 전체 리뷰 (4/10 → 9/10)
+    - [x] 디자인 목업 3종 생성 (B 아코디언 테이블 방향 승인)
+    - [x] 디자인 결정 7개 확정 (전용 페이지, 인라인 편집, 버전 관리 등)
+    - [x] 외부 의견 (Claude subagent + Codex GPT-5.4) — 10개 추가 갭 발견
+    - [x] TODOS.md P3.5 섹션 추가 (Critical 2건, High 5건, Medium 4건, UI 9건)
+
+37. **발주서 디자인 리뷰 4차** → 완료 (2026-04-03)
+    - [x] FINDING-001,002,003: Tailwind v4 @theme 폰트 사이즈 토큰 네이밍 수정 (--font-size-* → --text-*)
+    - [x] FINDING-004: 입고/지급 빈 탭 empty state 개선 (아이콘+설명 메시지)
+    - [x] FINDING-005: PO 상세 모바일 grid 반응형 수정 (cols-4 → cols-2 md:cols-4)
+    - [ ] FINDING-006 deferred: 날짜 포맷 mm/dd/yyyy (브라우저 locale 의존)
+
+38. **BOM 전용 페이지 구현** → 완료 (2026-04-03)
+    - [x] use-bom.ts 확장 — useBomList(검색+상태필터+페이지네이션), useActivateBom, useCreateBomVersion
+    - [x] useCreateBom 버전 자동부여 (최대 버전+1)
+    - [x] useDeleteBom 캐시 무효화 버그 수정 (bom.all + bom.byItem 모두)
+    - [x] bom_lines sort_order 정렬 적용 (모든 쿼리)
+    - [x] /bom 목록 페이지 — 아코디언 테이블 (검색+상태필터+페이지네이션, 재료 펼치기/접기)
+    - [x] /bom/new 생성 페이지 — 결과품목 Combobox(조립유형 필터) + 재료 인라인 테이블
+    - [x] 순환참조 방지 — 결과품목≠재료 클라이언트 검증
+    - [x] 중복 재료 피드백 — 토스트 "이미 추가된 재료입니다"
+    - [x] 수량 입력 검증 강화 — 빈값/0/음수 시 빨간 테두리 + 저장 불가
+    - [x] 새 버전 기능 — 기존 재료 복사 + 구버전 자동 비활성
+    - [x] 비활성/활성 토글 액션
+    - [x] 사이드바 BOM href /items → /bom + 품목 메뉴 별도 분리 (Layers 아이콘)
+    - [x] loading.tsx 추가
+    - [x] TypeScript + Next.js 빌드 통과
+
 ### 남은 작업
 1. ~~**supabase db push**~~ → 완료 (v0.2.0.0 배포)
 2. ~~**supabase gen types typescript**~~ → 완료
 3. ~~**Vercel 재배포**~~ → 완료 (2026-04-01, PR #1 머지 후 자동 배포)
 4. **엑셀 업로드** — 고객 샘플 확보 후
 5. **SO 거래처 데이터 "-"** — 기존 SO의 customer_id NULL (마이그레이션 데이터 이슈)
+6. ~~**BOM 전용 페이지 구현**~~ → 완료
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)

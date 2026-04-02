@@ -23,6 +23,7 @@ import {
   Shield,
   BookOpen,
   PanelLeftClose,
+  Layers,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
@@ -51,8 +52,9 @@ const navGroups = [
       { title: '기준정보', href: '/reference-codes', icon: BookOpen },
       { title: '업체정보', href: '/vendors', icon: Users },
       { title: '고객정보', href: '/customers', icon: UserCheck },
+      { title: '품목', href: '/items', icon: Package },
       { title: '창고', href: '/warehouses', icon: Warehouse },
-      { title: 'BOM', href: '/items', icon: Package },
+      { title: 'BOM', href: '/bom', icon: Layers },
     ],
   },
   {
