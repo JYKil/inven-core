@@ -134,7 +134,7 @@ export function useBomDetail(id: string) {
   })
 }
 
-// BOM 생성 (헤더 + 라인 한번에) — 버전 자동 부여
+// BOM 생성 (RPC로 헤더+라인 단일 트랜잭션 보장, 버전 자동 부여)
 export function useCreateBom() {
   const supabase = createClient()
   const qc = useQueryClient()
@@ -149,43 +149,20 @@ export function useCreateBom() {
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      // 버전 자동 부여: 해당 품목의 최대 버전 + 1
-      let version = input.version
-      if (!version) {
-        const { data: existing } = await supabase
-          .from('bom_headers')
-          .select('version')
-          .eq('product_item_id', input.product_item_id)
-          .order('version', { ascending: false })
-          .limit(1)
-        version = (existing?.[0]?.version ?? 0) + 1
-      }
-
-      // 헤더 생성
-      const { data: header, error: headerErr } = await supabase
-        .from('bom_headers')
-        .insert({
-          company_id: profile.company_id,
-          product_item_id: input.product_item_id,
-          version,
-        })
-        .select()
-        .single()
-      if (headerErr) throw headerErr
-
-      // 라인 생성
-      const lines = input.lines.map((line, idx) => ({
-        bom_header_id: header.id,
+      const linesPayload = input.lines.map((line, idx) => ({
         material_item_id: line.material_item_id,
         quantity: line.quantity,
         sort_order: line.sort_order ?? idx,
       }))
-      const { error: linesErr } = await supabase
-        .from('bom_lines')
-        .insert(lines)
-      if (linesErr) throw linesErr
 
-      return header
+      const { data, error } = await supabase.rpc('create_bom', {
+        p_company_id: profile.company_id,
+        p_product_item_id: input.product_item_id,
+        p_version: input.version ?? undefined,
+        p_lines: JSON.stringify(linesPayload),
+      })
+      if (error) throw error
+      return { id: data as string }
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.bom.all })
@@ -275,7 +252,7 @@ export function useActivateBom() {
   })
 }
 
-// 새 버전 생성 (기존 재료 복사 + 구버전 비활성)
+// 새 버전 생성 (RPC로 구버전 비활성 + 신버전 생성 + 라인 복사를 단일 트랜잭션 보장)
 export function useCreateBomVersion() {
   const supabase = createClient()
   const qc = useQueryClient()
@@ -290,59 +267,13 @@ export function useCreateBomVersion() {
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      // 원본 BOM 라인 조회
-      const { data: source, error: srcErr } = await supabase
-        .from('bom_headers')
-        .select('*, bom_lines(*)')
-        .eq('id', sourceBomId)
-        .single()
-      if (srcErr) throw srcErr
-
-      // 최대 버전 조회
-      const { data: existing } = await supabase
-        .from('bom_headers')
-        .select('version')
-        .eq('product_item_id', productItemId)
-        .order('version', { ascending: false })
-        .limit(1)
-      const nextVersion = (existing?.[0]?.version ?? 0) + 1
-
-      // 구버전 비활성화
-      const { error: deactivateErr } = await supabase
-        .from('bom_headers')
-        .update({ is_active: false })
-        .eq('product_item_id', productItemId)
-        .eq('is_active', true)
-      if (deactivateErr) throw deactivateErr
-
-      // 새 헤더 생성
-      const { data: newHeader, error: headerErr } = await supabase
-        .from('bom_headers')
-        .insert({
-          company_id: profile.company_id,
-          product_item_id: productItemId,
-          version: nextVersion,
-          is_active: true,
-        })
-        .select()
-        .single()
-      if (headerErr) throw headerErr
-
-      // 라인 복사
-      if (source.bom_lines && source.bom_lines.length > 0) {
-        const lines = source.bom_lines.map((line: any) => ({
-          bom_header_id: newHeader.id,
-          material_item_id: line.material_item_id,
-          quantity: line.quantity,
-          sort_order: line.sort_order,
-        }))
-        const { error: linesErr } = await supabase
-          .from('bom_lines')
-          .insert(lines)
-        if (linesErr) throw linesErr
-      }
-
-      return newHeader
+      const { data, error } = await supabase.rpc('create_bom_version', {
+        p_company_id: profile.company_id,
+        p_source_bom_id: sourceBomId,
+        p_product_item_id: productItemId,
+      })
+      if (error) throw error
+      return { id: data as string }
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.bom.all })

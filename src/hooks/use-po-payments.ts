@@ -55,8 +55,8 @@ export function usePoPaymentsByPo(poId: string) {
   })
 }
 
+// 지급 등록 (API Route → RPC로 초과 지급 방지, 서버에서 company_id 주입)
 export function useCreatePoPayment() {
-  const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -66,29 +66,17 @@ export function useCreatePoPayment() {
       payment_method?: string
       notes?: string
     }) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
-
-      const { data, error } = await supabase
-        .from('po_payments')
-        .insert({
-          company_id: profile.company_id,
-          po_id: input.po_id,
-          payment_date: input.payment_date,
-          amount: input.amount,
-          payment_method: input.payment_method || null,
-          notes: input.notes || null,
-        })
-        .select()
-        .single()
-      if (error) throw error
-      return data as PoPayment
+      const res = await fetch('/api/po-payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error?.message ?? '지급 등록 실패')
+      }
+      const { data } = await res.json()
+      return { id: data.payment_id } as unknown as PoPayment
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.poPayments.all })

@@ -388,6 +388,36 @@
 
 ---
 
+## P3.6 — 코드 리뷰 CRITICAL 수정 (2026-04-03)
+
+### 1. 비원자적 트랜잭션 → RPC 전환 ✅
+- [x] `create_bom` RPC — BOM 헤더+라인 단일 트랜잭션 + 버전 자동부여 (FOR UPDATE로 동시성 보장)
+- [x] `create_bom_version` RPC — 구버전 비활성 + 신버전 생성 + 라인 복사 단일 트랜잭션
+- [x] `create_purchase_order` RPC — PO 헤더+라인 단일 트랜잭션 + DB에서 정확한 numeric 합계 계산
+- [x] `useCreateBom`, `useCreateBomVersion`, `useCreatePurchaseOrder` 훅 RPC 호출로 전환
+
+### 2. 지급 초과 검증 ✅
+- [x] `create_po_payment` RPC — 서버 측 누적 지급액 <= 총액 검증 (FOR UPDATE로 동시성 안전)
+- [x] `useCreatePoPayment` 훅 RPC 호출로 전환
+- [x] PO 상세 페이지 클라이언트 측 잔액 초과 사전 검증 추가
+
+### 3. 금융 계산 정밀도 개선 ✅
+- [x] PaymentsTab `paidTotal`/`remaining`/`paymentRate`에 `Math.round` 적용 (표시 정밀도 보장)
+- [x] PO 총액 계산은 `create_purchase_order` RPC에서 DB numeric 연산으로 이미 해결
+
+### 4. PO 생성/지급을 API Route로 이동 (보안 강화) ✅
+- [x] `POST /api/purchase-orders` — 서버에서 `getAuthenticatedUser`로 company_id 주입 + Zod 검증
+- [x] `POST /api/po-payments` — 서버에서 company_id 주입 + Zod 검증
+- [x] `useCreatePurchaseOrder` → `fetch('/api/purchase-orders')` 전환
+- [x] `useCreatePoPayment` → `fetch('/api/po-payments')` 전환
+
+### 마무리 ✅
+- [x] `supabase db push` — 4개 RPC 마이그레이션 클라우드 적용
+- [x] `supabase gen types typescript` — DB 타입 재생성
+- [x] TypeScript + Next.js 빌드 통과
+
+---
+
 ## P4 — 참고 사항
 
 ### 일정 가이드라인

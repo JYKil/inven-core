@@ -1411,6 +1411,23 @@ export type Database = {
         }
         Returns: number
       }
+      create_bom: {
+        Args: {
+          p_company_id: string
+          p_lines?: Json
+          p_product_item_id: string
+          p_version?: number
+        }
+        Returns: string
+      }
+      create_bom_version: {
+        Args: {
+          p_company_id: string
+          p_product_item_id: string
+          p_source_bom_id: string
+        }
+        Returns: string
+      }
       create_company_with_profile: {
         Args: {
           p_business_number?: string
@@ -1418,6 +1435,30 @@ export type Database = {
           p_display_name?: string
           p_email?: string
           p_user_id: string
+        }
+        Returns: string
+      }
+      create_po_payment: {
+        Args: {
+          p_amount: number
+          p_company_id: string
+          p_notes?: string
+          p_payment_date: string
+          p_payment_method?: string
+          p_po_id: string
+        }
+        Returns: string
+      }
+      create_purchase_order: {
+        Args: {
+          p_company_id: string
+          p_created_by: string
+          p_expected_date?: string
+          p_lines?: Json
+          p_notes?: string
+          p_order_date: string
+          p_po_number: string
+          p_vendor_id: string
         }
         Returns: string
       }

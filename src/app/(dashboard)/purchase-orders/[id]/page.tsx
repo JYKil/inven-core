@@ -260,12 +260,13 @@ function PaymentsTab({ poId, totalAmount }: { poId: string; totalAmount: number 
     notes: '',
   })
 
-  const paidTotal = payments?.reduce((sum: number, p: any) => sum + p.amount, 0) ?? 0
-  const remaining = totalAmount - paidTotal
-  const paymentRate = totalAmount > 0 ? (paidTotal / totalAmount) * 100 : 0
+  const paidTotal = Math.round((payments?.reduce((sum: number, p: any) => sum + p.amount, 0) ?? 0) * 100) / 100
+  const remaining = Math.round((totalAmount - paidTotal) * 100) / 100
+  const paymentRate = totalAmount > 0 ? Math.round((paidTotal / totalAmount) * 10000) / 100 : 0
 
   const handleSubmit = async () => {
     if (paymentForm.amount <= 0) { toast.error('금액을 입력해주세요'); return }
+    if (paymentForm.amount > remaining) { toast.error(`잔액(${formatAmount(remaining)})을 초과할 수 없습니다`); return }
     try {
       await createPayment.mutateAsync({ po_id: poId, ...paymentForm })
       toast.success('지급 등록 완료')

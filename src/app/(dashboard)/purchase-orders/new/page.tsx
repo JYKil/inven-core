@@ -142,7 +142,7 @@ export default function NewPurchaseOrderPage() {
           line_amount: l.line_type === 'expense' ? l.line_amount : undefined,
         })),
       })
-      toast.success(`발주 ${result.po_number} 등록 완료`)
+      toast.success(`발주 ${data.po_number} 등록 완료`)
       router.push(`/purchase-orders/${result.id}`)
     } catch (err) {
       toast.error(extractErrorMessage(err, '등록 실패'))
