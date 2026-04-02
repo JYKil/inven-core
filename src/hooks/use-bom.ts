@@ -54,23 +54,26 @@ export function useBomItemList(filters: BomFilters = {}) {
       if (error) throw error
 
       // BOM 라인 sort_order 정렬 + 활성 BOM만 필터
-      const processed = (data ?? []).map((item: any) => {
-        const activeBom = (item.bom_headers ?? [])
-          .filter((bh: any) => bh.is_active)
-          .sort((a: any, b: any) => (b.version ?? 0) - (a.version ?? 0))[0]
-        return {
-          ...item,
-          hasBom: !!activeBom,
-          activeBom: activeBom ? {
-            ...activeBom,
-            bom_lines: [...(activeBom.bom_lines ?? [])].sort(
-              (a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-            ),
-          } : null,
-        }
-      })
+      // BOM이 있는 품목만 필터 (조립가능=Y만 표시)
+      const processed = (data ?? [])
+        .map((item: any) => {
+          const activeBom = (item.bom_headers ?? [])
+            .filter((bh: any) => bh.is_active)
+            .sort((a: any, b: any) => (b.version ?? 0) - (a.version ?? 0))[0]
+          return {
+            ...item,
+            hasBom: !!activeBom,
+            activeBom: activeBom ? {
+              ...activeBom,
+              bom_lines: [...(activeBom.bom_lines ?? [])].sort(
+                (a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+              ),
+            } : null,
+          }
+        })
+        .filter((item: any) => item.hasBom)
 
-      return { data: processed, count: count ?? 0, page, pageSize }
+      return { data: processed, count: processed.length, page, pageSize }
     },
     placeholderData: keepPreviousData,
   })
