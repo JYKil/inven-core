@@ -333,8 +333,8 @@
   - customers, vendors, warehouses, items, purchase-orders, sales-orders
   - warehouse-transfers, inventory, reference-codes, goods-receipts
   - goods-receipts: tabIndex + onKeyDown + router.push 추가 (window.location 제거)
-- [ ] **POLISH**: EmptyState 컴포넌트 아이콘 속성 추가 (현재 텍스트+버튼만)
-- [ ] **POLISH**: 기준정보 모바일 12컬럼 테이블 개선 (반응형 컬럼 숨김 등)
+- [x] **POLISH**: EmptyState 컴포넌트 아이콘 속성 — 이미 icon prop (LucideIcon) 지원 확인
+- [x] **POLISH**: 기준정보 모바일 반응형 — 데이터 2-3 hidden md:table-cell, 데이터 4-5 hidden lg:table-cell
 
 ---
 
@@ -367,7 +367,7 @@
 - [x] **중복 재료 피드백**: 토스트 "이미 추가된 재료입니다"
 - [x] **soft delete 캐시 무효화 버그**: useDeleteBom에 bom.all + bom.byItem 모두 invalidate
 - [x] **수량 입력 검증 강화**: 빈값/0/음수 → 빨간 테두리 + 저장 불가
-- [ ] **인라인 편집 dirty state**: 변경 마커, batch save/cancel, 미저장 경고 (네비게이션 이탈 시) — 후속 작업
+- [x] **인라인 편집 dirty state**: 편집 모드 토글(연필 아이콘), 수량 변경/재료 추가·삭제, 변경 마커(노란/초록 도트), batch save/cancel, beforeunload 미저장 경고
 
 #### Medium ✅
 - [x] **bom_lines sort_order 정렬**: useBomList, useBomByItem, useBomDetail 모두 적용

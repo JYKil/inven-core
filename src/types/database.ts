@@ -1423,7 +1423,7 @@ export type Database = {
       create_bom_version: {
         Args: {
           p_company_id: string
-          p_product_item_id: string
+          p_product_item_id?: string
           p_source_bom_id: string
         }
         Returns: string

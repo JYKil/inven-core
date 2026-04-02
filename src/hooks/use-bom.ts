@@ -134,35 +134,22 @@ export function useBomDetail(id: string) {
   })
 }
 
-// BOM 생성 (RPC로 헤더+라인 단일 트랜잭션 보장, 버전 자동 부여)
+// BOM 생성 (API Route 경유, 서버에서 company_id 주입)
 export function useCreateBom() {
-  const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: { product_item_id: string; version?: number; lines: BomLineInput[] }) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
-
-      const linesPayload = input.lines.map((line, idx) => ({
-        material_item_id: line.material_item_id,
-        quantity: line.quantity,
-        sort_order: line.sort_order ?? idx,
-      }))
-
-      const { data, error } = await supabase.rpc('create_bom', {
-        p_company_id: profile.company_id,
-        p_product_item_id: input.product_item_id,
-        p_version: input.version ?? undefined,
-        p_lines: JSON.stringify(linesPayload),
+      const res = await fetch('/api/bom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
       })
-      if (error) throw error
-      return { id: data as string }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error?.message ?? 'BOM 생성 실패')
+      }
+      const { data } = await res.json()
+      return { id: data.bom_id as string }
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.bom.all })
@@ -252,28 +239,22 @@ export function useActivateBom() {
   })
 }
 
-// 새 버전 생성 (RPC로 구버전 비활성 + 신버전 생성 + 라인 복사를 단일 트랜잭션 보장)
+// 새 버전 생성 (API Route 경유, 서버에서 company_id 주입, product_item_id는 source에서 자동 추출)
 export function useCreateBomVersion() {
-  const supabase = createClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ sourceBomId, productItemId }: { sourceBomId: string; productItemId: string }) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
-
-      const { data, error } = await supabase.rpc('create_bom_version', {
-        p_company_id: profile.company_id,
-        p_source_bom_id: sourceBomId,
-        p_product_item_id: productItemId,
+      const res = await fetch('/api/bom/version', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_bom_id: sourceBomId, product_item_id: productItemId }),
       })
-      if (error) throw error
-      return { id: data as string }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error?.message ?? 'BOM 버전 생성 실패')
+      }
+      const { data } = await res.json()
+      return { id: data.bom_id as string }
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.bom.all })

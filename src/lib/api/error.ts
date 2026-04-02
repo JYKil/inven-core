@@ -28,9 +28,18 @@ export function apiError(code: string, message: string, details?: unknown): ApiR
 
 // PostgreSQL 에러코드 → ApiError 변환
 export function mapSupabaseError(error: { code?: string; message: string }): ApiError {
-  // RPC에서 RAISE한 에러
+  // RPC에서 RAISE한 에러 — 메시지 패턴 매칭
   if (error.message.includes('재고 부족')) {
     return new ApiError(409, error.message, 'INSUFFICIENT_STOCK')
+  }
+  if (error.message.includes('권한이 없습니다')) {
+    return new ApiError(403, error.message, 'FORBIDDEN')
+  }
+  if (error.message.includes('찾을 수 없습니다')) {
+    return new ApiError(404, error.message, 'NOT_FOUND')
+  }
+  if (error.message.includes('초과') || error.message.includes('0보다 커야')) {
+    return new ApiError(400, error.message, 'VALIDATION_ERROR')
   }
   // PostgreSQL 제약조건 에러
   if (error.code === '23505') {

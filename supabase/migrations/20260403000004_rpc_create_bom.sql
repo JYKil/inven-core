@@ -27,12 +27,29 @@ BEGIN
     FOR UPDATE;
   END IF;
 
-  -- 2. 헤더 생성
+  -- 2. 결과 품목 소유권 검증
+  IF NOT EXISTS (
+    SELECT 1 FROM items WHERE id = p_product_item_id AND company_id = p_company_id
+  ) THEN
+    RAISE EXCEPTION '품목을 찾을 수 없거나 권한이 없습니다: %', p_product_item_id;
+  END IF;
+
+  -- 3. 재료 품목 소유권 검증
+  FOR v_line IN SELECT * FROM jsonb_array_elements(p_lines)
+  LOOP
+    IF NOT EXISTS (
+      SELECT 1 FROM items WHERE id = (v_line->>'material_item_id')::uuid AND company_id = p_company_id
+    ) THEN
+      RAISE EXCEPTION '재료 품목을 찾을 수 없거나 권한이 없습니다: %', v_line->>'material_item_id';
+    END IF;
+  END LOOP;
+
+  -- 4. 헤더 생성
   INSERT INTO bom_headers (company_id, product_item_id, version)
   VALUES (p_company_id, p_product_item_id, v_version)
   RETURNING id INTO v_header_id;
 
-  -- 3. 라인 생성
+  -- 5. 라인 생성
   FOR v_line IN SELECT * FROM jsonb_array_elements(p_lines)
   LOOP
     INSERT INTO bom_lines (bom_header_id, material_item_id, quantity, sort_order)

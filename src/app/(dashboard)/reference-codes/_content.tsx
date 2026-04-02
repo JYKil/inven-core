@@ -137,10 +137,10 @@ export default function ReferenceCodesContent() {
             <TableRow className="bg-background/50">
               <TableHead className="whitespace-nowrap truncate">타입</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 1</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 2</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 3</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 4</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 5</TableHead>
+              <TableHead className="whitespace-nowrap truncate hidden md:table-cell">데이터 2</TableHead>
+              <TableHead className="whitespace-nowrap truncate hidden md:table-cell">데이터 3</TableHead>
+              <TableHead className="whitespace-nowrap truncate hidden lg:table-cell">데이터 4</TableHead>
+              <TableHead className="whitespace-nowrap truncate hidden lg:table-cell">데이터 5</TableHead>
               <TableHead className="w-[70px] whitespace-nowrap">액션</TableHead>
             </TableRow>
           </TableHeader>
@@ -148,9 +148,13 @@ export default function ReferenceCodesContent() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 7 }).map((_, j) => (
-                    <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
-                  ))}
+                  <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-full" /></TableCell>
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
@@ -179,10 +183,10 @@ export default function ReferenceCodesContent() {
                   <TableCell className="truncate">
                     {row.code_data1}
                   </TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data2 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data3 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data4 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data5 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate hidden md:table-cell">{row.code_data2 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate hidden md:table-cell">{row.code_data3 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate hidden lg:table-cell">{row.code_data4 || '-'}</TableCell>
+                  <TableCell className="text-text-secondary truncate hidden lg:table-cell">{row.code_data5 || '-'}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     <div className="flex items-center gap-1">
                       <Button

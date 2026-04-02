@@ -1,10 +1,11 @@
 # 체크포인트
 
 ## 현재 상태
-- **단계**: v0.2.0.0 프로덕션 배포 완료 + 코드 리뷰 CRITICAL 수정
+- **단계**: v0.2.0.0 프로덕션 배포 완료 + deferred 항목 마무리
 - **마지막 업데이트**: 2026-04-03
 - **디자인 점수**: A-, AI 슬롭: A (발주서 디자인 리뷰 4차 완료)
 - **코드 리뷰**: BOM/PO/지급 RPC 트랜잭션 전환 완료 (C1~C4, C7~C8 해결)
+- **deferred 마무리**: BOM 인라인 편집 dirty state, 기준정보 모바일 반응형, BOM 버전 API 타입 수정
 - **프로덕션 URL**: https://inven-core.vercel.app
 
 ## 완료된 작업
@@ -260,7 +261,7 @@
     - [x] FINDING-001,002,003: Tailwind v4 @theme 폰트 사이즈 토큰 네이밍 수정 (--font-size-* → --text-*)
     - [x] FINDING-004: 입고/지급 빈 탭 empty state 개선 (아이콘+설명 메시지)
     - [x] FINDING-005: PO 상세 모바일 grid 반응형 수정 (cols-4 → cols-2 md:cols-4)
-    - [ ] FINDING-006 deferred: 날짜 포맷 mm/dd/yyyy (브라우저 locale 의존)
+    - [x] FINDING-006: 날짜 포맷 — formatDate() 이미 YYYY-MM-DD, input type=date 표시는 브라우저 locale 의존 (커스텀 datepicker 없이 해결 불가, 현상 유지)
 
 38. **BOM 전용 페이지 구현** → 완료 (2026-04-03)
     - [x] use-bom.ts 확장 — useBomList(검색+상태필터+페이지네이션), useActivateBom, useCreateBomVersion
@@ -278,6 +279,13 @@
     - [x] loading.tsx 추가
     - [x] TypeScript + Next.js 빌드 통과
 
+39. **Deferred 항목 마무리** → 완료 (2026-04-03)
+    - [x] BOM 인라인 편집 dirty state — 편집 모드 토글, 수량 변경/재료 추가·삭제, 변경 마커(노란/초록 도트), batch save/cancel, beforeunload 경고
+    - [x] 기준정보 모바일 반응형 — 데이터 2-3 md:hidden, 데이터 4-5 lg:hidden
+    - [x] EmptyState 아이콘 — 이미 icon prop 지원 확인 (추가 작업 불필요)
+    - [x] 날짜 포맷 — formatDate()가 이미 YYYY-MM-DD, input type=date는 브라우저 locale 의존 (현상 유지)
+    - [x] BOM 버전 API 타입 수정 — product_item_id 파라미터 누락 수정 (route.ts + 훅)
+
 ### 남은 작업
 1. ~~**supabase db push**~~ → 완료 (v0.2.0.0 배포)
 2. ~~**supabase gen types typescript**~~ → 완료
@@ -285,6 +293,7 @@
 4. **엑셀 업로드** — 고객 샘플 확보 후
 5. **SO 거래처 데이터 "-"** — 기존 SO의 customer_id NULL (마이그레이션 데이터 이슈)
 6. ~~**BOM 전용 페이지 구현**~~ → 완료
+7. ~~**Deferred 항목 마무리**~~ → 완료
 
 ## 주요 결정 사항
 - 상태관리: Zustand(클라이언트) + TanStack Query(서버)

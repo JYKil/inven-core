@@ -76,11 +76,12 @@ export function useCreatePoPayment() {
         throw new Error(err.error?.message ?? '지급 등록 실패')
       }
       const { data } = await res.json()
-      return { id: data.payment_id } as unknown as PoPayment
+      return { id: data.payment_id as string }
     },
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.poPayments.all })
       qc.invalidateQueries({ queryKey: queryKeys.poPayments.byPo(variables.po_id) })
     },
+    retry: 0,
   })
 }

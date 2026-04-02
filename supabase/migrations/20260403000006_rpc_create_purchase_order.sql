@@ -23,7 +23,27 @@ DECLARE
   v_line_type text;
   v_line_amount numeric;
 BEGIN
-  -- 1. 총액 계산 (DB에서 정확한 numeric 연산)
+  -- 1. 업체 소유권 검증
+  IF NOT EXISTS (
+    SELECT 1 FROM vendors WHERE id = p_vendor_id AND company_id = p_company_id
+  ) THEN
+    RAISE EXCEPTION '업체를 찾을 수 없거나 권한이 없습니다: %', p_vendor_id;
+  END IF;
+
+  -- 2. 라인 품목 소유권 검증 (재고 라인만)
+  FOR v_line IN SELECT * FROM jsonb_array_elements(p_lines)
+  LOOP
+    v_line_type := v_line->>'line_type';
+    IF v_line_type = 'inventory' AND v_line->>'item_id' IS NOT NULL THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM items WHERE id = (v_line->>'item_id')::uuid AND company_id = p_company_id
+      ) THEN
+        RAISE EXCEPTION '품목을 찾을 수 없거나 권한이 없습니다: %', v_line->>'item_id';
+      END IF;
+    END IF;
+  END LOOP;
+
+  -- 3. 총액 계산 (DB에서 정확한 numeric 연산)
   FOR v_line IN SELECT * FROM jsonb_array_elements(p_lines)
   LOOP
     v_line_type := v_line->>'line_type';
@@ -36,7 +56,7 @@ BEGIN
     END IF;
   END LOOP;
 
-  -- 2. PO 헤더 생성
+  -- 4. PO 헤더 생성
   INSERT INTO purchase_orders (
     company_id, po_number, vendor_id, order_date,
     expected_date, notes, total_amount, created_by
@@ -46,7 +66,7 @@ BEGIN
   )
   RETURNING id INTO v_po_id;
 
-  -- 3. PO 라인 생성
+  -- 5. PO 라인 생성
   FOR v_line IN SELECT * FROM jsonb_array_elements(p_lines)
   LOOP
     v_line_type := v_line->>'line_type';

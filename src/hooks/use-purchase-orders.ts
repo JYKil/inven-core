@@ -93,11 +93,12 @@ export function useCreatePurchaseOrder() {
         throw new Error(err.error?.message ?? '등록 실패')
       }
       const { data } = await res.json()
-      return { id: data.po_id } as unknown as PO
+      return { id: data.po_id as string }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.purchaseOrders.all })
     },
+    retry: 0,
   })
 }
 
