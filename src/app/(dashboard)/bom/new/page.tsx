@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { extractErrorMessage } from '@/lib/api/error'
-import { X, Search } from 'lucide-react'
+import { X, Search, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -259,8 +259,10 @@ export default function NewBomPage() {
                   </Table>
                 </div>
               ) : (
-                <div className="text-center py-8 border border-dashed border-border rounded-lg">
-                  <p className="text-sm text-muted-foreground">재료를 검색하여 추가하세요</p>
+                <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                  <Package className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">아직 추가된 재료가 없습니다</p>
+                  <p className="text-xs text-text-muted mt-1">위 검색창에서 재료 품목을 검색하여 추가하세요</p>
                 </div>
               )}
             </div>
