@@ -7,47 +7,42 @@ import { escapeFilterValue } from '@/lib/utils'
 import type { BomLineInput } from '@/lib/validations/bom'
 
 export type BomFilters = ListFilters & {
-  status?: 'all' | 'active' | 'inactive'
+  materialType?: string
 }
 
-// BOM 목록 조회 (전용 페이지용 — 검색+상태필터+페이지네이션)
-export function useBomList(filters: BomFilters = {}) {
+// BOM 페이지: 전체 품목 + BOM 여부 조회 (품목 중심 뷰)
+export function useBomItemList(filters: BomFilters = {}) {
   const supabase = createClient()
-  const { search, page = 1, pageSize = 20, status } = filters
+  const { search, page = 1, pageSize = 50, materialType } = filters
 
   return useQuery({
     queryKey: queryKeys.bom.list(filters),
     queryFn: async () => {
       let query = supabase
-        .from('bom_headers')
+        .from('items')
         .select(`
-          *,
-          product_item:items!bom_headers_product_item_id_fkey(id, code, name, unit),
-          bom_lines(
-            *,
-            material_item:items!bom_lines_material_item_id_fkey(id, code, name, unit)
+          id, code, name, unit, item_type, material_type, description, is_active,
+          bom_headers!bom_headers_product_item_id_fkey(
+            id, version, is_active,
+            bom_lines(
+              id, quantity, sort_order,
+              material_item:items!bom_lines_material_item_id_fkey(id, code, name, unit, material_type, item_type)
+            )
           )
         `, { count: 'exact' })
-        .order('created_at', { ascending: false })
+        .eq('is_active', true)
+        .order('material_type')
+        .order('code')
 
-      // 상태 필터
-      if (status === 'active') query = query.eq('is_active', true)
-      else if (status === 'inactive') query = query.eq('is_active', false)
+      // material_type 필터
+      if (materialType && materialType !== 'all') {
+        query = query.eq('material_type', materialType)
+      }
 
-      // 검색 (결과품목 코드/이름)
+      // 검색
       if (search) {
-        // product_item 관계 필터는 직접 사용 불가 → 서브쿼리 대안으로 item_id 목록 먼저 조회
         const s = escapeFilterValue(search)
-        const { data: matchedItems } = await supabase
-          .from('items')
-          .select('id')
-          .or(`name.ilike.%${s}%,code.ilike.%${s}%`)
-          .limit(100)
-        if (matchedItems && matchedItems.length > 0) {
-          query = query.in('product_item_id', matchedItems.map((i) => i.id))
-        } else {
-          return { data: [], count: 0, page, pageSize }
-        }
+        query = query.or(`name.ilike.%${s}%,code.ilike.%${s}%`)
       }
 
       // 페이지네이션
@@ -58,13 +53,24 @@ export function useBomList(filters: BomFilters = {}) {
       const { data, error, count } = await query
       if (error) throw error
 
-      // bom_lines sort_order 정렬
-      const sorted = (data ?? []).map((bom) => ({
-        ...bom,
-        bom_lines: [...(bom.bom_lines ?? [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
-      }))
+      // BOM 라인 sort_order 정렬 + 활성 BOM만 필터
+      const processed = (data ?? []).map((item: any) => {
+        const activeBom = (item.bom_headers ?? [])
+          .filter((bh: any) => bh.is_active)
+          .sort((a: any, b: any) => (b.version ?? 0) - (a.version ?? 0))[0]
+        return {
+          ...item,
+          hasBom: !!activeBom,
+          activeBom: activeBom ? {
+            ...activeBom,
+            bom_lines: [...(activeBom.bom_lines ?? [])].sort(
+              (a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+            ),
+          } : null,
+        }
+      })
 
-      return { data: sorted, count: count ?? 0, page, pageSize }
+      return { data: processed, count: count ?? 0, page, pageSize }
     },
     placeholderData: keepPreviousData,
   })
@@ -82,7 +88,7 @@ export function useBomByItem(itemId: string) {
           *,
           bom_lines(
             *,
-            material_item:items!bom_lines_material_item_id_fkey(id, code, name, unit)
+            material_item:items!bom_lines_material_item_id_fkey(id, code, name, unit, material_type, item_type)
           )
         `)
         .eq('product_item_id', itemId)

@@ -693,6 +693,7 @@ export type Database = {
           id: string
           is_active: boolean
           item_type: string
+          material_type: string | null
           min_stock_qty: number | null
           name: string
           unit: string
@@ -707,6 +708,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           item_type?: string
+          material_type?: string | null
           min_stock_qty?: number | null
           name: string
           unit?: string
@@ -721,6 +723,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           item_type?: string
+          material_type?: string | null
           min_stock_qty?: number | null
           name?: string
           unit?: string
@@ -827,27 +830,33 @@ export type Database = {
       }
       purchase_order_lines: {
         Row: {
+          description: string | null
           id: string
-          item_id: string
+          item_id: string | null
           line_amount: number
+          line_type: string
           ordered_qty: number
           po_id: string
           received_qty: number
           unit_price: number
         }
         Insert: {
+          description?: string | null
           id?: string
-          item_id: string
+          item_id?: string | null
           line_amount: number
+          line_type?: string
           ordered_qty: number
           po_id: string
           received_qty?: number
           unit_price: number
         }
         Update: {
+          description?: string | null
           id?: string
-          item_id?: string
+          item_id?: string | null
           line_amount?: number
+          line_type?: string
           ordered_qty?: number
           po_id?: string
           received_qty?: number

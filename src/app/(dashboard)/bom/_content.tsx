@@ -3,8 +3,7 @@
 import { useState, useCallback, Fragment } from 'react'
 import Link from 'next/link'
 import { Plus, ChevronRight, ChevronDown } from 'lucide-react'
-import { toast } from 'sonner'
-import { extractErrorMessage } from '@/lib/api/error'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -17,23 +16,39 @@ import { PageHeader } from '@/components/common/page-header'
 import { SearchInput } from '@/components/common/search-input'
 import { EmptyState } from '@/components/common/empty-state'
 import { DataTablePagination } from '@/components/common/data-table-pagination'
-import { StatusBadge } from '@/components/common/status-badge'
-import { formatQty, formatDate } from '@/lib/format'
-import {
-  useBomList,
-  useDeleteBom,
-  useActivateBom,
-  useCreateBomVersion,
-  type BomFilters,
-} from '@/hooks/use-bom'
+import { formatQty } from '@/lib/format'
+import { useBomItemList, type BomFilters } from '@/hooks/use-bom'
+
+// material_type 배지 스타일
+const typeStyles: Record<string, string> = {
+  'Finished Good': 'border-[1.5px] border-secondary text-secondary bg-transparent',
+  'WIP': 'border-[1.5px] border-info text-info bg-transparent',
+  'Raw Material': 'border-[1.5px] border-muted-foreground text-text-secondary bg-transparent',
+  'Assemble Labor': 'border-[1.5px] border-warning text-warning bg-transparent',
+  'Freight Overhead': 'border-[1.5px] border-primary text-primary bg-transparent',
+}
+
+function MaterialTypeBadge({ type }: { type: string | null }) {
+  if (!type) return <span className="text-muted-foreground">-</span>
+  return (
+    <Badge variant="outline" className={`rounded-sm font-medium text-xs px-2 py-0.5 ${typeStyles[type] ?? typeStyles['Raw Material']}`}>
+      {type}
+    </Badge>
+  )
+}
+
+function AssemblyBadge({ hasBom }: { hasBom: boolean }) {
+  return hasBom
+    ? <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-secondary/10 text-secondary font-semibold text-xs">Y</span>
+    : <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-muted/50 text-muted-foreground font-medium text-xs">N</span>
+}
 
 export default function BomContent() {
-  const [filters, setFilters] = useState<BomFilters>({ page: 1, pageSize: 20 })
+  const [filters, setFilters] = useState<BomFilters>({ page: 1, pageSize: 50 })
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
-  const { data, isLoading } = useBomList(filters)
-  const deleteBom = useDeleteBom()
-  const activateBom = useActivateBom()
-  const createVersion = useCreateBomVersion()
+  // 2단계 아코디언: 하위 BOM 펼침
+  const [expandedSubIds, setExpandedSubIds] = useState<Set<string>>(new Set())
+  const { data, isLoading } = useBomItemList(filters)
 
   const handleSearch = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search, page: 1 }))
@@ -48,27 +63,13 @@ export default function BomContent() {
     })
   }
 
-  const handleToggleActive = async (bomId: string, productItemId: string, currentActive: boolean) => {
-    try {
-      if (currentActive) {
-        await deleteBom.mutateAsync({ id: bomId, productItemId })
-        toast.success('BOM 비활성화 완료')
-      } else {
-        await activateBom.mutateAsync({ id: bomId, productItemId })
-        toast.success('BOM 활성화 완료')
-      }
-    } catch (err) {
-      toast.error(extractErrorMessage(err, '상태 변경 실패'))
-    }
-  }
-
-  const handleNewVersion = async (sourceBomId: string, productItemId: string) => {
-    try {
-      const result = await createVersion.mutateAsync({ sourceBomId, productItemId })
-      toast.success(`새 버전 v${result.version} 생성 완료`)
-    } catch (err) {
-      toast.error(extractErrorMessage(err, '새 버전 생성 실패'))
-    }
+  const toggleSubExpand = (id: string) => {
+    setExpandedSubIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }
 
   return (
@@ -84,20 +85,23 @@ export default function BomContent() {
         <SearchInput
           value={filters.search ?? ''}
           onChange={handleSearch}
-          placeholder="결과품목 검색..."
+          placeholder="품목 검색..."
         />
         <Select
-          value={filters.status ?? 'all'}
-          onValueChange={(v) => setFilters((prev) => ({ ...prev, status: !v || v === 'all' ? undefined : v as BomFilters['status'], page: 1 }))}
-          items={{ all: '전체 상태', active: '활성', inactive: '비활성' }}
+          value={filters.materialType ?? 'all'}
+          onValueChange={(v) => setFilters((prev) => ({ ...prev, materialType: !v || v === 'all' ? undefined : v, page: 1 }))}
+          items={{ all: '전체 유형', 'Finished Good': 'Finished Good', 'WIP': 'WIP', 'Raw Material': 'Raw Material', 'Assemble Labor': 'Assemble Labor', 'Freight Overhead': 'Freight Overhead' }}
         >
-          <SelectTrigger className="w-[140px] h-9">
-            <SelectValue placeholder="전체 상태" />
+          <SelectTrigger className="w-[180px] h-9">
+            <SelectValue placeholder="전체 유형" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">전체 상태</SelectItem>
-            <SelectItem value="active">활성</SelectItem>
-            <SelectItem value="inactive">비활성</SelectItem>
+            <SelectItem value="all">전체 유형</SelectItem>
+            <SelectItem value="Finished Good">Finished Good</SelectItem>
+            <SelectItem value="WIP">WIP</SelectItem>
+            <SelectItem value="Raw Material">Raw Material</SelectItem>
+            <SelectItem value="Assemble Labor">Assemble Labor</SelectItem>
+            <SelectItem value="Freight Overhead">Freight Overhead</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -106,127 +110,127 @@ export default function BomContent() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="w-10"></TableHead>
-              <TableHead className="sticky left-0 bg-background/50 z-10">결과품목</TableHead>
-              <TableHead>버전</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead>재료 수</TableHead>
-              <TableHead className="hidden md:table-cell">수정일</TableHead>
-              <TableHead className="text-right">액션</TableHead>
+              <TableHead className="w-8"></TableHead>
+              <TableHead className="sticky left-0 bg-background/50 z-10">Material</TableHead>
+              <TableHead>Material Type</TableHead>
+              <TableHead className="hidden md:table-cell">설명</TableHead>
+              <TableHead className="text-center w-20">조립여부</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
+              Array.from({ length: 8 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 7 }).map((_, j) => (
+                  {Array.from({ length: 5 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7}>
+                <TableCell colSpan={5}>
                   <EmptyState
-                    title="BOM이 없습니다"
-                    description="조립 품목의 자재명세서를 등록하세요"
-                    actionLabel="첫 BOM 생성하기"
-                    actionHref="/bom/new"
+                    title="품목이 없습니다"
+                    description="품목을 먼저 등록하세요"
+                    actionLabel="품목 등록"
+                    actionHref="/items/new"
                   />
                 </TableCell>
               </TableRow>
             ) : (
-              data?.data.map((bom: any) => {
-                const isExpanded = expandedIds.has(bom.id)
-                const productItem = bom.product_item
+              data?.data.map((item: any) => {
+                const isExpanded = expandedIds.has(item.id)
                 return (
-                  <Fragment key={bom.id}>
+                  <Fragment key={item.id}>
                     <TableRow
-                      className="cursor-pointer hover:bg-background/30 h-9"
-                      tabIndex={0}
-                      aria-label={`BOM ${productItem?.code} v${bom.version} ${isExpanded ? '접기' : '펼치기'}`}
-                      aria-expanded={isExpanded}
-                      onClick={() => toggleExpand(bom.id)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(bom.id) } }}
+                      className={`h-9 ${item.hasBom ? 'cursor-pointer hover:bg-background/30' : ''}`}
+                      tabIndex={item.hasBom ? 0 : undefined}
+                      aria-label={item.hasBom ? `${item.name} BOM 구성 ${isExpanded ? '접기' : '펼치기'}` : undefined}
+                      aria-expanded={item.hasBom ? isExpanded : undefined}
+                      onClick={() => item.hasBom && toggleExpand(item.id)}
+                      onKeyDown={(e) => { if (item.hasBom && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleExpand(item.id) } }}
                     >
-                      <TableCell className="w-10 px-2">
-                        {isExpanded
-                          ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                          : <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        }
+                      <TableCell className="w-8 px-2">
+                        {item.hasBom && (
+                          isExpanded
+                            ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </TableCell>
                       <TableCell className="sticky left-0 bg-surface z-10">
-                        <span className="font-data font-medium">{productItem?.code}</span>
-                        <span className="text-text-secondary ml-2">{productItem?.name}</span>
+                        <span className="font-medium">{item.name}</span>
                       </TableCell>
-                      <TableCell className="font-data">v{bom.version}</TableCell>
                       <TableCell>
-                        {bom.is_active
-                          ? <StatusBadge status="active" />
-                          : <StatusBadge status="inactive" />
-                        }
+                        <MaterialTypeBadge type={item.material_type} />
                       </TableCell>
-                      <TableCell className="font-data">{bom.bom_lines?.length ?? 0}</TableCell>
-                      <TableCell className="font-data hidden md:table-cell">{formatDate(bom.updated_at)}</TableCell>
-                      <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1">
-                          {bom.is_active && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-xs h-7 px-2"
-                              onClick={() => handleNewVersion(bom.id, bom.product_item_id)}
-                              disabled={createVersion.isPending}
-                              aria-label="새 버전 생성"
-                            >
-                              새 버전
-                            </Button>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className={`text-xs h-7 px-2 ${bom.is_active ? 'text-destructive' : 'text-secondary'}`}
-                            onClick={() => handleToggleActive(bom.id, bom.product_item_id, bom.is_active)}
-                            disabled={deleteBom.isPending || activateBom.isPending}
-                            aria-label={bom.is_active ? '비활성화' : '활성화'}
-                          >
-                            {bom.is_active ? '비활성화' : '활성화'}
-                          </Button>
-                        </div>
+                      <TableCell className="hidden md:table-cell text-text-secondary text-cell">
+                        {item.description || '-'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <AssemblyBadge hasBom={item.hasBom} />
                       </TableCell>
                     </TableRow>
 
-                    {/* 아코디언: 재료 목록 */}
-                    {isExpanded && (
+                    {/* 1단계: BOM 구성품 */}
+                    {isExpanded && item.activeBom && (
                       <TableRow className="bg-background/20">
-                        <TableCell colSpan={7} className="p-0">
-                          <div className="px-8 py-3">
-                            {bom.bom_lines && bom.bom_lines.length > 0 ? (
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr className="text-xs text-muted-foreground border-b border-border">
-                                    <th className="text-left py-1.5 font-medium">코드</th>
-                                    <th className="text-left py-1.5 font-medium">재료 품목</th>
-                                    <th className="text-left py-1.5 font-medium">단위</th>
-                                    <th className="text-right py-1.5 font-medium">수량</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {bom.bom_lines.map((line: any) => (
-                                    <tr key={line.id} className="border-b border-border/50 last:border-0">
-                                      <td className="py-1.5 font-data">{line.material_item?.code}</td>
-                                      <td className="py-1.5">{line.material_item?.name}</td>
-                                      <td className="py-1.5 text-text-secondary">{line.material_item?.unit}</td>
-                                      <td className="py-1.5 font-data text-right">
-                                        {formatQty(line.quantity, line.material_item?.unit)}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            ) : (
-                              <p className="text-xs text-muted-foreground py-2">재료가 없습니다</p>
-                            )}
+                        <TableCell colSpan={5} className="p-0">
+                          <div className="pl-10 pr-4 py-2">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="text-xs text-muted-foreground border-b border-border">
+                                  <th className="w-6"></th>
+                                  <th className="text-left py-1.5 font-medium">구성품</th>
+                                  <th className="text-left py-1.5 font-medium">Material Type</th>
+                                  <th className="text-right py-1.5 font-medium w-20">수량</th>
+                                  <th className="text-center py-1.5 font-medium w-16">조립여부</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {item.activeBom.bom_lines.map((line: any) => {
+                                  const mat = line.material_item
+                                  // 하위 품목이 assembly 타입이면 조립여부 Y
+                                  const matHasBom = mat?.item_type === 'assembly'
+                                  const isSubExpanded = expandedSubIds.has(line.id)
+
+                                  return (
+                                    <Fragment key={line.id}>
+                                      <tr
+                                        className={`border-b border-border/50 last:border-0 ${matHasBom ? 'cursor-pointer hover:bg-background/10' : ''}`}
+                                        onClick={() => matHasBom && toggleSubExpand(line.id)}
+                                      >
+                                        <td className="w-6 py-1.5">
+                                          {matHasBom && (
+                                            isSubExpanded
+                                              ? <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                                              : <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                                          )}
+                                        </td>
+                                        <td className="py-1.5 font-medium">{mat?.name}</td>
+                                        <td className="py-1.5">
+                                          <MaterialTypeBadge type={mat?.material_type} />
+                                        </td>
+                                        <td className="py-1.5 font-data text-right">
+                                          {formatQty(line.quantity, mat?.unit)}
+                                        </td>
+                                        <td className="py-1.5 text-center">
+                                          <AssemblyBadge hasBom={matHasBom} />
+                                        </td>
+                                      </tr>
+
+                                      {/* 2단계: 하위 BOM 구성품 */}
+                                      {isSubExpanded && matHasBom && (
+                                        <tr>
+                                          <td colSpan={5} className="p-0">
+                                            <SubBomLines itemId={mat.id} />
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </Fragment>
+                                  )
+                                })}
+                              </tbody>
+                            </table>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -247,6 +251,51 @@ export default function BomContent() {
           onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
         />
       )}
+    </div>
+  )
+}
+
+// 2단계 하위 BOM 컴포넌트 (별도 쿼리)
+import { useBomByItem } from '@/hooks/use-bom'
+
+function SubBomLines({ itemId }: { itemId: string }) {
+  const { data: boms, isLoading } = useBomByItem(itemId)
+  const activeBom = boms?.find((b: any) => b.is_active)
+
+  if (isLoading) return <div className="pl-16 py-2"><Skeleton className="h-4 w-48" /></div>
+  if (!activeBom || !activeBom.bom_lines?.length) return <div className="pl-16 py-2 text-xs text-muted-foreground">BOM 없음</div>
+
+  return (
+    <div className="pl-16 pr-4 py-2 bg-background/10">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-xs text-muted-foreground border-b border-border/30">
+            <th className="text-left py-1 font-medium">구성품</th>
+            <th className="text-left py-1 font-medium">Material Type</th>
+            <th className="text-right py-1 font-medium w-20">수량</th>
+            <th className="text-center py-1 font-medium w-16">조립여부</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activeBom.bom_lines.map((line: any) => {
+            const mat = line.material_item
+            return (
+              <tr key={line.id} className="border-b border-border/30 last:border-0">
+                <td className="py-1">{mat?.name}</td>
+                <td className="py-1">
+                  <MaterialTypeBadge type={mat?.material_type} />
+                </td>
+                <td className="py-1 font-data text-right">
+                  {formatQty(line.quantity, mat?.unit)}
+                </td>
+                <td className="py-1 text-center">
+                  <AssemblyBadge hasBom={false} />
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
