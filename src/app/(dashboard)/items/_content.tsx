@@ -45,10 +45,10 @@ export default function ItemsContent() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="sticky left-0 z-20 bg-background w-[120px] min-w-[120px]">코드</TableHead>
-              <TableHead className="min-w-[200px]">품목명</TableHead>
-              <TableHead className="min-w-[140px]">카테고리</TableHead>
-              <TableHead className="text-center w-[100px]">조립가능여부</TableHead>
+              <TableHead className="sticky left-0 z-20 bg-background w-1/4">코드</TableHead>
+              <TableHead className="w-1/4">품목명</TableHead>
+              <TableHead className="w-1/4">카테고리</TableHead>
+              <TableHead className="text-center w-1/4">조립가능여부</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -82,7 +82,7 @@ export default function ItemsContent() {
                     onClick={() => router.push(`/items/${item.id}`)}
                     onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/items/${item.id}`) }}
                   >
-                    <TableCell className="font-data font-medium sticky left-0 z-10 bg-card w-[120px] min-w-[120px]">{item.code}</TableCell>
+                    <TableCell className="font-data font-medium sticky left-0 z-10 bg-card">{item.code}</TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-text-secondary">{item.category || '-'}</TableCell>
                     <TableCell className="text-center">
