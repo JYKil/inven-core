@@ -47,7 +47,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
     form.reset({
       code: item.code,
       name: item.name,
-      category: item.category ?? '',
+      material_type: item.material_type ?? '',
       unit: item.unit,
       item_type: item.item_type as ItemUpdate['item_type'],
       description: item.description ?? '',
@@ -159,7 +159,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                     <div className="space-y-1.5">
                       <Label>카테고리</Label>
-                      <Input {...form.register('category')} />
+                      <Input {...form.register('material_type')} />
                     </div>
                   </div>
                   <div className="space-y-1.5">
@@ -197,7 +197,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs mb-1">카테고리</dt>
-                    <dd>{item.category || '-'}</dd>
+                    <dd>{item.material_type || '-'}</dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs mb-1">최소 재고</dt>

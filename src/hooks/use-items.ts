@@ -25,10 +25,11 @@ export function useItems(filters: ItemFilters = {}) {
       let query = supabase
         .from('items')
         .select('*, inventory_summary(total_qty)', { count: 'exact' })
-        .order('code')
+        .order('item_type')
+        .order('name')
 
       if (!filters.includeInactive) query = query.eq('is_active', true)
-      if (filters.category) query = query.eq('category', filters.category)
+      if (filters.category) query = query.eq('material_type', filters.category)
       if (filters.itemType) query = query.eq('item_type', filters.itemType)
       if (filters.search) {
         const s = escapeFilterValue(filters.search)

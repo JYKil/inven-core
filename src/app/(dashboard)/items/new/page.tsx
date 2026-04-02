@@ -26,7 +26,7 @@ export default function NewItemPage() {
   const form = useForm<ItemCreate>({
     resolver: zodResolver(itemCreateSchema),
     defaultValues: {
-      code: '', name: '', category: '', unit: 'EA',
+      code: '', name: '', material_type: '', unit: 'EA',
       item_type: 'basic', description: '', min_stock_qty: 0,
     },
   })
@@ -94,8 +94,8 @@ export default function NewItemPage() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="category">카테고리</Label>
-                <Input id="category" {...form.register('category')} />
+                <Label htmlFor="material_type">카테고리</Label>
+                <Input id="material_type" {...form.register('material_type')} />
               </div>
             </div>
             <div className="space-y-1.5">
