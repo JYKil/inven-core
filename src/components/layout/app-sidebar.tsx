@@ -52,7 +52,7 @@ const navGroups = [
       { title: '업체정보', href: '/vendors', icon: Users },
       { title: '고객정보', href: '/customers', icon: UserCheck },
       { title: '창고', href: '/warehouses', icon: Warehouse },
-      { title: '품목 관리', href: '/items', icon: Package },
+      { title: 'BOM', href: '/items', icon: Package },
     ],
   },
   {
