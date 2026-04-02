@@ -42,7 +42,7 @@ inven-core/
 │   ├── stores/         # Zustand 스토어
 │   ├── types/          # TypeScript 타입 (Supabase 자동생성 포함)
 │   └── proxy.ts        # 인증 미들웨어
-├── test/               # 단위 테스트 (164개)
+├── test/               # 단위 테스트 (170개)
 ├── supabase/           # Supabase 설정 + 마이그레이션
 ├── .planning/          # 설계 문서
 └── .doc/               # 프로젝트 참고 문서
