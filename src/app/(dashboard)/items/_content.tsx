@@ -3,21 +3,16 @@
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, AlertTriangle, Wrench } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/common/page-header'
 import { SearchInput } from '@/components/common/search-input'
 import { EmptyState } from '@/components/common/empty-state'
 import { DataTablePagination } from '@/components/common/data-table-pagination'
-import { formatQty } from '@/lib/format'
 import { useItems, type ItemFilters } from '@/hooks/use-items'
 
 export default function ItemsContent() {
@@ -44,47 +39,30 @@ export default function ItemsContent() {
           onChange={handleSearch}
           placeholder="품목코드, 품목명 검색..."
         />
-        <Select
-          value={filters.itemType ?? 'all'}
-          onValueChange={(v) => setFilters((prev) => ({ ...prev, itemType: !v || v === 'all' ? undefined : v, page: 1 }))}
-          items={{ all: '전체 유형', basic: '기초 품목', assembly: '조립 품목' }}
-        >
-          <SelectTrigger className="w-[140px] h-9">
-            <SelectValue placeholder="전체 유형" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">전체 유형</SelectItem>
-            <SelectItem value="basic">기초 품목</SelectItem>
-            <SelectItem value="assembly">조립 품목</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="border border-border rounded-lg overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="sticky left-0 z-20 bg-background w-[100px] min-w-[100px]">코드</TableHead>
-              <TableHead className="sticky left-[100px] z-20 bg-background min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">품목명</TableHead>
-              <TableHead>유형</TableHead>
-              <TableHead>단위</TableHead>
-              <TableHead>카테고리</TableHead>
-              <TableHead className="text-right">현재고</TableHead>
-              <TableHead className="w-10"></TableHead>
+              <TableHead className="sticky left-0 z-20 bg-background w-[120px] min-w-[120px]">코드</TableHead>
+              <TableHead className="min-w-[200px]">품목명</TableHead>
+              <TableHead className="min-w-[140px]">카테고리</TableHead>
+              <TableHead className="text-center w-[100px]">조립가능여부</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 7 }).map((_, j) => (
+                  {Array.from({ length: 4 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7}>
+                <TableCell colSpan={4}>
                   <EmptyState
                     title="품목이 없습니다"
                     actionLabel="첫 품목 등록하기"
@@ -94,41 +72,24 @@ export default function ItemsContent() {
               </TableRow>
             ) : (
               data?.data.map((item: any) => {
-                // inventory_summary에서 총 재고 합산
-                const totalQty = Array.isArray(item.inventory_summary)
-                  ? item.inventory_summary.reduce((sum: number, s: any) => sum + (s.total_qty ?? 0), 0)
-                  : 0
-                const isLow = item.min_stock_qty > 0 && totalQty < item.min_stock_qty
-
+                const isAssembly = item.item_type === 'assembly'
                 return (
                   <TableRow
                     key={item.id}
-                    className="cursor-pointer hover:bg-background/30"
+                    className="cursor-pointer hover:bg-background/30 h-9"
                     tabIndex={0}
                     aria-label={`품목 ${item.code} ${item.name} 상세보기`}
                     onClick={() => router.push(`/items/${item.id}`)}
                     onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/items/${item.id}`) }}
                   >
-                    <TableCell className="font-data font-medium sticky left-0 z-10 bg-card w-[100px] min-w-[100px]">{item.code}</TableCell>
-                    <TableCell className="font-medium sticky left-[100px] z-10 bg-card min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">{item.name}</TableCell>
-                    <TableCell>
-                      {item.item_type === 'assembly' ? (
-                        <Badge variant="outline" className="rounded-sm border-[1.5px] border-info text-info text-xs">
-                          <Wrench className="h-3 w-3 mr-1" />조립
-                        </Badge>
-                      ) : (
-                        <span className="text-text-secondary">기초</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-text-secondary">{item.unit}</TableCell>
+                    <TableCell className="font-data font-medium sticky left-0 z-10 bg-card w-[120px] min-w-[120px]">{item.code}</TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-text-secondary">{item.category || '-'}</TableCell>
-                    <TableCell className="font-data text-right">
-                      {formatQty(totalQty, item.unit)}
-                    </TableCell>
-                    <TableCell>
-                      {isLow && (
-                        <AlertTriangle className="h-4 w-4 text-warning" />
-                      )}
+                    <TableCell className="text-center">
+                      {isAssembly
+                        ? <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-secondary/10 text-secondary font-semibold text-xs">Y</span>
+                        : <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-muted/50 text-muted-foreground font-medium text-xs">N</span>
+                      }
                     </TableCell>
                   </TableRow>
                 )
