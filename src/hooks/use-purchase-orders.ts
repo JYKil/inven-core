@@ -18,17 +18,9 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
   return useQuery({
     queryKey: queryKeys.purchaseOrders.list(filters),
     queryFn: async () => {
-      // PO 헤더 + 라인 + 품목을 조인하여 플랫 테이블용 데이터 조회
       let query = supabase
         .from('purchase_orders')
-        .select(`
-          *,
-          vendor:vendors!purchase_orders_vendor_id_fkey(id, name),
-          purchase_order_lines(
-            *,
-            item:items!purchase_order_lines_item_id_fkey(id, code, name, unit)
-          )
-        `, { count: 'exact' })
+        .select('*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', { count: 'exact' })
         .order('created_at', { ascending: false })
 
       if (filters.status) query = query.eq('status', filters.status)
