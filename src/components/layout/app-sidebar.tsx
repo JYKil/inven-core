@@ -56,7 +56,7 @@ const navGroups = [
     ],
   },
   {
-    label: '구매·입고',
+    label: '발주',
     items: [
       { title: '발주서(PO)', href: '/purchase-orders', icon: ClipboardList },
       { title: '입고 처리', href: '/goods-receipts', icon: PackageCheck },
