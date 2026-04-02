@@ -3,25 +3,22 @@
 // 정수 단위 (EA, BOX, PCS, SET, ROLL, SHEET)
 const integerUnits = new Set(['EA', 'BOX', 'PCS', 'SET', 'ROLL', 'SHEET'])
 
-// 수량 포맷: 정수 단위는 정수, 소수 단위는 소수4자리
-export function formatQty(value: number | null | undefined, unit = 'EA'): string {
+// 수량 포맷: 항상 정수 (소수점 0자리)
+export function formatQty(value: number | null | undefined, _unit = 'EA'): string {
   if (value == null) return '-'
-  if (integerUnits.has(unit.toUpperCase())) {
-    return Math.round(value).toLocaleString('ko-KR')
-  }
-  return value.toLocaleString('ko-KR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })
+  return Math.round(value).toLocaleString('ko-KR')
 }
 
-// 단가 포맷: 최대 소수4자리 (후행 0 제거) + ₩
+// 단가 포맷: 소수점 5자리
 export function formatUnitPrice(value: number | null | undefined): string {
   if (value == null) return '-'
-  return `₩${value.toLocaleString('ko-KR', { minimumFractionDigits: 0, maximumFractionDigits: 4 })}`
+  return value.toLocaleString('ko-KR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })
 }
 
-// 금액 포맷: 정수 + ₩ (원화는 소수점 불필요)
+// 금액 포맷: 소수점 2자리
 export function formatAmount(value: number | null | undefined): string {
   if (value == null) return '-'
-  return `₩${Math.round(value).toLocaleString('ko-KR')}`
+  return value.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 // 비율 포맷: 소수1자리 + %

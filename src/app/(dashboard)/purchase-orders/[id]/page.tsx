@@ -129,39 +129,53 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
               <Table>
                 <TableHeader>
                   <TableRow className="bg-background/50">
-                    <TableHead>코드</TableHead>
-                    <TableHead>품목명</TableHead>
-                    <TableHead className="text-right">발주수량</TableHead>
-                    <TableHead className="text-right">입고수량</TableHead>
-                    <TableHead className="text-right">입고율</TableHead>
+                    <TableHead>계약일자</TableHead>
+                    <TableHead>계약번호</TableHead>
+                    <TableHead>업체명</TableHead>
+                    <TableHead>매입품</TableHead>
+                    <TableHead>구분</TableHead>
+                    <TableHead className="text-right">수량</TableHead>
                     <TableHead className="text-right">단가</TableHead>
                     <TableHead className="text-right">금액</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {(po as any).purchase_order_lines?.map((line: any) => {
-                    const receiveRate = line.ordered_qty > 0
-                      ? (line.received_qty / line.ordered_qty) * 100 : 0
+                    const isExpense = line.line_type === 'expense'
                     return (
                       <TableRow key={line.id}>
-                        <TableCell className="font-data">{line.item?.code}</TableCell>
-                        <TableCell>{line.item?.name}</TableCell>
-                        <TableCell className="font-data text-right">
-                          {formatQty(line.ordered_qty, line.item?.unit)}
-                        </TableCell>
-                        <TableCell className="font-data text-right">
-                          {formatQty(line.received_qty, line.item?.unit)}
-                        </TableCell>
-                        <TableCell className="font-data text-right">
-                          <span className={receiveRate >= 100 ? 'text-secondary' : receiveRate > 0 ? 'text-warning' : ''}>
-                            {formatPercent(receiveRate)}
+                        <TableCell className="font-data">{formatDate(po.order_date)}</TableCell>
+                        <TableCell className="font-data font-medium">{po.po_number}</TableCell>
+                        <TableCell>{(po as any).vendor?.name ?? '-'}</TableCell>
+                        <TableCell>{isExpense ? (line.description || '-') : (line.item?.name ?? '-')}</TableCell>
+                        <TableCell>
+                          <span className={`inline-block px-2 py-0.5 rounded-sm text-2xs font-medium ${
+                            isExpense
+                              ? 'bg-warning/10 text-warning'
+                              : 'bg-secondary/10 text-secondary'
+                          }`}>
+                            {isExpense ? '비용' : '재고'}
                           </span>
                         </TableCell>
-                        <TableCell className="font-data text-right">{formatUnitPrice(line.unit_price)}</TableCell>
+                        <TableCell className="font-data text-right">
+                          {isExpense ? '—' : formatQty(line.ordered_qty, line.item?.unit)}
+                        </TableCell>
+                        <TableCell className="font-data text-right">
+                          {isExpense ? '—' : formatUnitPrice(line.unit_price)}
+                        </TableCell>
                         <TableCell className="font-data text-right">{formatAmount(line.line_amount)}</TableCell>
                       </TableRow>
                     )
                   })}
+                  {/* 합계 행 */}
+                  <TableRow className="bg-background/30">
+                    <TableCell colSpan={7} className="text-right text-xs font-medium text-text-secondary">
+                      합계
+                    </TableCell>
+                    <TableCell className="font-data font-medium text-right">
+                      {formatAmount(po.total_amount)}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
           </div>

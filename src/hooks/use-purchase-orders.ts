@@ -18,9 +18,17 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
   return useQuery({
     queryKey: queryKeys.purchaseOrders.list(filters),
     queryFn: async () => {
+      // PO 헤더 + 라인 + 품목을 조인하여 플랫 테이블용 데이터 조회
       let query = supabase
         .from('purchase_orders')
-        .select('*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', { count: 'exact' })
+        .select(`
+          *,
+          vendor:vendors!purchase_orders_vendor_id_fkey(id, name),
+          purchase_order_lines(
+            *,
+            item:items!purchase_order_lines_item_id_fkey(id, code, name, unit)
+          )
+        `, { count: 'exact' })
         .order('created_at', { ascending: false })
 
       if (filters.status) query = query.eq('status', filters.status)
@@ -76,7 +84,14 @@ export function useCreatePurchaseOrder() {
       order_date: string
       expected_date?: string
       notes?: string
-      lines: { item_id: string; ordered_qty: number; unit_price: number }[]
+      lines: {
+        line_type: 'inventory' | 'expense'
+        item_id?: string
+        description?: string
+        ordered_qty?: number
+        unit_price?: number
+        line_amount?: number
+      }[]
     }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
@@ -87,7 +102,11 @@ export function useCreatePurchaseOrder() {
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const totalAmount = input.lines.reduce((sum, l) => sum + l.ordered_qty * l.unit_price, 0)
+      // 재고: qty * price, 비용: line_amount 직접
+      const totalAmount = input.lines.reduce((sum, l) => {
+        if (l.line_type === 'expense') return sum + (l.line_amount ?? 0)
+        return sum + (l.ordered_qty ?? 0) * (l.unit_price ?? 0)
+      }, 0)
 
       // PO 헤더 생성
       const { data: po, error: poErr } = await supabase
@@ -107,13 +126,28 @@ export function useCreatePurchaseOrder() {
       if (poErr) throw poErr
 
       // PO 라인 생성
-      const lines = input.lines.map((l) => ({
-        po_id: po.id,
-        item_id: l.item_id,
-        ordered_qty: l.ordered_qty,
-        unit_price: l.unit_price,
-        line_amount: l.ordered_qty * l.unit_price,
-      }))
+      const lines = input.lines.map((l) => {
+        if (l.line_type === 'expense') {
+          return {
+            po_id: po.id,
+            line_type: 'expense' as const,
+            item_id: null,
+            description: l.description ?? '',
+            ordered_qty: 0,
+            unit_price: 0,
+            line_amount: l.line_amount ?? 0,
+          }
+        }
+        return {
+          po_id: po.id,
+          line_type: 'inventory' as const,
+          item_id: l.item_id!,
+          description: null,
+          ordered_qty: l.ordered_qty ?? 0,
+          unit_price: l.unit_price ?? 0,
+          line_amount: (l.ordered_qty ?? 0) * (l.unit_price ?? 0),
+        }
+      })
       const { error: linesErr } = await supabase
         .from('purchase_order_lines')
         .insert(lines)

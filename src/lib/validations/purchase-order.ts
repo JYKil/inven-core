@@ -1,10 +1,29 @@
 import { z } from 'zod'
 
-export const poLineSchema = z.object({
+// 재고 라인: 품목 선택 + 수량/단가
+const inventoryLineSchema = z.object({
+  line_type: z.literal('inventory'),
   item_id: z.string().uuid('품목을 선택해주세요'),
+  description: z.string().optional(),
   ordered_qty: z.number().positive('수량은 0보다 커야 합니다'),
   unit_price: z.number().min(0, '단가는 0 이상이어야 합니다'),
+  line_amount: z.number().optional(),
 })
+
+// 비용 라인: 매입품명 직접 입력 + 금액만
+const expenseLineSchema = z.object({
+  line_type: z.literal('expense'),
+  item_id: z.string().optional(),
+  description: z.string().min(1, '매입품명을 입력해주세요'),
+  ordered_qty: z.number().optional(),
+  unit_price: z.number().optional(),
+  line_amount: z.number().positive('금액을 입력해주세요'),
+})
+
+export const poLineSchema = z.discriminatedUnion('line_type', [
+  inventoryLineSchema,
+  expenseLineSchema,
+])
 
 export const poCreateSchema = z.object({
   po_number: z.string().min(1, 'PO 번호를 입력해주세요'),

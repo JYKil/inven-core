@@ -188,7 +188,7 @@ describe('poCreateSchema', () => {
     po_number: 'PO-001',
     vendor_id: uuid,
     order_date: '2026-03-31',
-    lines: [{ item_id: uuid, ordered_qty: 10, unit_price: 1000 }],
+    lines: [{ line_type: 'inventory' as const, item_id: uuid, ordered_qty: 10, unit_price: 1000 }],
   }
 
   it('유효한 데이터 통과', () => {
@@ -207,13 +207,23 @@ describe('poCreateSchema', () => {
 })
 
 describe('poLineSchema', () => {
-  it('수량 0이면 실패', () => {
-    const result = poLineSchema.safeParse({ item_id: uuid, ordered_qty: 0, unit_price: 100 })
+  it('재고 라인: 수량 0이면 실패', () => {
+    const result = poLineSchema.safeParse({ line_type: 'inventory', item_id: uuid, ordered_qty: 0, unit_price: 100 })
     expect(result.success).toBe(false)
   })
 
-  it('단가 음수면 실패', () => {
-    const result = poLineSchema.safeParse({ item_id: uuid, ordered_qty: 10, unit_price: -1 })
+  it('재고 라인: 단가 음수면 실패', () => {
+    const result = poLineSchema.safeParse({ line_type: 'inventory', item_id: uuid, ordered_qty: 10, unit_price: -1 })
+    expect(result.success).toBe(false)
+  })
+
+  it('비용 라인: 유효한 데이터 통과', () => {
+    const result = poLineSchema.safeParse({ line_type: 'expense', description: '수수료', line_amount: 100 })
+    expect(result.success).toBe(true)
+  })
+
+  it('비용 라인: 매입품명 없으면 실패', () => {
+    const result = poLineSchema.safeParse({ line_type: 'expense', description: '', line_amount: 100 })
     expect(result.success).toBe(false)
   })
 })

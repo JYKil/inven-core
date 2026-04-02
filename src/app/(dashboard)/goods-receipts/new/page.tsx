@@ -76,7 +76,7 @@ function NewGoodsReceiptContent() {
     if (!po || fields.length > 0) return
     const poLines = (po as any).purchase_order_lines ?? []
     const newLines = poLines
-      .filter((l: any) => l.received_qty < l.ordered_qty)
+      .filter((l: any) => l.line_type !== 'expense' && l.received_qty < l.ordered_qty)
       .map((l: any) => {
         const remaining = l.ordered_qty - l.received_qty
         setItemNames((prev) => ({ ...prev, [l.item_id]: `${l.item?.code} — ${l.item?.name}` }))

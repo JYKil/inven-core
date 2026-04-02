@@ -6,8 +6,8 @@ describe('formatQty', () => {
     expect(formatQty(1234, 'EA')).toBe('1,234')
   })
 
-  it('소수 단위(KG)는 소수4자리로 표시', () => {
-    expect(formatQty(12.5, 'KG')).toBe('12.5000')
+  it('소수 단위(KG)도 정수로 표시', () => {
+    expect(formatQty(12.5, 'KG')).toBe('13')
   })
 
   it('null이면 - 반환', () => {
@@ -34,16 +34,16 @@ describe('formatQty', () => {
 })
 
 describe('formatUnitPrice', () => {
-  it('정수 단가는 후행 0 없이 표시', () => {
-    expect(formatUnitPrice(1500)).toBe('₩1,500')
+  it('정수 단가도 소수점 5자리로 표시', () => {
+    expect(formatUnitPrice(1500)).toBe('1,500.00000')
   })
 
-  it('소수점 있는 단가는 최대 4자리까지 표시', () => {
-    expect(formatUnitPrice(12.3456)).toBe('₩12.3456')
+  it('소수점 있는 단가는 5자리까지 표시', () => {
+    expect(formatUnitPrice(0.006)).toBe('0.00600')
   })
 
-  it('소수 2자리 단가는 2자리까지만 표시', () => {
-    expect(formatUnitPrice(100.55)).toBe('₩100.55')
+  it('소수 2자리 단가도 5자리로 표시', () => {
+    expect(formatUnitPrice(100.55)).toBe('100.55000')
   })
 
   it('null이면 - 반환', () => {
@@ -54,26 +54,26 @@ describe('formatUnitPrice', () => {
     expect(formatUnitPrice(undefined)).toBe('-')
   })
 
-  it('0은 ₩0', () => {
-    expect(formatUnitPrice(0)).toBe('₩0')
+  it('0은 0.00000', () => {
+    expect(formatUnitPrice(0)).toBe('0.00000')
   })
 })
 
 describe('formatAmount', () => {
-  it('금액에 ₩ 접두사와 정수 표시 (원화는 소수점 불필요)', () => {
-    expect(formatAmount(10000)).toBe('₩10,000')
+  it('금액은 소수점 2자리로 표시', () => {
+    expect(formatAmount(10000)).toBe('10,000.00')
   })
 
   it('null이면 - 반환', () => {
     expect(formatAmount(null)).toBe('-')
   })
 
-  it('0은 ₩0', () => {
-    expect(formatAmount(0)).toBe('₩0')
+  it('0은 0.00', () => {
+    expect(formatAmount(0)).toBe('0.00')
   })
 
-  it('소수점 값은 반올림', () => {
-    expect(formatAmount(10000.75)).toBe('₩10,001')
+  it('소수점 값은 2자리까지 표시', () => {
+    expect(formatAmount(10000.75)).toBe('10,000.75')
   })
 })
 
