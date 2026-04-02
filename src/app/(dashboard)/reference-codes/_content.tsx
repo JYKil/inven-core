@@ -135,16 +135,12 @@ export default function ReferenceCodesContent() {
         <Table className="table-fixed">
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="w-[12%] whitespace-nowrap truncate">타입</TableHead>
-              <TableHead className="w-[18%] whitespace-nowrap truncate">데이터 1</TableHead>
+              <TableHead className="whitespace-nowrap truncate">타입</TableHead>
+              <TableHead className="whitespace-nowrap truncate">데이터 1</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 2</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 3</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 4</TableHead>
               <TableHead className="whitespace-nowrap truncate">데이터 5</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 6</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 7</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 8</TableHead>
-              <TableHead className="whitespace-nowrap truncate">데이터 9</TableHead>
               <TableHead className="w-[70px] whitespace-nowrap">액션</TableHead>
             </TableRow>
           </TableHeader>
@@ -152,14 +148,14 @@ export default function ReferenceCodesContent() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 11 }).map((_, j) => (
+                  {Array.from({ length: 7 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={11}>
+                <TableCell colSpan={7}>
                   <EmptyState
                     title="기준정보가 없습니다"
                     actionLabel="첫 기준정보 추가하기"
@@ -187,10 +183,6 @@ export default function ReferenceCodesContent() {
                   <TableCell className="text-text-secondary truncate">{row.code_data3 || '-'}</TableCell>
                   <TableCell className="text-text-secondary truncate">{row.code_data4 || '-'}</TableCell>
                   <TableCell className="text-text-secondary truncate">{row.code_data5 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data6 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data7 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data8 || '-'}</TableCell>
-                  <TableCell className="text-text-secondary truncate">{row.code_data9 || '-'}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     <div className="flex items-center gap-1">
                       <Button
