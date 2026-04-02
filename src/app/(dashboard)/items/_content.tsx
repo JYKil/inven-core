@@ -45,24 +45,25 @@ export default function ItemsContent() {
         <Table>
           <TableHeader>
             <TableRow className="bg-background/50">
-              <TableHead className="sticky left-0 z-20 bg-background w-1/4">코드</TableHead>
-              <TableHead className="w-1/4">품목명</TableHead>
-              <TableHead className="w-1/4">카테고리</TableHead>
-              <TableHead className="text-center w-1/4">조립가능여부</TableHead>
+              <TableHead className="sticky left-0 z-20 bg-background w-[10%]">Code</TableHead>
+              <TableHead className="w-[25%]">Material</TableHead>
+              <TableHead className="w-[15%]">Material Type</TableHead>
+              <TableHead className="w-[35%]">Material Describe</TableHead>
+              <TableHead className="text-center w-[15%]">BOM</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 4 }).map((_, j) => (
+                  {Array.from({ length: 5 }).map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                   ))}
                 </TableRow>
               ))
             ) : data?.data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={5}>
                   <EmptyState
                     title="품목이 없습니다"
                     actionLabel="첫 품목 등록하기"
@@ -84,7 +85,8 @@ export default function ItemsContent() {
                   >
                     <TableCell className="font-data font-medium sticky left-0 z-10 bg-card">{item.code}</TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-text-secondary">{item.category || '-'}</TableCell>
+                    <TableCell className="text-text-secondary">{item.material_type || '-'}</TableCell>
+                    <TableCell className="text-text-secondary text-cell">{item.description || '-'}</TableCell>
                     <TableCell className="text-center">
                       {isAssembly
                         ? <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-secondary/10 text-secondary font-semibold text-xs">Y</span>
