@@ -36,8 +36,8 @@
 
 ```
 [x] Docker + Docker Compose 설치
-[ ] PostgreSQL 16 컨테이너 실행
-[ ] psql 접속 테스트 확인
+[x] PostgreSQL 16 컨테이너 실행
+[x] psql 접속 테스트 확인
 ```
 
 ```yaml
@@ -61,11 +61,11 @@ services:
 ## Phase 2 — DB 마이그레이션
 
 ```
-[ ] Supabase 클라우드에서 public 스키마 덤프
-[ ] RLS 정책 별도 추출 (백업용으로만 보관)
-[ ] 미니PC PostgreSQL에 복원
-[ ] 테이블 24개 모두 정상 복원됐는지 확인
-[ ] 운영 데이터 row 수 검증 (클라우드 vs 로컬 비교)
+[x] Supabase 클라우드에서 public 스키마 덤프
+[x] RLS 정책 별도 추출 (백업용으로만 보관)
+[x] 미니PC PostgreSQL에 복원
+[x] 테이블 24개 모두 정상 복원됐는지 확인
+[x] 운영 데이터 row 수 검증 (클라우드 vs 로컬 비교)
 ```
 
 ```bash
@@ -88,17 +88,27 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 **Better Auth 선택 (Next.js 15 + TypeScript에 최적)**
 
 ```
-[ ] 패키지 교체
-    npm install better-auth
-    npm uninstall @supabase/supabase-js @supabase/ssr
+[x] 패키지 교체
+    npm install better-auth pg @types/pg
+    npm uninstall @supabase/supabase-js @supabase/ssr (Phase 4에서 제거 예정)
 
-[ ] better-auth DB 스키마 마이그레이션 실행
-    npx better-auth migrate
+[x] better-auth DB 스키마 마이그레이션 실행
+    node scripts/migrate-better-auth.mjs
+    → user, session, account, verification 테이블 생성
+    → user 테이블에 role(text), companyId(text) 컬럼 포함
 
-[ ] src/lib/auth.ts 생성
-    - 이메일/비밀번호 provider만 설정
-    - PostgreSQL adapter 연결
-    - 관리자 승인 커스텀 필드 추가 (isApproved 등)
+[x] src/lib/auth.ts 생성
+    - betterAuth + pg Pool adapter (DATABASE_URL 환경변수)
+    - emailAndPassword 활성화
+    - role additionalField (defaultValue: 'pending', input: false)
+    - companyId additionalField (nullable, input: false)
+    - nextCookies() 플러그인 (Next.js App Router 쿠키 처리)
+
+[x] src/app/api/auth/[...all]/route.ts 생성
+    - toNextJsHandler(auth) — Better Auth 라우트 핸들러
+
+[x] src/lib/auth-client.ts 생성
+    - createAuthClient — signIn, signUp, signOut, useSession export
 
 [ ] src/proxy.ts (미들웨어) 재작성
     - supabaseMiddleware → better-auth session 체크로 교체
