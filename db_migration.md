@@ -110,7 +110,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] src/lib/auth-client.ts 생성
     - createAuthClient — signIn, signUp, signOut, useSession export
 
-[ ] src/proxy.ts (미들웨어) 재작성
+[x] src/proxy.ts (미들웨어) 재작성
     - supabaseMiddleware → better-auth session 체크로 교체
     - 미승인 유저 리다이렉트 로직 유지
 
