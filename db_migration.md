@@ -1,7 +1,7 @@
 # inven-core 마이그레이션 체크리스트
 > Vercel + Supabase → 리눅스 미니PC (PostgreSQL + Better Auth 이메일/비밀번호)
 
-> 업데이트: 2026-05-12 Phase 4 잔여 작업 일부 반영
+> 업데이트: 2026-05-12 Phase 4 hooks/settings/admin fluent 호출 제거 반영
 
 ---
 
@@ -13,19 +13,18 @@
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
 | **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
-| **Supabase Query 제거** | Phase 4 추가 진행 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, hooks/settings/admin 호출은 로컬 DB query client로 전환 |
+| **Supabase Query 제거** | Phase 4 추가 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 통과 | 2026-05-12 Phase 4 잔여 작업 후 `npx tsc --noEmit`, 관련 Vitest 통과 |
-| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup 원격 푸쉬 완료 |
+| **검증 상태** | 통과 | 2026-05-12 Phase 4 fluent 호출 제거 후 `npx tsc --noEmit` 통과 |
+| **Git 반영** | 진행 중 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup 원격 푸쉬 완료. fluent 호출 제거 작업은 커밋 전 |
 
 ## 다음 우선순위
 
 ```
-1. hooks/settings/admin 화면의 `dbClient.from()/rpc()` fluent 호출을 도메인별 전용 API 함수로 축소
-2. API-backed 쿼리 라우트의 주요 화면 런타임 검증
-3. Supabase 자동생성 타입(`src/types/database.ts`)을 Drizzle 기반 타입으로 교체
-4. Dockerfile/docker-compose 배포 파일 작성
+1. API-backed 쿼리 라우트의 주요 화면 런타임 검증
+2. Supabase 자동생성 타입(`src/types/database.ts`)을 Drizzle 기반 타입으로 교체
+3. Dockerfile/docker-compose 배포 파일 작성
 ```
 
 ## 2026-05-12 Phase 3 작업 결과
@@ -274,7 +273,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - use-assembly-orders, use-warehouse-transfers, use-inventory
     - use-bom, use-dashboard, use-reports, use-reference-codes, use-po-payments
     → 외부 `@supabase/*` 의존은 제거했고, 잔존 hooks/settings/admin 호출은 `/api/db-query` 서버 API-backed 호환 어댑터로 전환
-    → 다음 단계에서 훅별 직접 `fetch` 호출로 치환하면 `src/lib/supabase/*` 제거 가능
+    → 2026-05-12 추가 작업으로 hooks/settings/admin의 `dbClient.from()/rpc()` fluent 호출 제거 및 직접 `queryDb()`/`rpcDb()` 호출로 전환
 ```
 
 ### 2026-05-12 Phase 4 진행 메모
@@ -303,6 +302,10 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] hooks/settings/admin 잔존 호출 import를 `src/lib/api/db-client.ts`로 전환
     - 외부 Supabase client import 제거
     - `createClient()` / `supabase` 네이밍 제거
+[x] hooks/settings/admin `dbClient.from()/rpc()` fluent 호출 제거
+    - `queryDb()` / `rpcDb()` / `getCurrentUser()` 직접 함수 호출로 전환
+    - `createDbClient()` 및 임시 `QueryBuilder` 호환 레이어 제거
+    - API route 호출부의 빈 bearer 토큰 생성 제거
 [x] Supabase 호환 임시 어댑터 제거
     - `src/lib/supabase/admin.ts`
     - `src/lib/supabase/client.ts`
@@ -317,11 +320,14 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] 검증
     - `npx tsc --noEmit`
     - `npx vitest run test/api-auth.test.ts test/api-error.test.ts`
+[x] 추가 검증
+    - `npx tsc --noEmit`
+    - `rg "createDbClient|dbClient\\.from|dbClient\\.rpc|class QueryBuilder|getCurrentSession" src`
 [x] 관련 변경사항 커밋 및 원격 푸쉬 완료
     - `5e58402` Remove test.txt
     - `86e464b` Update Supabase invite and db query APIs
     - `431e2eb` Continue Phase 4 Supabase query cleanup
-[!] hooks/settings/admin 파일에는 아직 `dbClient.from()/rpc()` fluent 호출이 남아 있음
+[ ] 관련 변경사항 커밋 및 원격 푸쉬
 [!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
 ```
 

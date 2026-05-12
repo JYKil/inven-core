@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, rpcDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,29 +15,28 @@ export type ReferenceCodeFilters = ListFilters & {
 }
 
 export function useReferenceCodes(filters: ReferenceCodeFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.referenceCodes.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('reference_codes')
-        .select('*', { count: 'exact' })
-        .eq('is_active', true)
-        .order('code_type')
-        .order('sort_order')
+      const ops: QueryOp[] = [
+        { type: 'select', columns: '*', options: { count: 'exact' } },
+        { type: 'eq', column: 'is_active', value: true },
+        { type: 'order', column: 'code_type' },
+        { type: 'order', column: 'sort_order' },
+      ]
 
-      if (filters.codeType) query = query.eq('code_type', filters.codeType)
+      if (filters.codeType) ops.push({ type: 'eq', column: 'code_type', value: filters.codeType })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.or(`code_data1.ilike.%${s}%,code_type.ilike.%${s}%`)
+        ops.push({ type: 'or', filter: `code_data1.ilike.%${s}%,code_type.ilike.%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<ReferenceCode[]>('reference_codes', ops)
       if (error) throw error
       return { data: data as ReferenceCode[], count: count ?? 0, page, pageSize }
     },
@@ -46,12 +45,11 @@ export function useReferenceCodes(filters: ReferenceCodeFilters = {}) {
 }
 
 export function useReferenceCodeTypes() {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.referenceCodes.types(),
     queryFn: async () => {
       // DB에서 DISTINCT 처리 (1000행 제한 회피)
-      const { data, error } = await dbClient.rpc('get_reference_code_types')
+      const { data, error } = await rpcDb<Array<{ code_type: string }>>('get_reference_code_types')
       if (error) throw error
       return (data ?? []).map((r: any) => r.code_type)
     },
@@ -59,12 +57,11 @@ export function useReferenceCodeTypes() {
 }
 
 export function useCreateReferenceCode() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<ReferenceCodeInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
       // DB RPC로 원자적 생성 (sort_order MAX+1 포함)
-      const { data, error } = await dbClient.rpc('create_reference_code', {
+      const { data, error } = await rpcDb<string>('create_reference_code', {
         p_code_type: input.code_type,
         p_code_data1: input.code_data1,
         p_code_data2: input.code_data2 ?? undefined,
@@ -88,12 +85,11 @@ export function useCreateReferenceCode() {
 }
 
 export function useUpdateReferenceCode() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: ReferenceCodeUpdate & { id: string }) => {
       // RPC로 is_active, company_id 등 DB 레벨 보호
-      const { error } = await dbClient.rpc('update_reference_code', {
+      const { error } = await rpcDb('update_reference_code', {
         p_id: id,
         p_code_data1: input.code_data1 ?? undefined,
         p_code_data2: input.code_data2 ?? undefined,
@@ -116,12 +112,11 @@ export function useUpdateReferenceCode() {
 }
 
 export function useDeleteReferenceCode() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
       // RPC로 소프트 삭제 (DB 레벨 보호)
-      const { error } = await dbClient.rpc('soft_delete_reference_code', { p_id: id })
+      const { error } = await rpcDb('soft_delete_reference_code', { p_id: id })
       if (error) throw error
     },
     retry: 0,

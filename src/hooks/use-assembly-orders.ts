@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { AssemblyOrderCreate } from '@/lib/validations/assembly'
 import { escapeFilterValue } from '@/lib/utils'
@@ -12,31 +12,34 @@ export type AssemblyFilters = ListFilters & {
 
 // 조립 지시 목록
 export function useAssemblyOrders(filters: AssemblyFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('assembly_orders')
-        .select(`
+      const ops: QueryOp[] = [
+        {
+          type: 'select',
+          columns: `
           *,
           product_item:items!assembly_orders_product_item_id_fkey(id, code, name, unit),
           warehouse:warehouses!assembly_orders_warehouse_id_fkey(id, code, name)
-        `, { count: 'exact' })
-        .order('created_at', { ascending: false })
+        `,
+          options: { count: 'exact' },
+        },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ]
 
-      if (filters.status) query = query.eq('status', filters.status)
+      if (filters.status) ops.push({ type: 'eq', column: 'status', value: filters.status })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.ilike('order_number', `%${s}%`)
+        ops.push({ type: 'ilike', column: 'order_number', value: `%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<any[]>('assembly_orders', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -46,13 +49,13 @@ export function useAssemblyOrders(filters: AssemblyFilters = {}) {
 
 // 조립 지시 상세
 export function useAssemblyOrder(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('assembly_orders')
-        .select(`
+      const { data, error } = await queryDb<any>('assembly_orders', [
+        {
+          type: 'select',
+          columns: `
           *,
           product_item:items!assembly_orders_product_item_id_fkey(id, code, name, unit),
           warehouse:warehouses!assembly_orders_warehouse_id_fkey(id, code, name),
@@ -61,9 +64,10 @@ export function useAssemblyOrder(id: string) {
             *,
             material_item:items!assembly_order_lines_material_item_id_fkey(id, code, name, unit)
           )
-        `)
-        .eq('id', id)
-        .single()
+        `,
+        },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data
     },
@@ -77,29 +81,31 @@ export function useMaterialAvailability(
   warehouseId: string,
   quantity: number,
 ) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.materialAvailability(bomHeaderId, warehouseId, quantity),
     queryFn: async () => {
       // BOM 라인 조회
-      const { data: bomLines, error: bomErr } = await dbClient
-        .from('bom_lines')
-        .select(`
+      const { data: bomLines, error: bomErr } = await queryDb<any[]>('bom_lines', [
+        {
+          type: 'select',
+          columns: `
           material_item_id,
           quantity,
           material_item:items!bom_lines_material_item_id_fkey(id, code, name, unit)
-        `)
-        .eq('bom_header_id', bomHeaderId)
-        .order('sort_order')
+        `,
+        },
+        { type: 'eq', column: 'bom_header_id', value: bomHeaderId },
+        { type: 'order', column: 'sort_order' },
+      ])
       if (bomErr) throw bomErr
 
       // 각 재료의 현재고 조회
       const materialIds = (bomLines ?? []).map((l: any) => l.material_item_id)
-      const { data: stockData, error: stockErr } = await dbClient
-        .from('inventory_summary')
-        .select('item_id, total_qty')
-        .eq('warehouse_id', warehouseId)
-        .in('item_id', materialIds)
+      const { data: stockData, error: stockErr } = await queryDb<any[]>('inventory_summary', [
+        { type: 'select', columns: 'item_id, total_qty' },
+        { type: 'eq', column: 'warehouse_id', value: warehouseId },
+        { type: 'in', column: 'item_id', values: materialIds },
+      ])
       if (stockErr) throw stockErr
 
       const stockMap = new Map(
@@ -107,13 +113,13 @@ export function useMaterialAvailability(
       )
 
       // FIFO 순 로트 단가 조회 (예상 원가 미리보기용)
-      const { data: lotsData, error: lotsErr } = await dbClient
-        .from('inventory_lots')
-        .select('item_id, remaining_qty, unit_cost')
-        .eq('warehouse_id', warehouseId)
-        .in('item_id', materialIds)
-        .gt('remaining_qty', 0)
-        .order('lot_date', { ascending: true })
+      const { data: lotsData, error: lotsErr } = await queryDb<any[]>('inventory_lots', [
+        { type: 'select', columns: 'item_id, remaining_qty, unit_cost' },
+        { type: 'eq', column: 'warehouse_id', value: warehouseId },
+        { type: 'in', column: 'item_id', values: materialIds },
+        { type: 'gt', column: 'remaining_qty', value: 0 },
+        { type: 'order', column: 'lot_date', options: { ascending: true } },
+      ])
       if (lotsErr) throw lotsErr
 
       // 품목별 로트 그룹핑
@@ -169,19 +175,21 @@ export function useMaterialAvailability(
 
 // 조립 가능 품목 (item_type='assembly' && 활성 BOM 있음)
 export function useAssemblyItems() {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.items(),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('items')
-        .select(`
+      const { data, error } = await queryDb<any[]>('items', [
+        {
+          type: 'select',
+          columns: `
           id, code, name, unit,
           bom_headers!bom_headers_product_item_id_fkey(id, version, is_active)
-        `)
-        .eq('item_type', 'assembly')
-        .eq('is_active', true)
-        .order('code')
+        `,
+        },
+        { type: 'eq', column: 'item_type', value: 'assembly' },
+        { type: 'eq', column: 'is_active', value: true },
+        { type: 'order', column: 'code' },
+      ])
       if (error) throw error
       // 활성 BOM이 있는 품목만 필터
       return (data ?? []).filter((item: any) =>
@@ -194,19 +202,12 @@ export function useAssemblyItems() {
 // 조립 실행 — API Route 호출
 // 조립 취소 — API Route 호출 (cancel_assembly RPC)
 export function useCancelAssembly() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch(`/api/assembly-orders/${id}/cancel`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       })
       if (!res.ok) {
@@ -223,19 +224,12 @@ export function useCancelAssembly() {
 }
 
 export function useExecuteAssembly() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: AssemblyOrderCreate) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch('/api/assembly-orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       })
       if (!res.ok) {

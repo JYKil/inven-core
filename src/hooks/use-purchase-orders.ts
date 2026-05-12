@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -13,27 +13,26 @@ export type PoFilters = ListFilters & {
 }
 
 export function usePurchaseOrders(filters: PoFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.purchaseOrders.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('purchase_orders')
-        .select('*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', { count: 'exact' })
-        .order('created_at', { ascending: false })
+      const ops: QueryOp[] = [
+        { type: 'select', columns: '*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', options: { count: 'exact' } },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ]
 
-      if (filters.status) query = query.eq('status', filters.status)
+      if (filters.status) ops.push({ type: 'eq', column: 'status', value: filters.status })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.or(`po_number.ilike.%${s}%`)
+        ops.push({ type: 'or', filter: `po_number.ilike.%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<any[]>('purchase_orders', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -42,22 +41,23 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
 }
 
 export function usePurchaseOrder(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.purchaseOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('purchase_orders')
-        .select(`
+      const { data, error } = await queryDb<any>('purchase_orders', [
+        {
+          type: 'select',
+          columns: `
           *,
           vendor:vendors!purchase_orders_vendor_id_fkey(id, name),
           purchase_order_lines(
             *,
             item:items!purchase_order_lines_item_id_fkey(id, code, name, unit)
           )
-        `)
-        .eq('id', id)
-        .single()
+        `,
+        },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data
     },
@@ -103,17 +103,15 @@ export function useCreatePurchaseOrder() {
 }
 
 export function useUpdatePurchaseOrderStatus() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, status, expectedStatus }: { id: string; status: string; expectedStatus: string }) => {
-      const { data, error } = await dbClient
-        .from('purchase_orders')
-        .update({ status })
-        .eq('id', id)
-        .eq('status', expectedStatus)
-        .select()
-        .single()
+      const { data, error } = await queryDb<PO>('purchase_orders', [
+        { type: 'update', values: { status } },
+        { type: 'eq', column: 'id', value: id },
+        { type: 'eq', column: 'status', value: expectedStatus },
+        { type: 'select' },
+      ], { single: true })
       if (error) throw error
       return data as PO
     },

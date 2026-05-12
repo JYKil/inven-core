@@ -1,24 +1,27 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 
 type PoPayment = Database['public']['Tables']['po_payments']['Row']
 
 export function usePoPayments(filters: ListFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.poPayments.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('po_payments')
-        .select(`
+      const ops: QueryOp[] = [
+        {
+          type: 'select',
+          columns: `
           *,
           purchase_order:purchase_orders!po_payments_po_id_fkey(id, po_number, total_amount, vendor:vendors!purchase_orders_vendor_id_fkey(name))
-        `, { count: 'exact' })
-        .order('payment_date', { ascending: false })
+        `,
+          options: { count: 'exact' },
+        },
+        { type: 'order', column: 'payment_date', options: { ascending: false } },
+      ]
 
       if (filters.search) {
         // PO 번호로 검색은 join 필터 불가 — 전체 조회
@@ -27,9 +30,9 @@ export function usePoPayments(filters: ListFilters = {}) {
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<PoPayment[]>('po_payments', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -39,15 +42,14 @@ export function usePoPayments(filters: ListFilters = {}) {
 
 // PO별 지급 이력
 export function usePoPaymentsByPo(poId: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.poPayments.byPo(poId),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('po_payments')
-        .select('*')
-        .eq('po_id', poId)
-        .order('payment_date', { ascending: false })
+      const { data, error } = await queryDb<PoPayment[]>('po_payments', [
+        { type: 'select', columns: '*' },
+        { type: 'eq', column: 'po_id', value: poId },
+        { type: 'order', column: 'payment_date', options: { ascending: false } },
+      ])
       if (error) throw error
       return data ?? []
     },

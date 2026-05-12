@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,27 +15,26 @@ export type VendorFilters = ListFilters & {
 }
 
 export function useVendors(filters: VendorFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.vendors.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('vendors')
-        .select('*', { count: 'exact' })
-        .order('name')
+      const ops: QueryOp[] = [
+        { type: 'select', columns: '*', options: { count: 'exact' } },
+        { type: 'order', column: 'name' },
+      ]
 
-      if (!filters.includeInactive) query = query.eq('is_active', true)
+      if (!filters.includeInactive) ops.push({ type: 'eq', column: 'is_active', value: true })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.or(`name.ilike.%${s}%,business_number.ilike.%${s}%`)
+        ops.push({ type: 'or', filter: `name.ilike.%${s}%,business_number.ilike.%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<Vendor[]>('vendors', ops)
       if (error) throw error
       return { data: data as Vendor[], count: count ?? 0, page, pageSize }
     },
@@ -44,15 +43,13 @@ export function useVendors(filters: VendorFilters = {}) {
 }
 
 export function useVendor(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.vendors.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('vendors')
-        .select('*')
-        .eq('id', id)
-        .single()
+      const { data, error } = await queryDb<Vendor>('vendors', [
+        { type: 'select', columns: '*' },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data as Vendor
     },
@@ -61,24 +58,13 @@ export function useVendor(id: string) {
 }
 
 export function useCreateVendor() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<VendorInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
-      const { data: { user } } = await dbClient.auth.getUser()
-      if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await dbClient
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
-
-      const { data, error } = await dbClient
-        .from('vendors')
-        .insert({ ...input, company_id: profile.company_id })
-        .select()
-        .single()
+      const { data, error } = await queryDb<Vendor>('vendors', [
+        { type: 'insert', values: input },
+        { type: 'select' },
+      ], { single: true })
       if (error) throw error
       return data as Vendor
     },
@@ -89,17 +75,15 @@ export function useCreateVendor() {
 }
 
 export function useUpdateVendor() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: VendorUpdate & { id: string }) => {
       const { name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes } = input
-      const { data, error } = await dbClient
-        .from('vendors')
-        .update({ name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes })
-        .eq('id', id)
-        .select()
-        .single()
+      const { data, error } = await queryDb<Vendor>('vendors', [
+        { type: 'update', values: { name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes } },
+        { type: 'eq', column: 'id', value: id },
+        { type: 'select' },
+      ], { single: true })
       if (error) throw error
       return data as Vendor
     },
@@ -111,14 +95,13 @@ export function useUpdateVendor() {
 }
 
 export function useDeleteVendor() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await dbClient
-        .from('vendors')
-        .update({ is_active: false })
-        .eq('id', id)
+      const { error } = await queryDb('vendors', [
+        { type: 'update', values: { is_active: false } },
+        { type: 'eq', column: 'id', value: id },
+      ])
       if (error) throw error
     },
     onSuccess: () => {

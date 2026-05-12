@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createDbClient } from '@/lib/api/db-client'
+import { getCurrentUser, queryDb } from '@/lib/api/db-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '@/components/common/page-header'
 import { Button } from '@/components/ui/button'
@@ -61,7 +61,6 @@ const roleItems: Record<string, string> = {
 }
 
 export default function UsersSettingsContent() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   const [search, setSearch] = useState('')
 
@@ -81,13 +80,12 @@ export default function UsersSettingsContent() {
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me'],
     queryFn: async () => {
-      const { data: { user } } = await dbClient.auth.getUser()
+      const { data: { user } } = await getCurrentUser()
       if (!user) return null
-      const { data } = await dbClient
-        .from('profiles')
-        .select('display_name, email, role, company_id')
-        .eq('id', user.id)
-        .single()
+      const { data } = await queryDb<any>('profiles', [
+        { type: 'select', columns: 'display_name, email, role, company_id' },
+        { type: 'eq', column: 'id', value: user.id },
+      ], { single: true })
       if (!data) return null
       return {
         id: user.id,
@@ -107,11 +105,11 @@ export default function UsersSettingsContent() {
     queryKey: ['settings', 'users', profile?.company_id],
     queryFn: async () => {
       if (!profile?.company_id) return []
-      const { data, error } = await dbClient
-        .from('profiles')
-        .select('id, email, display_name, role, is_active, created_at')
-        .eq('company_id', profile.company_id)
-        .order('created_at', { ascending: true })
+      const { data, error } = await queryDb<CompanyUser[]>('profiles', [
+        { type: 'select', columns: 'id, email, display_name, role, is_active, created_at' },
+        { type: 'eq', column: 'company_id', value: profile.company_id },
+        { type: 'order', column: 'created_at', options: { ascending: true } },
+      ])
       if (error) throw error
       return data as CompanyUser[]
     },
@@ -154,10 +152,10 @@ export default function UsersSettingsContent() {
   const updateRoleMutation = useMutation({
     mutationFn: async () => {
       if (!editingUser) return
-      const { error } = await dbClient
-        .from('profiles')
-        .update({ role: editRole })
-        .eq('id', editingUser.id)
+      const { error } = await queryDb('profiles', [
+        { type: 'update', values: { role: editRole } },
+        { type: 'eq', column: 'id', value: editingUser.id },
+      ])
       if (error) throw error
     },
     onSuccess: () => {
@@ -171,10 +169,10 @@ export default function UsersSettingsContent() {
   // 활성/비활성 토글
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await dbClient
-        .from('profiles')
-        .update({ is_active: !isActive })
-        .eq('id', id)
+      const { error } = await queryDb('profiles', [
+        { type: 'update', values: { is_active: !isActive } },
+        { type: 'eq', column: 'id', value: id },
+      ])
       if (error) throw error
     },
     onSuccess: () => {

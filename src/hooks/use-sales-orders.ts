@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { getCurrentUser, queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,27 +15,26 @@ export type SoFilters = ListFilters & {
 
 // 판매 주문 목록
 export function useSalesOrders(filters: SoFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.salesOrders.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('sales_orders')
-        .select('*, customer:customers!sales_orders_customer_id_fkey(id, name)', { count: 'exact' })
-        .order('created_at', { ascending: false })
+      const ops: QueryOp[] = [
+        { type: 'select', columns: '*, customer:customers!sales_orders_customer_id_fkey(id, name)', options: { count: 'exact' } },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ]
 
-      if (filters.status) query = query.eq('status', filters.status)
+      if (filters.status) ops.push({ type: 'eq', column: 'status', value: filters.status })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.or(`order_number.ilike.%${s}%`)
+        ops.push({ type: 'or', filter: `order_number.ilike.%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<any[]>('sales_orders', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -45,13 +44,13 @@ export function useSalesOrders(filters: SoFilters = {}) {
 
 // 판매 주문 상세 (라인 포함)
 export function useSalesOrder(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.salesOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('sales_orders')
-        .select(`
+      const { data, error } = await queryDb<any>('sales_orders', [
+        {
+          type: 'select',
+          columns: `
           *,
           customer:customers!sales_orders_customer_id_fkey(id, name),
           sales_order_lines(
@@ -59,9 +58,10 @@ export function useSalesOrder(id: string) {
             item:items!sales_order_lines_item_id_fkey(id, code, name, unit),
             warehouse:warehouses!sales_order_lines_warehouse_id_fkey(id, code, name)
           )
-        `)
-        .eq('id', id)
-        .single()
+        `,
+        },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data
     },
@@ -71,7 +71,6 @@ export function useSalesOrder(id: string) {
 
 // 판매 주문 생성 (draft → DB query API)
 export function useCreateSalesOrder() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -81,32 +80,28 @@ export function useCreateSalesOrder() {
       notes?: string
       lines: { item_id: string; warehouse_id: string; quantity: number; unit_price: number }[]
     }) => {
-      const { data: { user } } = await dbClient.auth.getUser()
+      const { data: { user } } = await getCurrentUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await dbClient
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-      if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
       const totalAmount = input.lines.reduce((sum, l) => sum + l.quantity * l.unit_price, 0)
 
       // SO 헤더 생성
-      const { data: so, error: soErr } = await dbClient
-        .from('sales_orders')
-        .insert({
-          company_id: profile.company_id,
+      const { data: so, error: soErr } = await queryDb<SO>('sales_orders', [
+        {
+          type: 'insert',
+          values: {
           order_number: input.order_number,
           customer_id: input.customer_id,
           order_date: input.order_date,
           notes: input.notes || null,
           total_amount: totalAmount,
           created_by: user.id,
-        } satisfies Omit<SOInsert, 'id' | 'status' | 'created_at' | 'updated_at'>)
-        .select()
-        .single()
+          } satisfies Omit<SOInsert, 'id' | 'company_id' | 'status' | 'created_at' | 'updated_at'>,
+        },
+        { type: 'select' },
+      ], { single: true })
       if (soErr) throw soErr
+      if (!so) throw new Error('판매 주문 생성 실패')
 
       // SO 라인 생성
       const lines = input.lines.map((l) => ({
@@ -117,9 +112,9 @@ export function useCreateSalesOrder() {
         unit_price: l.unit_price,
         line_amount: l.quantity * l.unit_price,
       }))
-      const { error: linesErr } = await dbClient
-        .from('sales_order_lines')
-        .insert(lines)
+      const { error: linesErr } = await queryDb('sales_order_lines', [
+        { type: 'insert', values: lines },
+      ])
       if (linesErr) throw linesErr
 
       return so as SO
@@ -132,17 +127,15 @@ export function useCreateSalesOrder() {
 
 // 판매 주문 상태 변경 (draft → confirmed, confirmed → cancelled 등)
 export function useUpdateSalesOrderStatus() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, status, expectedStatus }: { id: string; status: string; expectedStatus: string }) => {
-      const { data, error } = await dbClient
-        .from('sales_orders')
-        .update({ status })
-        .eq('id', id)
-        .eq('status', expectedStatus)
-        .select()
-        .single()
+      const { data, error } = await queryDb<SO>('sales_orders', [
+        { type: 'update', values: { status } },
+        { type: 'eq', column: 'id', value: id },
+        { type: 'eq', column: 'status', value: expectedStatus },
+        { type: 'select' },
+      ], { single: true })
       if (error) throw error
       return data as SO
     },
@@ -155,19 +148,12 @@ export function useUpdateSalesOrderStatus() {
 
 // 출고 취소 — API Route 호출 (cancel_shipment RPC)
 export function useCancelShipment() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch(`/api/sales-orders/${id}/cancel-shipment`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       })
       if (!res.ok) {
@@ -185,19 +171,12 @@ export function useCancelShipment() {
 
 // 출고 실행 — API Route 호출 (execute_shipment RPC)
 export function useExecuteShipment() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (salesOrderId: string) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch(`/api/sales-orders/${salesOrderId}/ship`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
       if (!res.ok) {
         const err = await res.json()

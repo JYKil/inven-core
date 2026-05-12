@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import { escapeFilterValue } from '@/lib/utils'
 
@@ -10,31 +10,34 @@ export type GrFilters = ListFilters & {
 }
 
 export function useGoodsReceipts(filters: GrFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('goods_receipts')
-        .select(`
+      const ops: QueryOp[] = [
+        {
+          type: 'select',
+          columns: `
           *,
           warehouse:warehouses!goods_receipts_warehouse_id_fkey(id, code, name),
           purchase_order:purchase_orders!goods_receipts_po_id_fkey(id, po_number)
-        `, { count: 'exact' })
-        .order('created_at', { ascending: false })
+        `,
+          options: { count: 'exact' },
+        },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ]
 
-      if (filters.poId) query = query.eq('po_id', filters.poId)
+      if (filters.poId) ops.push({ type: 'eq', column: 'po_id', value: filters.poId })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.ilike('receipt_number', `%${s}%`)
+        ops.push({ type: 'ilike', column: 'receipt_number', value: `%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<any[]>('goods_receipts', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -44,13 +47,13 @@ export function useGoodsReceipts(filters: GrFilters = {}) {
 
 // 입고 상세 (라인 포함)
 export function useGoodsReceipt(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('goods_receipts')
-        .select(`
+      const { data, error } = await queryDb<any>('goods_receipts', [
+        {
+          type: 'select',
+          columns: `
           *,
           warehouse:warehouses!goods_receipts_warehouse_id_fkey(id, code, name),
           purchase_order:purchase_orders!goods_receipts_po_id_fkey(id, po_number),
@@ -58,9 +61,10 @@ export function useGoodsReceipt(id: string) {
             *,
             item:items!goods_receipt_lines_item_id_fkey(id, code, name, unit)
           )
-        `)
-        .eq('id', id)
-        .single()
+        `,
+        },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data
     },
@@ -70,22 +74,24 @@ export function useGoodsReceipt(id: string) {
 
 // PO별 입고 이력
 export function useGoodsReceiptsByPo(poId: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.byPo(poId),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('goods_receipts')
-        .select(`
+      const { data, error } = await queryDb<any[]>('goods_receipts', [
+        {
+          type: 'select',
+          columns: `
           *,
           warehouse:warehouses!goods_receipts_warehouse_id_fkey(id, code, name),
           goods_receipt_lines(
             *,
             item:items!goods_receipt_lines_item_id_fkey(id, code, name, unit)
           )
-        `)
-        .eq('po_id', poId)
-        .order('receipt_date', { ascending: false })
+        `,
+        },
+        { type: 'eq', column: 'po_id', value: poId },
+        { type: 'order', column: 'receipt_date', options: { ascending: false } },
+      ])
       if (error) throw error
       return data ?? []
     },
@@ -95,19 +101,12 @@ export function useGoodsReceiptsByPo(poId: string) {
 
 // 입고 취소 — API Route 호출 (cancel_goods_receipt RPC)
 export function useCancelGoodsReceipt() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch(`/api/goods-receipts/${id}/cancel`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       })
       if (!res.ok) {
@@ -126,7 +125,6 @@ export function useCancelGoodsReceipt() {
 
 // 입고 실행 — API Route 호출 (복잡한 트랜잭션)
 export function useExecuteGoodsReceipt() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -137,16 +135,9 @@ export function useExecuteGoodsReceipt() {
       notes?: string
       lines: { po_line_id?: string; item_id: string; quantity: number; unit_price: number }[]
     }) => {
-      // API Route 대신 RPC 직접 호출
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch('/api/goods-receipts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       })
       if (!res.ok) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import { escapeFilterValue } from '@/lib/utils'
 
@@ -11,31 +11,34 @@ export type TransferFilters = ListFilters & {
 
 // 창고 이동 목록
 export function useWarehouseTransfers(filters: TransferFilters = {}) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.warehouseTransfers.list(filters),
     queryFn: async () => {
-      let query = dbClient
-        .from('warehouse_transfers')
-        .select(`
+      const ops: QueryOp[] = [
+        {
+          type: 'select',
+          columns: `
           *,
           from_warehouse:warehouses!warehouse_transfers_from_warehouse_id_fkey(id, code, name),
           to_warehouse:warehouses!warehouse_transfers_to_warehouse_id_fkey(id, code, name)
-        `, { count: 'exact' })
-        .order('created_at', { ascending: false })
+        `,
+          options: { count: 'exact' },
+        },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ]
 
-      if (filters.status) query = query.eq('status', filters.status)
+      if (filters.status) ops.push({ type: 'eq', column: 'status', value: filters.status })
       if (filters.search) {
         const s = escapeFilterValue(filters.search)
-        query = query.ilike('transfer_number', `%${s}%`)
+        ops.push({ type: 'ilike', column: 'transfer_number', value: `%${s}%` })
       }
 
       const page = filters.page ?? 1
       const pageSize = filters.pageSize ?? 20
       const from = (page - 1) * pageSize
-      query = query.range(from, from + pageSize - 1)
+      ops.push({ type: 'range', from, to: from + pageSize - 1 })
 
-      const { data, error, count } = await query
+      const { data, error, count } = await queryDb<any[]>('warehouse_transfers', ops)
       if (error) throw error
       return { data: data ?? [], count: count ?? 0, page, pageSize }
     },
@@ -45,13 +48,13 @@ export function useWarehouseTransfers(filters: TransferFilters = {}) {
 
 // 창고 이동 상세 (라인 포함)
 export function useWarehouseTransfer(id: string) {
-  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.warehouseTransfers.detail(id),
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('warehouse_transfers')
-        .select(`
+      const { data, error } = await queryDb<any>('warehouse_transfers', [
+        {
+          type: 'select',
+          columns: `
           *,
           from_warehouse:warehouses!warehouse_transfers_from_warehouse_id_fkey(id, code, name),
           to_warehouse:warehouses!warehouse_transfers_to_warehouse_id_fkey(id, code, name),
@@ -59,9 +62,10 @@ export function useWarehouseTransfer(id: string) {
             *,
             item:items!warehouse_transfer_lines_item_id_fkey(id, code, name, unit)
           )
-        `)
-        .eq('id', id)
-        .single()
+        `,
+        },
+        { type: 'eq', column: 'id', value: id },
+      ], { single: true })
       if (error) throw error
       return data
     },
@@ -71,19 +75,12 @@ export function useWarehouseTransfer(id: string) {
 
 // 창고 이동 취소 — API Route 호출 (cancel_transfer RPC)
 export function useCancelTransfer() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch(`/api/warehouse-transfers/${id}/cancel`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       })
       if (!res.ok) {
@@ -101,7 +98,6 @@ export function useCancelTransfer() {
 
 // 창고 이동 실행 — API Route 호출 (execute_transfer RPC)
 export function useExecuteTransfer() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -111,15 +107,9 @@ export function useExecuteTransfer() {
       notes?: string
       lines: { item_id: string; quantity: number }[]
     }) => {
-      const { data: { session } } = await dbClient.auth.getSession()
-      if (!session) throw new Error('인증이 필요합니다')
-
       const res = await fetch('/api/warehouse-transfers', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       })
       if (!res.ok) {

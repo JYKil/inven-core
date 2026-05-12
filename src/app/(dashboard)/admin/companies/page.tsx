@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createDbClient } from '@/lib/api/db-client'
+import { queryDb, rpcDb } from '@/lib/api/db-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,7 +42,6 @@ type CompanyAdmin = {
 }
 
 export default function AdminCompaniesPage() {
-  const dbClient = createDbClient()
   const qc = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<Company | null>(null)
@@ -67,10 +66,10 @@ export default function AdminCompaniesPage() {
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['admin', 'companies'],
     queryFn: async () => {
-      const { data, error } = await dbClient
-        .from('companies')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const { data, error } = await queryDb<Company[]>('companies', [
+        { type: 'select', columns: '*' },
+        { type: 'order', column: 'created_at', options: { ascending: false } },
+      ])
       if (error) throw error
       return data as Company[]
     },
@@ -81,12 +80,12 @@ export default function AdminCompaniesPage() {
     queryKey: ['admin', 'company-admins', adminsCompany?.id],
     queryFn: async () => {
       if (!adminsCompany) return []
-      const { data, error } = await dbClient
-        .from('profiles')
-        .select('id, email, display_name, role, is_active')
-        .eq('company_id', adminsCompany.id)
-        .in('role', ['company_admin', 'normal'])
-        .order('role')
+      const { data, error } = await queryDb<CompanyAdmin[]>('profiles', [
+        { type: 'select', columns: 'id, email, display_name, role, is_active' },
+        { type: 'eq', column: 'company_id', value: adminsCompany.id },
+        { type: 'in', column: 'role', values: ['company_admin', 'normal'] },
+        { type: 'order', column: 'role' },
+      ])
       if (error) throw error
       return data as CompanyAdmin[]
     },
@@ -95,7 +94,7 @@ export default function AdminCompaniesPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await dbClient.rpc('admin_create_company', {
+      const { error } = await rpcDb('admin_create_company', {
         p_name: name,
         p_business_number: businessNumber || undefined,
         p_address: address || undefined,
@@ -112,15 +111,18 @@ export default function AdminCompaniesPage() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editing) return
-      const { error } = await dbClient
-        .from('companies')
-        .update({
+      const { error } = await queryDb('companies', [
+        {
+          type: 'update',
+          values: {
           name,
           business_number: businessNumber || null,
           address: address || null,
           phone: phone || null,
-        })
-        .eq('id', editing.id)
+          },
+        },
+        { type: 'eq', column: 'id', value: editing.id },
+      ])
       if (error) throw error
     },
     onSuccess: () => {
@@ -131,10 +133,10 @@ export default function AdminCompaniesPage() {
 
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await dbClient
-        .from('companies')
-        .update({ is_active: !isActive })
-        .eq('id', id)
+      const { error } = await queryDb('companies', [
+        { type: 'update', values: { is_active: !isActive } },
+        { type: 'eq', column: 'id', value: id },
+      ])
       if (error) throw error
     },
     onSuccess: () => {
