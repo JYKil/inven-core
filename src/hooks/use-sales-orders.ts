@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { getCurrentUser, queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
-import type { Database } from '@/types/database'
+import type { Database } from '@/types/db'
 import { escapeFilterValue } from '@/lib/utils'
 
 type SO = Database['public']['Tables']['sales_orders']['Row']

@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { queryDb, type QueryOp } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
-import type { Database } from '@/types/database'
+import type { Database } from '@/types/db'
 import { escapeFilterValue } from '@/lib/utils'
 
 type Warehouse = Database['public']['Tables']['warehouses']['Row']

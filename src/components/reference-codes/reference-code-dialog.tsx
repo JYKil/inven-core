@@ -23,7 +23,7 @@ import {
   type ReferenceCodeCreate,
   type ReferenceCodeUpdate,
 } from '@/lib/validations/reference-code'
-import type { Database } from '@/types/database'
+import type { Database } from '@/types/db'
 
 type ReferenceCode = Database['public']['Tables']['reference_codes']['Row']
 

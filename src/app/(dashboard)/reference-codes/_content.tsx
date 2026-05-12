@@ -34,7 +34,7 @@ import {
 } from '@/hooks/use-reference-codes'
 import { ReferenceCodeDialog } from '@/components/reference-codes/reference-code-dialog'
 import { extractErrorMessage } from '@/lib/api/error'
-import type { Database } from '@/types/database'
+import type { Database } from '@/types/db'
 import type { ReferenceCodeCreate, ReferenceCodeUpdate } from '@/lib/validations/reference-code'
 
 type ReferenceCode = Database['public']['Tables']['reference_codes']['Row']

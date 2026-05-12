@@ -352,7 +352,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [i] API-backed 주요 화면 런타임 검증은 배포 후 Phase 7에서 수행
     - 로컬 개발 서버가 아닌 미니PC Docker/production env 기준으로 검증
     - 쿠키 도메인, `BETTER_AUTH_URL`, DB 네트워크, reverse proxy까지 포함
-[!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
+[x] `src/types/database.ts` 제거 및 Drizzle 기반 `src/types/db.ts`로 교체 완료
 ```
 
 ---
@@ -360,15 +360,15 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 ## Phase 5 — 타입 정리
 
 ```
-[ ] src/types/ 의 Supabase 자동생성 타입 파일 제거
+[x] src/types/ 의 Supabase 자동생성 타입 파일 제거
     - src/types/database.ts
 
 [x] src/lib/supabase/* 제거
     - admin.ts, client.ts, middleware.ts, server.ts
     - database.types.ts
 
-[ ] Drizzle InferSelectModel / InferInsertModel 으로 타입 재생성
-[ ] TypeScript 빌드 에러 전체 해소
+[x] Drizzle InferSelectModel / InferInsertModel 으로 타입 재생성
+[x] TypeScript 빌드 에러 전체 해소
     npx tsc --noEmit
 ```
 
