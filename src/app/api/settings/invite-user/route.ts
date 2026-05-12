@@ -1,11 +1,12 @@
 // company_admin 전용: 같은 회사에 사용자 초대 (사용자 생성 + 프로필 등록)
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { withApiHandler } from '@/lib/api/handler'
-import { getAuthenticatedUser, requireRole } from '@/lib/api/auth'
 import { apiSuccess, ApiError } from '@/lib/api/error'
+import { getSessionProfile, requireRole } from '@/lib/api/session'
+import { authDbPool } from '@/lib/db/auth-admin'
+import { hashPassword } from 'better-auth/crypto'
+import { randomUUID } from 'crypto'
 
 const inviteSchema = z.object({
   email: z.string().email('올바른 이메일을 입력하세요'),
@@ -15,9 +16,7 @@ const inviteSchema = z.object({
 })
 
 export const POST = withApiHandler(async (request: Request) => {
-  // 요청자 권한 확인 — company_admin만 가능
-  const supabase = await createServerSupabaseClient()
-  const { profile } = await getAuthenticatedUser(supabase)
+  const profile = await getSessionProfile()
   requireRole(profile, 'company_admin')
 
   if (!profile.company_id) {
@@ -27,42 +26,57 @@ export const POST = withApiHandler(async (request: Request) => {
   const body = await request.json()
   const input = inviteSchema.parse(body)
 
-  const adminClient = createAdminSupabaseClient()
+  const client = await authDbPool.connect()
+  const userId = randomUUID()
+  const accountId = randomUUID()
+  const passwordHash = await hashPassword(input.password)
 
-  // 이메일 중복 확인
-  const { data: existing } = await adminClient
-    .from('profiles')
-    .select('id')
-    .eq('email', input.email)
-    .maybeSingle()
-  if (existing) throw new ApiError(409, '이미 등록된 이메일입니다', 'DUPLICATE')
+  try {
+    await client.query('BEGIN')
+    const existing = await client.query('SELECT id FROM profiles WHERE email = $1 UNION SELECT id FROM "user" WHERE email = $1', [input.email])
+    if (existing.rowCount) throw new ApiError(409, '이미 등록된 이메일입니다', 'DUPLICATE')
 
-  // Auth 사용자 생성
-  const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-    email: input.email,
-    password: input.password,
-    email_confirm: true,
-  })
-  if (authError) throw new ApiError(400, authError.message, 'AUTH_ERROR')
-
-  // 프로필 생성 — 요청자와 같은 회사에 소속
-  const { error: profileError } = await adminClient
-    .from('profiles')
-    .insert({
-      id: authData.user.id,
-      email: input.email,
-      display_name: input.displayName,
-      role: input.role,
-      company_id: profile.company_id,
-    })
-  if (profileError) {
-    // 프로필 생성 실패 시 Auth 사용자도 삭제 (롤백)
-    await adminClient.auth.admin.deleteUser(authData.user.id)
-    throw new ApiError(500, '프로필 생성에 실패했습니다', 'INTERNAL_ERROR')
+    await client.query(
+      `
+        INSERT INTO "user" (
+          id, name, email, "emailVerified", image,
+          "createdAt", "updatedAt", role, "companyId"
+        )
+        VALUES ($1, $2, $3, true, null, now(), now(), $4, $5)
+      `,
+      [userId, input.displayName, input.email, input.role, profile.company_id],
+    )
+    await client.query(
+      `
+        INSERT INTO account (
+          id, "accountId", "providerId", "userId", password,
+          "createdAt", "updatedAt"
+        )
+        VALUES ($1, $2, 'credential', $3, $4, now(), now())
+      `,
+      [accountId, userId, userId, passwordHash],
+    )
+    await client.query(
+      `
+        INSERT INTO profiles (id, email, display_name, role, company_id)
+        VALUES ($1::uuid, $2, $3, $4, $5::uuid)
+      `,
+      [userId, input.email, input.displayName, input.role, profile.company_id],
+    )
+    await client.query('COMMIT')
+  } catch (error) {
+    await client.query('ROLLBACK')
+    if (error instanceof ApiError) throw error
+    if ((error as { code?: string }).code === '23505') {
+      throw new ApiError(409, '이미 등록된 이메일입니다', 'DUPLICATE')
+    }
+    throw error
+  } finally {
+    client.release()
   }
 
   return NextResponse.json(apiSuccess({
-    userId: authData.user.id,
+    userId,
     email: input.email,
     displayName: input.displayName,
     role: input.role,

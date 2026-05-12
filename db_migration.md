@@ -13,7 +13,7 @@
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
 | **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
-| **Supabase Query 제거** | 진행 중 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출로 교체, hooks/settings/admin 화면의 Supabase 스타일 호출은 잔존 |
+| **Supabase Query 제거** | Phase 4 추가 진행 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, hooks/settings/admin 잔존 호출은 로컬 API-backed 호환 어댑터로 전환 |
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
 | **검증 상태** | 통과 | 2026-05-12 Phase 4 부분 전환 후 `npx tsc --noEmit` 통과 |
@@ -21,9 +21,9 @@
 ## 다음 우선순위
 
 ```
-1. hooks/settings/admin 화면의 Supabase 스타일 호출을 전용 API + Drizzle 쿼리로 교체
-2. invite-user API를 Better Auth 사용자 생성 플로우로 교체
-3. Supabase 호환 임시 어댑터(`src/lib/supabase/*`) 제거
+1. hooks/settings/admin 화면의 남은 Supabase 스타일 호출을 직접 `fetch` 기반 전용 API 호출로 정리
+2. Supabase 호환 임시 어댑터(`src/lib/supabase/*`) 제거
+3. API-backed 쿼리 라우트의 주요 화면 런타임 검증
 4. Supabase 자동생성 타입 제거 후 TypeScript 빌드 확인
 5. Dockerfile/docker-compose 배포 파일 작성
 ```
@@ -262,18 +262,19 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - supabase.rpc('function') → 직접 SQL 또는 Drizzle 쿼리
     - 우선순위: 핵심 기능(입고/출고/재고) → 보조 기능(보고서/설정) 순
     - 핵심 거래 API 12개는 Better Auth 세션 + PostgreSQL 함수 직접 호출로 교체 완료
-    - `admin/settings invite-user`는 Better Auth 초대 플로우 교체 필요
+    - `admin/settings invite-user`는 Better Auth user/account + profiles 생성 플로우로 교체 완료
 
 [~] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
     - supabase/ 폴더의 기존 마이그레이션 SQL 재활용 가능
     → 이번 단계에서는 기존 PostgreSQL 함수 직접 호출로 재사용
 
-[ ] 클라이언트 hooks의 Supabase 호출 제거
+[~] 클라이언트 hooks의 Supabase 호출 제거
     - use-items, use-warehouses, use-vendors, use-customers
     - use-purchase-orders, use-goods-receipts, use-sales-orders
     - use-assembly-orders, use-warehouse-transfers, use-inventory
     - use-bom, use-dashboard, use-reports, use-reference-codes, use-po-payments
-    → 외부 `@supabase/*` 의존은 제거했지만 hooks 호출부는 아직 전용 API로 전환 필요
+    → 외부 `@supabase/*` 의존은 제거했고, 잔존 hooks/settings/admin 호출은 `/api/db-query` 서버 API-backed 호환 어댑터로 전환
+    → 다음 단계에서 훅별 직접 `fetch` 호출로 치환하면 `src/lib/supabase/*` 제거 가능
 ```
 
 ### 2026-05-12 Phase 4 진행 메모
@@ -292,8 +293,15 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - sales-orders ship/cancel-shipment
     - warehouse-transfers create/cancel
 [x] `npx tsc --noEmit` 통과
-[!] hooks/settings/admin 화면은 아직 전용 Drizzle API로 완전 교체 필요
-[!] `src/lib/supabase/*`는 외부 패키지 의존을 끊은 임시 호환 어댑터 상태
+[x] `admin/settings invite-user` API를 Better Auth 사용자 생성 플로우로 교체
+    - Better Auth `user` / `account` 생성
+    - 기존 `profiles` 동시 생성
+    - 실패 시 트랜잭션 롤백
+[x] hooks/settings/admin 잔존 호출을 외부 Supabase 런타임 대신 로컬 서버 API-backed 호환 어댑터로 연결
+    - `src/app/api/db-query/route.ts`
+    - 세션 기반 company_id 필터 및 일부 관리자 권한 체크 포함
+[!] hooks/settings/admin 파일에는 아직 `createClient().from()/rpc()` 스타일 호출이 남아 있음
+[!] `src/lib/supabase/*`는 Phase 5 전 직접 fetch 전환 후 제거 필요
 ```
 
 ---
