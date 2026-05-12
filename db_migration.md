@@ -274,6 +274,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - use-assembly-orders, use-warehouse-transfers, use-inventory
     - use-bom, use-dashboard, use-reports, use-reference-codes, use-po-payments
     → 외부 `@supabase/*` 의존은 제거했지만 hooks 호출부는 아직 전용 API로 전환 필요
+```
 
 ### 2026-05-12 Phase 4 진행 메모
 
