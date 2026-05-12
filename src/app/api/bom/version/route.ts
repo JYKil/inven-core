@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { withApiHandler } from '@/lib/api/handler'
 import { apiSuccess } from '@/lib/api/error'
-import { getSessionProfile } from '@/lib/api/session'
+import { getSessionProfile, requireCompany } from '@/lib/api/session'
 import { callRpc } from '@/lib/db/rpc'
 import { z } from 'zod'
 
@@ -12,6 +12,7 @@ const bomVersionCreateSchema = z.object({
 
 export const POST = withApiHandler(async (request: Request) => {
   const profile = await getSessionProfile()
+  requireCompany(profile)
 
   const body = await request.json()
   const input = bomVersionCreateSchema.parse(body)

@@ -15,6 +15,7 @@ const mockCallRpc = vi.fn()
 
 vi.mock('@/lib/api/session', () => ({
   getSessionProfile: mockGetSessionProfile,
+  requireCompany: vi.fn(),
 }))
 
 vi.mock('@/lib/db/rpc', () => ({

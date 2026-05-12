@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, unique, pgPolicy, check, uuid, numeric, integer, index, date, varchar, text, timestamp, uniqueIndex, boolean } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, check, uuid, numeric, integer, index, date, varchar, text, timestamp, uniqueIndex, boolean } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -21,11 +21,6 @@ export const bomLines = pgTable("bom_lines", {
 			name: "bom_lines_material_item_id_fkey"
 		}),
 	unique("bom_lines_bom_header_id_material_item_id_key").on(table.bomHeaderId, table.materialItemId),
-	pgPolicy("bom_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM bom_headers
-  WHERE ((bom_headers.id = bom_lines.bom_header_id) AND ((bom_headers.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM bom_headers
-  WHERE ((bom_headers.id = bom_lines.bom_header_id) AND ((bom_headers.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("bom_lines_quantity_check", sql`quantity > (0)::numeric`),
 ]);
 
@@ -50,7 +45,6 @@ export const poPayments = pgTable("po_payments", {
 			foreignColumns: [purchaseOrders.id],
 			name: "po_payments_po_id_fkey"
 		}),
-	pgPolicy("po_payments_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("po_payments_amount_check", sql`amount > (0)::numeric`),
 ]);
 
@@ -77,11 +71,6 @@ export const goodsReceiptLines = pgTable("goods_receipt_lines", {
 			foreignColumns: [goodsReceipts.id],
 			name: "goods_receipt_lines_receipt_id_fkey"
 		}).onDelete("cascade"),
-	pgPolicy("goods_receipt_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM goods_receipts
-  WHERE ((goods_receipts.id = goods_receipt_lines.receipt_id) AND ((goods_receipts.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM goods_receipts
-  WHERE ((goods_receipts.id = goods_receipt_lines.receipt_id) AND ((goods_receipts.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("goods_receipt_lines_quantity_check", sql`quantity > (0)::numeric`),
 	check("goods_receipt_lines_unit_price_check", sql`unit_price >= (0)::numeric`),
 ]);
@@ -107,11 +96,6 @@ export const purchaseOrderLines = pgTable("purchase_order_lines", {
 			foreignColumns: [purchaseOrders.id],
 			name: "purchase_order_lines_po_id_fkey"
 		}).onDelete("cascade"),
-	pgPolicy("purchase_order_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM purchase_orders
-  WHERE ((purchase_orders.id = purchase_order_lines.po_id) AND ((purchase_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM purchase_orders
-  WHERE ((purchase_orders.id = purchase_order_lines.po_id) AND ((purchase_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("purchase_order_lines_line_type_check", sql`(line_type)::text = ANY (ARRAY[('inventory'::character varying)::text, ('expense'::character varying)::text])`),
 	check("purchase_order_lines_ordered_qty_check", sql`((line_type)::text = 'expense'::text) OR (ordered_qty > (0)::numeric)`),
 	check("purchase_order_lines_received_qty_check", sql`received_qty >= (0)::numeric`),
@@ -154,7 +138,6 @@ export const goodsReceipts = pgTable("goods_receipts", {
 			name: "goods_receipts_warehouse_id_fkey"
 		}),
 	unique("goods_receipts_company_id_receipt_number_key").on(table.companyId, table.receiptNumber),
-	pgPolicy("goods_receipts_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("goods_receipts_status_check", sql`(status)::text = ANY (ARRAY[('confirmed'::character varying)::text, ('cancelled'::character varying)::text])`),
 ]);
 
@@ -189,7 +172,6 @@ export const purchaseOrders = pgTable("purchase_orders", {
 			name: "purchase_orders_vendor_id_fkey"
 		}),
 	unique("purchase_orders_company_id_po_number_key").on(table.companyId, table.poNumber),
-	pgPolicy("purchase_orders_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("purchase_orders_status_check", sql`(status)::text = ANY (ARRAY[('draft'::character varying)::text, ('confirmed'::character varying)::text, ('partially_received'::character varying)::text, ('received'::character varying)::text, ('cancelled'::character varying)::text])`),
 ]);
 
@@ -218,7 +200,6 @@ export const referenceCodes = pgTable("reference_codes", {
 			foreignColumns: [companies.id],
 			name: "reference_codes_company_id_fkey"
 		}),
-	pgPolicy("reference_codes_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const items = pgTable("items", {
@@ -242,7 +223,6 @@ export const items = pgTable("items", {
 			name: "items_company_id_fkey"
 		}),
 	unique("items_company_id_code_key").on(table.companyId, table.code),
-	pgPolicy("items_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("items_item_type_check", sql`(item_type)::text = ANY (ARRAY[('basic'::character varying)::text, ('assembly'::character varying)::text])`),
 ]);
 
@@ -284,7 +264,6 @@ export const inventoryTransactions = pgTable("inventory_transactions", {
 			foreignColumns: [warehouses.id],
 			name: "inventory_transactions_warehouse_id_fkey"
 		}),
-	pgPolicy("inventory_transactions_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("inventory_transactions_transaction_type_check", sql`(transaction_type)::text = ANY (ARRAY[('purchase_in'::character varying)::text, ('assembly_in'::character varying)::text, ('assembly_out'::character varying)::text, ('sale_out'::character varying)::text, ('transfer_in'::character varying)::text, ('transfer_out'::character varying)::text, ('adjustment'::character varying)::text, ('purchase_in_cancel'::character varying)::text, ('assembly_in_cancel'::character varying)::text, ('assembly_out_cancel'::character varying)::text, ('sale_out_cancel'::character varying)::text, ('transfer_in_cancel'::character varying)::text, ('transfer_out_cancel'::character varying)::text])`),
 ]);
 
@@ -333,7 +312,6 @@ export const inventorySummary = pgTable("inventory_summary", {
 			name: "inventory_summary_warehouse_id_fkey"
 		}),
 	unique("inventory_summary_company_id_item_id_warehouse_id_key").on(table.companyId, table.itemId, table.warehouseId),
-	pgPolicy("inventory_summary_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const salesOrderLines = pgTable("sales_order_lines", {
@@ -361,11 +339,6 @@ export const salesOrderLines = pgTable("sales_order_lines", {
 			foreignColumns: [warehouses.id],
 			name: "sales_order_lines_warehouse_id_fkey"
 		}),
-	pgPolicy("sales_order_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM sales_orders
-  WHERE ((sales_orders.id = sales_order_lines.sales_order_id) AND ((sales_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM sales_orders
-  WHERE ((sales_orders.id = sales_order_lines.sales_order_id) AND ((sales_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("sales_order_lines_quantity_check", sql`quantity > (0)::numeric`),
 	check("sales_order_lines_unit_price_check", sql`unit_price >= (0)::numeric`),
 ]);
@@ -382,7 +355,6 @@ export const companies = pgTable("companies", {
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	unique("companies_business_number_key").on(table.businessNumber),
-	pgPolicy("companies_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("companies_costing_method_check", sql`(costing_method)::text = ANY (ARRAY[('FIFO'::character varying)::text, ('LIFO'::character varying)::text, ('WEIGHTED_AVG'::character varying)::text])`),
 ]);
 
@@ -406,11 +378,6 @@ export const inventoryLotConsumptions = pgTable("inventory_lot_consumptions", {
 			foreignColumns: [inventoryTransactions.id],
 			name: "inventory_lot_consumptions_transaction_id_fkey"
 		}),
-	pgPolicy("inventory_lot_consumptions_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM inventory_lots
-  WHERE ((inventory_lots.id = inventory_lot_consumptions.lot_id) AND ((inventory_lots.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM inventory_lots
-  WHERE ((inventory_lots.id = inventory_lot_consumptions.lot_id) AND ((inventory_lots.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("inventory_lot_consumptions_consumed_qty_check", sql`consumed_qty > (0)::numeric`),
 ]);
 
@@ -445,7 +412,6 @@ export const salesOrders = pgTable("sales_orders", {
 			name: "sales_orders_customer_id_fkey"
 		}),
 	unique("sales_orders_company_id_order_number_key").on(table.companyId, table.orderNumber),
-	pgPolicy("sales_orders_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("sales_orders_status_check", sql`(status)::text = ANY (ARRAY[('draft'::character varying)::text, ('confirmed'::character varying)::text, ('shipped'::character varying)::text, ('cancelled'::character varying)::text])`),
 ]);
 
@@ -470,7 +436,6 @@ export const bomHeaders = pgTable("bom_headers", {
 			name: "bom_headers_product_item_id_fkey"
 		}),
 	unique("bom_headers_product_item_id_version_key").on(table.productItemId, table.version),
-	pgPolicy("bom_headers_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const assemblyOrderLines = pgTable("assembly_order_lines", {
@@ -491,11 +456,6 @@ export const assemblyOrderLines = pgTable("assembly_order_lines", {
 			foreignColumns: [items.id],
 			name: "assembly_order_lines_material_item_id_fkey"
 		}),
-	pgPolicy("assembly_order_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM assembly_orders
-  WHERE ((assembly_orders.id = assembly_order_lines.assembly_order_id) AND ((assembly_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM assembly_orders
-  WHERE ((assembly_orders.id = assembly_order_lines.assembly_order_id) AND ((assembly_orders.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 ]);
 
 export const assemblyOrders = pgTable("assembly_orders", {
@@ -542,7 +502,6 @@ export const assemblyOrders = pgTable("assembly_orders", {
 			name: "assembly_orders_warehouse_id_fkey"
 		}),
 	unique("assembly_orders_company_id_order_number_key").on(table.companyId, table.orderNumber),
-	pgPolicy("assembly_orders_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("assembly_orders_quantity_check", sql`quantity > (0)::numeric`),
 	check("assembly_orders_status_check", sql`(status)::text = ANY (ARRAY[('draft'::character varying)::text, ('completed'::character varying)::text, ('cancelled'::character varying)::text])`),
 ]);
@@ -567,7 +526,6 @@ export const customers = pgTable("customers", {
 			name: "customers_company_id_fkey"
 		}),
 	unique("customers_company_id_name_key").on(table.companyId, table.name),
-	pgPolicy("customers_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const inventoryLots = pgTable("inventory_lots", {
@@ -600,7 +558,6 @@ export const inventoryLots = pgTable("inventory_lots", {
 			foreignColumns: [warehouses.id],
 			name: "inventory_lots_warehouse_id_fkey"
 		}),
-	pgPolicy("inventory_lots_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("inventory_lots_initial_qty_check", sql`initial_qty > (0)::numeric`),
 	check("inventory_lots_remaining_qty_check", sql`remaining_qty >= (0)::numeric`),
 	check("inventory_lots_source_type_check", sql`(source_type)::text = ANY (ARRAY[('purchase'::character varying)::text, ('assembly'::character varying)::text, ('transfer_in'::character varying)::text])`),
@@ -642,7 +599,6 @@ export const warehouseTransfers = pgTable("warehouse_transfers", {
 			name: "warehouse_transfers_to_warehouse_id_fkey"
 		}),
 	unique("warehouse_transfers_company_id_transfer_number_key").on(table.companyId, table.transferNumber),
-	pgPolicy("warehouse_transfers_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 	check("warehouse_transfers_check", sql`from_warehouse_id <> to_warehouse_id`),
 	check("warehouse_transfers_status_check", sql`(status)::text = ANY (ARRAY[('completed'::character varying)::text, ('cancelled'::character varying)::text])`),
 ]);
@@ -664,11 +620,6 @@ export const warehouseTransferLines = pgTable("warehouse_transfer_lines", {
 			foreignColumns: [warehouseTransfers.id],
 			name: "warehouse_transfer_lines_transfer_id_fkey"
 		}).onDelete("cascade"),
-	pgPolicy("warehouse_transfer_lines_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`(EXISTS ( SELECT 1
-   FROM warehouse_transfers
-  WHERE ((warehouse_transfers.id = warehouse_transfer_lines.transfer_id) AND ((warehouse_transfers.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`, withCheck: sql`(EXISTS ( SELECT 1
-   FROM warehouse_transfers
-  WHERE ((warehouse_transfers.id = warehouse_transfer_lines.transfer_id) AND ((warehouse_transfers.company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text)))))`  }),
 	check("warehouse_transfer_lines_quantity_check", sql`quantity > (0)::numeric`),
 ]);
 
@@ -696,7 +647,6 @@ export const vendors = pgTable("vendors", {
 			name: "vendors_company_id_fkey"
 		}),
 	unique("vendors_company_id_name_key").on(table.companyId, table.name),
-	pgPolicy("vendors_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const warehouses = pgTable("warehouses", {
@@ -716,7 +666,6 @@ export const warehouses = pgTable("warehouses", {
 			foreignColumns: [companies.id],
 			name: "warehouses_company_id_fkey"
 		}),
-	pgPolicy("warehouses_tenant_isolation", { as: "permissive", for: "all", to: ["public"], using: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`, withCheck: sql`((company_id = get_my_company_id()) OR (get_my_role() = 'super_admin'::text))`  }),
 ]);
 
 export const user = pgTable("user", {

@@ -251,10 +251,13 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 
 [x] src/db/index.ts — DB 커넥션 풀 설정
 
-[~] RLS 정책 → 앱 레이어 권한 체크로 교체
+[x] RLS 정책 → 앱 레이어 권한 체크로 교체
     - 기존: Supabase RLS가 company_id 기반 자동 격리
     - 변경: 모든 쿼리에 .where(eq(table.companyId, session.companyId)) 추가
     - ⚠️ 누락 시 타사 데이터 노출 위험 — 전수 검토 필수
+    → 2026-05-12 `/api/db-query` tenant/child-parent ownership 필터 보강, raw relation join에 company_id 조건 추가
+    → 2026-05-12 `20260512000001_disable_rls_app_permissions.sql` 추가: 기존 RLS 정책 DROP + RLS 비활성화
+    → Drizzle 스키마의 `pgPolicy` 선언 제거
 
 [~] src/app/api/ 의 서버 엔드포인트 순차 교체
     - supabase.from('table').select() → db.select().from(table)

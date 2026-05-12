@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server'
 import { withApiHandler } from '@/lib/api/handler'
 import { apiSuccess } from '@/lib/api/error'
-import { getSessionProfile, getSessionUser } from '@/lib/api/session'
+import { getSessionProfile, getSessionUser, requireCompany } from '@/lib/api/session'
 import { callRpc } from '@/lib/db/rpc'
 import { warehouseTransferCreateSchema } from '@/lib/validations/warehouse-transfer'
 
 export const POST = withApiHandler(async (request: Request) => {
   const user = await getSessionUser()
   const profile = await getSessionProfile()
+  requireCompany(profile)
 
   const body = await request.json()
   const parsed = warehouseTransferCreateSchema.parse(body)

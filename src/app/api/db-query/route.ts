@@ -32,16 +32,22 @@ const tableColumns: Record<string, string[]> = {
   customers: ['id', 'company_id', 'name', 'business_number', 'address', 'receipt_currency', 'contact_email', 'notes', 'is_active', 'created_at', 'updated_at'],
   reference_codes: ['id', 'company_id', 'code_type', 'code_data1', 'code_data2', 'code_data3', 'code_data4', 'code_data5', 'code_data6', 'code_data7', 'code_data8', 'code_data9', 'sort_order', 'is_active', 'created_at', 'updated_at'],
   purchase_orders: ['id', 'company_id', 'po_number', 'order_date', 'expected_date', 'status', 'total_amount', 'notes', 'created_by', 'created_at', 'updated_at', 'vendor_id'],
+  purchase_order_lines: ['id', 'po_id', 'item_id', 'ordered_qty', 'received_qty', 'unit_price', 'line_amount', 'line_type', 'description'],
   sales_orders: ['id', 'company_id', 'order_number', 'customer_id', 'order_date', 'status', 'total_amount', 'notes', 'created_by', 'created_at', 'updated_at', 'shipped_at', 'cancelled_at', 'cancel_reason'],
-  sales_order_lines: ['id', 'sales_order_id', 'item_id', 'warehouse_id', 'quantity', 'unit_price', 'line_amount', 'cost_of_goods'],
+  sales_order_lines: ['id', 'sales_order_id', 'item_id', 'warehouse_id', 'quantity', 'unit_price', 'line_amount', 'shipped_qty', 'cost_of_goods'],
   goods_receipts: ['id', 'company_id', 'receipt_number', 'po_id', 'warehouse_id', 'receipt_date', 'status', 'notes', 'created_by', 'created_at', 'updated_at', 'cancelled_at', 'cancel_reason'],
+  goods_receipt_lines: ['id', 'receipt_id', 'po_line_id', 'item_id', 'quantity', 'unit_price'],
   po_payments: ['id', 'company_id', 'po_id', 'payment_date', 'amount', 'payment_method', 'notes', 'created_at'],
   bom_headers: ['id', 'company_id', 'product_item_id', 'version', 'is_active', 'created_at', 'updated_at'],
   bom_lines: ['id', 'bom_header_id', 'material_item_id', 'quantity', 'sort_order'],
+  inventory_transactions: ['id', 'company_id', 'item_id', 'warehouse_id', 'transaction_type', 'quantity', 'unit_cost', 'total_cost', 'reference_type', 'reference_id', 'transaction_date', 'created_by', 'created_at'],
   inventory_summary: ['id', 'company_id', 'item_id', 'warehouse_id', 'total_qty', 'total_value', 'avg_unit_cost', 'updated_at'],
   inventory_lots: ['id', 'company_id', 'item_id', 'warehouse_id', 'lot_number', 'lot_date', 'initial_qty', 'remaining_qty', 'unit_cost', 'source_type', 'source_id', 'created_at'],
+  inventory_lot_consumptions: ['id', 'lot_id', 'transaction_id', 'quantity', 'unit_cost', 'created_at'],
   assembly_orders: ['id', 'company_id', 'order_number', 'bom_header_id', 'product_item_id', 'warehouse_id', 'quantity', 'assembly_date', 'status', 'total_cost', 'created_by', 'created_at', 'updated_at', 'cancelled_at', 'cancel_reason'],
+  assembly_order_lines: ['id', 'assembly_order_id', 'material_item_id', 'required_qty', 'consumed_qty', 'unit_cost'],
   warehouse_transfers: ['id', 'company_id', 'transfer_number', 'from_warehouse_id', 'to_warehouse_id', 'transfer_date', 'status', 'notes', 'created_by', 'created_at', 'updated_at', 'cancelled_at', 'cancel_reason'],
+  warehouse_transfer_lines: ['id', 'transfer_id', 'item_id', 'quantity'],
 }
 
 const tenantTables = new Set([
@@ -50,7 +56,15 @@ const tenantTables = new Set([
   'inventory_lots', 'assembly_orders', 'warehouse_transfers',
 ])
 
-const childTenantTables = new Set(['bom_lines'])
+const childTenantTables: Record<string, { parentTable: string; foreignKey: string; parentKey: string }> = {
+  bom_lines: { parentTable: 'bom_headers', foreignKey: 'bom_header_id', parentKey: 'id' },
+  purchase_order_lines: { parentTable: 'purchase_orders', foreignKey: 'po_id', parentKey: 'id' },
+  goods_receipt_lines: { parentTable: 'goods_receipts', foreignKey: 'receipt_id', parentKey: 'id' },
+  sales_order_lines: { parentTable: 'sales_orders', foreignKey: 'sales_order_id', parentKey: 'id' },
+  assembly_order_lines: { parentTable: 'assembly_orders', foreignKey: 'assembly_order_id', parentKey: 'id' },
+  warehouse_transfer_lines: { parentTable: 'warehouse_transfers', foreignKey: 'transfer_id', parentKey: 'id' },
+  inventory_lot_consumptions: { parentTable: 'inventory_lots', foreignKey: 'lot_id', parentKey: 'id' },
+}
 
 function assertTable(table: string) {
   if (!tableColumns[table]) throw new ApiError(400, '지원하지 않는 테이블입니다', 'VALIDATION_ERROR')
@@ -129,6 +143,14 @@ function addTenant(table: string, profile: Awaited<ReturnType<typeof getSessionP
   where.push(`company_id = $${values.length}`)
 }
 
+function addChildTenant(table: string, profile: Awaited<ReturnType<typeof getSessionProfile>>, values: unknown[], where: string[]) {
+  const relation = childTenantTables[table]
+  if (!relation || profile.role === 'super_admin') return
+  if (!profile.company_id) throw new ApiError(403, '회사 정보가 없습니다', 'FORBIDDEN')
+  values.push(profile.company_id)
+  where.push(`EXISTS (SELECT 1 FROM ${relation.parentTable} parent_tenant WHERE parent_tenant.${relation.parentKey} = ${relation.foreignKey} AND parent_tenant.company_id = $${values.length})`)
+}
+
 function addOrderLimit(table: string, ops: QueryOp[], values: unknown[]) {
   const order = ops.filter((op): op is Extract<QueryOp, { type: 'order' }> => op.type === 'order')
     .map((op) => {
@@ -172,15 +194,7 @@ async function genericSelect(table: string, ops: QueryOp[], profile: Awaited<Ret
   const where: string[] = []
   addTenant(table, profile, values, where)
   addFilters(table, ops, values, where)
-
-  if (childTenantTables.has(table)) {
-    const bomHeaderId = getFilter(ops, 'bom_header_id')
-    if (!bomHeaderId) throw new ApiError(400, '상위 BOM이 필요합니다', 'VALIDATION_ERROR')
-    if (profile.role !== 'super_admin') {
-      values.push(profile.company_id)
-      where.push(`EXISTS (SELECT 1 FROM bom_headers bh WHERE bh.id = bom_lines.bom_header_id AND bh.company_id = $${values.length})`)
-    }
-  }
+  addChildTenant(table, profile, values, where)
 
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : ''
   const orderLimit = addOrderLimit(table, ops, values)
@@ -195,6 +209,7 @@ async function genericMutate(table: string, ops: QueryOp[], profile: Awaited<Ret
   assertTable(table)
   const update = ops.find((op): op is Extract<QueryOp, { type: 'update' }> => op.type === 'update')
   const insert = ops.find((op): op is Extract<QueryOp, { type: 'insert' }> => op.type === 'insert')
+  const hasDelete = ops.some((op) => op.type === 'delete')
   if (insert) {
     const rows = Array.isArray(insert.values) ? insert.values : [insert.values]
     if (tenantTables.has(table) && profile.role !== 'super_admin') {
@@ -203,15 +218,41 @@ async function genericMutate(table: string, ops: QueryOp[], profile: Awaited<Ret
         row.company_id = profile.company_id
       }
     }
+    const childRelation = childTenantTables[table]
+    if (childRelation && profile.role !== 'super_admin') {
+      if (!profile.company_id) throw new ApiError(403, '회사 정보가 없습니다', 'FORBIDDEN')
+      if (rows.some((row) => !row[childRelation.foreignKey])) throw new ApiError(400, '상위 데이터가 필요합니다', 'VALIDATION_ERROR')
+      const parentIds = [...new Set(rows.map((row) => row[childRelation.foreignKey]))].filter(Boolean)
+      const { rows: ownedParents } = await queryRows(
+        `SELECT ${childRelation.parentKey} FROM ${childRelation.parentTable} WHERE ${childRelation.parentKey} = ANY($1::uuid[]) AND company_id = $2::uuid`,
+        [parentIds, profile.company_id],
+      )
+      if (ownedParents.length !== parentIds.length) throw new ApiError(403, '권한이 부족합니다', 'FORBIDDEN')
+    }
     const columns = Object.keys(rows[0] ?? {}).filter((column) => tableColumns[table].includes(column))
+    if (!columns.length) throw new ApiError(400, '등록할 컬럼이 없습니다', 'VALIDATION_ERROR')
     const values = rows.flatMap((row) => columns.map((column) => row[column]))
     const groups = rows.map((_, rowIndex) => `(${columns.map((_, colIndex) => `$${rowIndex * columns.length + colIndex + 1}`).join(', ')})`)
     const { rows: inserted } = await queryRows(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${groups.join(', ')} RETURNING *`, values)
     return { data: Array.isArray(insert.values) ? inserted : inserted[0] ?? null, count: null }
   }
+  if (hasDelete) {
+    const values: unknown[] = []
+    const where: string[] = []
+    addTenant(table, profile, values, where)
+    addChildTenant(table, profile, values, where)
+    addFilters(table, ops, values, where)
+    if (!where.length) throw new ApiError(400, '삭제 조건이 필요합니다', 'VALIDATION_ERROR')
+    const { rows } = await queryRows(`DELETE FROM ${table} WHERE ${where.join(' AND ')} RETURNING *`, values)
+    return { data: rows, count: null }
+  }
   if (!update) throw new ApiError(400, '지원하지 않는 작업입니다', 'VALIDATION_ERROR')
+  if (table === 'profiles' && profile.role !== 'super_admin' && update.values.role === 'super_admin') {
+    throw new ApiError(403, '권한이 부족합니다', 'FORBIDDEN')
+  }
 
   const columns = Object.keys(update.values).filter((column) => tableColumns[table].includes(column) && column !== 'id' && column !== 'company_id')
+  if (!columns.length) throw new ApiError(400, '수정할 컬럼이 없습니다', 'VALIDATION_ERROR')
   const values = columns.map((column) => update.values[column])
   const setSql = columns.map((column, index) => `${column} = $${index + 1}`).join(', ')
   const where: string[] = []
@@ -222,6 +263,7 @@ async function genericMutate(table: string, ops: QueryOp[], profile: Awaited<Ret
     requireCompanyAdmin(profile)
   }
   addTenant(table, profile, values, where)
+  addChildTenant(table, profile, values, where)
   addFilters(table, ops, values, where)
   if (!where.length) throw new ApiError(400, '수정 조건이 필요합니다', 'VALIDATION_ERROR')
   const { rows } = await queryRows(`UPDATE ${table} SET ${setSql}, updated_at = now() WHERE ${where.join(' AND ')} RETURNING *`, values)
@@ -265,12 +307,12 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
                 'material_item_id', bl.material_item_id,
                 'material_item', json_build_object('id', mi.id, 'code', mi.code, 'name', mi.name, 'unit', mi.unit, 'material_type', mi.material_type, 'item_type', mi.item_type)
               ) ORDER BY bl.sort_order)
-              FROM bom_lines bl JOIN items mi ON mi.id = bl.material_item_id
+              FROM bom_lines bl JOIN items mi ON mi.id = bl.material_item_id AND mi.company_id = i.company_id
               WHERE bl.bom_header_id = bh.id
             ), '[]'::json)
           ) ORDER BY bh.version DESC)
           FROM bom_headers bh
-          WHERE bh.product_item_id = i.id
+          WHERE bh.product_item_id = i.id AND bh.company_id = i.company_id
         ), '[]'::json) AS bom_headers
       FROM items i ${qualify(whereSql, { company_id: 'i.company_id', is_active: 'i.is_active', item_type: 'i.item_type', material_type: 'i.material_type', name: 'i.name', code: 'i.code' })}
       ${qualify(orderLimit, { material_type: 'i.material_type', code: 'i.code' })}
@@ -283,7 +325,7 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
       SELECT i.*, COALESCE((
         SELECT json_agg(json_build_object('total_qty', s.total_qty))
         FROM inventory_summary s
-        WHERE s.item_id = i.id
+        WHERE s.item_id = i.id AND s.company_id = i.company_id
       ), '[]'::json) AS inventory_summary
       FROM items i ${qualify(whereSql, { company_id: 'i.company_id', is_active: 'i.is_active', material_type: 'i.material_type', item_type: 'i.item_type', name: 'i.name', code: 'i.code' })}
       ${qualify(orderLimit, { item_type: 'i.item_type', name: 'i.name' })}
@@ -296,7 +338,8 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
       SELECT bl.*,
         json_build_object('id', i.id, 'code', i.code, 'name', i.name, 'unit', i.unit, 'material_type', i.material_type, 'item_type', i.item_type) AS material_item
       FROM bom_lines bl
-      JOIN items i ON i.id = bl.material_item_id
+      JOIN bom_headers bh ON bh.id = bl.bom_header_id
+      JOIN items i ON i.id = bl.material_item_id AND i.company_id = bh.company_id
       ${qualify(whereSql, { bom_header_id: 'bl.bom_header_id', material_item_id: 'bl.material_item_id' })}
       ${qualify(orderLimit, { sort_order: 'bl.sort_order' })}
     `, values)
@@ -316,11 +359,11 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'quantity', bl.quantity, 'sort_order', bl.sort_order,
             'material_item', json_build_object('id', mi.id, 'code', mi.code, 'name', mi.name, 'unit', mi.unit, 'material_type', mi.material_type, 'item_type', mi.item_type)
           ) ORDER BY bl.sort_order)
-          FROM bom_lines bl JOIN items mi ON mi.id = bl.material_item_id
+          FROM bom_lines bl JOIN items mi ON mi.id = bl.material_item_id AND mi.company_id = bh.company_id
           WHERE bl.bom_header_id = bh.id
         ), '[]'::json) AS bom_lines` : ''}
       FROM bom_headers bh
-      ${withProduct ? 'JOIN items p ON p.id = bh.product_item_id' : ''}
+      ${withProduct ? 'JOIN items p ON p.id = bh.product_item_id AND p.company_id = bh.company_id' : ''}
       ${qualify(whereSql, { company_id: 'bh.company_id', id: 'bh.id', product_item_id: 'bh.product_item_id' })}
       ${qualify(orderLimit, { version: 'bh.version' })}
     `, values)
@@ -340,11 +383,11 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'line_type', pol.line_type, 'description', pol.description,
             'item', CASE WHEN i.id IS NULL THEN NULL ELSE json_build_object('id', i.id, 'code', i.code, 'name', i.name, 'unit', i.unit) END
           ))
-          FROM purchase_order_lines pol LEFT JOIN items i ON i.id = pol.item_id
+          FROM purchase_order_lines pol LEFT JOIN items i ON i.id = pol.item_id AND i.company_id = po.company_id
           WHERE pol.po_id = po.id
         ), '[]'::json) AS purchase_order_lines` : ''}
       FROM purchase_orders po
-      JOIN vendors v ON v.id = po.vendor_id
+      JOIN vendors v ON v.id = po.vendor_id AND v.company_id = po.company_id
       ${qualify(whereSql, { company_id: 'po.company_id', status: 'po.status', id: 'po.id', po_number: 'po.po_number' })}
       ${qualify(orderLimit, { created_at: 'po.created_at' })}
     `, values)
@@ -364,12 +407,12 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'quantity', gl.quantity, 'unit_price', gl.unit_price,
             'item', json_build_object('id', i.id, 'code', i.code, 'name', i.name, 'unit', i.unit)
           ))
-          FROM goods_receipt_lines gl JOIN items i ON i.id = gl.item_id
+          FROM goods_receipt_lines gl JOIN items i ON i.id = gl.item_id AND i.company_id = gr.company_id
           WHERE gl.receipt_id = gr.id
         ), '[]'::json) AS goods_receipt_lines` : ''}
       FROM goods_receipts gr
-      JOIN warehouses w ON w.id = gr.warehouse_id
-      LEFT JOIN purchase_orders po ON po.id = gr.po_id
+      JOIN warehouses w ON w.id = gr.warehouse_id AND w.company_id = gr.company_id
+      LEFT JOIN purchase_orders po ON po.id = gr.po_id AND po.company_id = gr.company_id
       ${qualify(whereSql, { company_id: 'gr.company_id', po_id: 'gr.po_id', id: 'gr.id', receipt_number: 'gr.receipt_number' })}
       ${qualify(orderLimit, { created_at: 'gr.created_at', receipt_date: 'gr.receipt_date' })}
     `, values)
@@ -391,12 +434,12 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'warehouse', json_build_object('id', w.id, 'code', w.code, 'name', w.name)
           ))
           FROM sales_order_lines sol
-          JOIN items i ON i.id = sol.item_id
-          JOIN warehouses w ON w.id = sol.warehouse_id
+          JOIN items i ON i.id = sol.item_id AND i.company_id = so.company_id
+          JOIN warehouses w ON w.id = sol.warehouse_id AND w.company_id = so.company_id
           WHERE sol.sales_order_id = so.id
         ), '[]'::json) AS sales_order_lines` : ''}
       FROM sales_orders so
-      JOIN customers c ON c.id = so.customer_id
+      JOIN customers c ON c.id = so.customer_id AND c.company_id = so.company_id
       ${qualify(whereSql, { company_id: 'so.company_id', status: 'so.status', id: 'so.id', order_number: 'so.order_number' })}
       ${qualify(orderLimit, { created_at: 'so.created_at' })}
     `, values)
@@ -409,8 +452,8 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
         json_build_object('id', i.id, 'code', i.code, 'name', i.name, 'unit', i.unit, 'min_stock_qty', i.min_stock_qty, 'item_type', i.item_type) AS item,
         json_build_object('id', w.id, 'code', w.code, 'name', w.name) AS warehouse
       FROM inventory_summary s
-      JOIN items i ON i.id = s.item_id
-      JOIN warehouses w ON w.id = s.warehouse_id
+      JOIN items i ON i.id = s.item_id AND i.company_id = s.company_id
+      JOIN warehouses w ON w.id = s.warehouse_id AND w.company_id = s.company_id
       ${qualify(whereSql, { company_id: 's.company_id', warehouse_id: 's.warehouse_id', total_qty: 's.total_qty' })}
       ${qualify(orderLimit, { item_id: 's.item_id' })}
     `, values)
@@ -421,7 +464,7 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
     const { rows } = await queryRows(`
       SELECT l.*, json_build_object('id', w.id, 'code', w.code, 'name', w.name) AS warehouse
       FROM inventory_lots l
-      JOIN warehouses w ON w.id = l.warehouse_id
+      JOIN warehouses w ON w.id = l.warehouse_id AND w.company_id = l.company_id
       ${qualify(whereSql, { company_id: 'l.company_id', warehouse_id: 'l.warehouse_id', item_id: 'l.item_id', remaining_qty: 'l.remaining_qty' })}
       ${qualify(orderLimit, { lot_date: 'l.lot_date' })}
     `, values)
@@ -436,8 +479,8 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
           'vendor', json_build_object('name', v.name)
         ) AS purchase_order
       FROM po_payments p
-      JOIN purchase_orders po ON po.id = p.po_id
-      JOIN vendors v ON v.id = po.vendor_id
+      JOIN purchase_orders po ON po.id = p.po_id AND po.company_id = p.company_id
+      JOIN vendors v ON v.id = po.vendor_id AND v.company_id = p.company_id
       ${qualify(whereSql, { company_id: 'p.company_id', po_id: 'p.po_id' })}
       ${qualify(orderLimit, { payment_date: 'p.payment_date' })}
     `, values)
@@ -458,13 +501,13 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'required_qty', aol.required_qty, 'consumed_qty', aol.consumed_qty, 'unit_cost', aol.unit_cost,
             'material_item', json_build_object('id', mi.id, 'code', mi.code, 'name', mi.name, 'unit', mi.unit)
           ))
-          FROM assembly_order_lines aol JOIN items mi ON mi.id = aol.material_item_id
+          FROM assembly_order_lines aol JOIN items mi ON mi.id = aol.material_item_id AND mi.company_id = ao.company_id
           WHERE aol.assembly_order_id = ao.id
         ), '[]'::json) AS assembly_order_lines` : ''}
       FROM assembly_orders ao
-      JOIN items pi ON pi.id = ao.product_item_id
-      JOIN warehouses w ON w.id = ao.warehouse_id
-      LEFT JOIN bom_headers bh ON bh.id = ao.bom_header_id
+      JOIN items pi ON pi.id = ao.product_item_id AND pi.company_id = ao.company_id
+      JOIN warehouses w ON w.id = ao.warehouse_id AND w.company_id = ao.company_id
+      LEFT JOIN bom_headers bh ON bh.id = ao.bom_header_id AND bh.company_id = ao.company_id
       ${qualify(whereSql, { company_id: 'ao.company_id', status: 'ao.status', id: 'ao.id', order_number: 'ao.order_number' })}
       ${qualify(orderLimit, { created_at: 'ao.created_at' })}
     `, values)
@@ -483,12 +526,12 @@ async function queryWithRelations(table: string, ops: QueryOp[], profile: Awaite
             'id', wtl.id, 'transfer_id', wtl.transfer_id, 'item_id', wtl.item_id, 'quantity', wtl.quantity,
             'item', json_build_object('id', i.id, 'code', i.code, 'name', i.name, 'unit', i.unit)
           ))
-          FROM warehouse_transfer_lines wtl JOIN items i ON i.id = wtl.item_id
+          FROM warehouse_transfer_lines wtl JOIN items i ON i.id = wtl.item_id AND i.company_id = wt.company_id
           WHERE wtl.transfer_id = wt.id
         ), '[]'::json) AS warehouse_transfer_lines` : ''}
       FROM warehouse_transfers wt
-      JOIN warehouses fw ON fw.id = wt.from_warehouse_id
-      JOIN warehouses tw ON tw.id = wt.to_warehouse_id
+      JOIN warehouses fw ON fw.id = wt.from_warehouse_id AND fw.company_id = wt.company_id
+      JOIN warehouses tw ON tw.id = wt.to_warehouse_id AND tw.company_id = wt.company_id
       ${qualify(whereSql, { company_id: 'wt.company_id', status: 'wt.status', id: 'wt.id', transfer_number: 'wt.transfer_number' })}
       ${qualify(orderLimit, { created_at: 'wt.created_at' })}
     `, values)
