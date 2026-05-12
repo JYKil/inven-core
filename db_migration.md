@@ -1,7 +1,7 @@
 # inven-core 마이그레이션 체크리스트
 > Vercel + Supabase → 리눅스 미니PC (PostgreSQL + Better Auth 이메일/비밀번호)
 
-> 업데이트: 2026-05-12 Phase 4 hooks/settings/admin fluent 호출 제거 반영
+> 업데이트: 2026-05-12 Phase 4 API 동적 라우트 params 전환 및 검증 반영
 
 ---
 
@@ -13,11 +13,11 @@
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
 | **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
-| **Supabase Query 제거** | Phase 4 추가 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
+| **Supabase Query 제거** | Phase 4 추가 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, 동적 API route는 Next params 기반으로 전환, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 통과 | 2026-05-12 Phase 4 fluent 호출 제거 후 `npx tsc --noEmit`, `npx vitest run` 통과 |
-| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup, `61251be` fluent client 제거 원격 푸쉬 완료 |
+| **검증 상태** | 통과 | 2026-05-12 Phase 4 동적 API route params 전환 후 `npm run build`, `npm test -- test/cancel-routes.test.ts test/api-handler.test.ts` 통과 |
+| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup, `61251be` fluent client 제거, 이번 커밋에 동적 API route params 전환 반영 |
 
 ## 다음 우선순위
 
@@ -265,6 +265,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - 우선순위: 핵심 기능(입고/출고/재고) → 보조 기능(보고서/설정) 순
     - 핵심 거래 API 12개는 Better Auth 세션 + PostgreSQL 함수 직접 호출로 교체 완료
     - `admin/settings invite-user`는 Better Auth user/account + profiles 생성 플로우로 교체 완료
+    - 동적 route 5개는 URL pathname 직접 파싱 제거, Next.js `context.params.id` 기반으로 전환 완료
 
 [~] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
     - supabase/ 폴더의 기존 마이그레이션 SQL 재활용 가능
@@ -332,6 +333,22 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - `86e464b` Update Supabase invite and db query APIs
     - `431e2eb` Continue Phase 4 Supabase query cleanup
     - `61251be` Remove db query fluent client usage
+[x] 동적 API route의 URL pathname 직접 파싱 제거
+    - `withApiHandler`가 App Router context를 전달하도록 확장
+    - `sales-orders/[id]/ship`
+    - `sales-orders/[id]/cancel-shipment`
+    - `goods-receipts/[id]/cancel`
+    - `warehouse-transfers/[id]/cancel`
+    - `assembly-orders/[id]/cancel`
+    - 누락된 `params.id`는 `ApiError(400, VALIDATION_ERROR)`로 정규화
+[x] 취소 route 테스트 갱신
+    - route 직접 호출 테스트에서 Next.js route context를 명시 전달
+[x] 검증
+    - `npm run build`
+    - `npm test -- test/cancel-routes.test.ts test/api-handler.test.ts`
+[!] `npm run lint`는 기존 repo lint debt로 실패
+    - `.claude/skills/gstack.bak` 및 기존 `any` 사용 다수
+    - 이번 동적 API route 변경과 무관
 [!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
 ```
 

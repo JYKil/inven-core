@@ -3,12 +3,16 @@ import { NextResponse } from 'next/server'
 import { ApiError, apiError } from './error'
 import { ZodError } from 'zod'
 
-type HandlerFn = (request: Request) => Promise<NextResponse>
+type HandlerContext = {
+  params?: Promise<Record<string, string | string[]>>
+}
+
+type HandlerFn = (request: Request, context?: HandlerContext) => Promise<NextResponse>
 
 export function withApiHandler(handler: HandlerFn): HandlerFn {
-  return async (request: Request) => {
+  return async (request: Request, context?: HandlerContext) => {
     try {
-      return await handler(request)
+      return await handler(request, context)
     } catch (err) {
       if (err instanceof ApiError) {
         return NextResponse.json(

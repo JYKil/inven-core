@@ -30,6 +30,10 @@ function fakeRequest(url: string, body?: Record<string, unknown>): Request {
   })
 }
 
+function routeContext(id: string) {
+  return { params: Promise.resolve({ id }) }
+}
+
 beforeEach(() => {
   vi.clearAllMocks()
   mockGetSessionProfile.mockResolvedValue({
@@ -48,7 +52,7 @@ describe('POST /api/sales-orders/[id]/cancel-shipment', () => {
     const { POST } = await import('@/app/api/sales-orders/[id]/cancel-shipment/route')
     const req = fakeRequest('http://localhost/api/sales-orders/so-uuid-123/cancel-shipment', { reason: '고객 변심' })
 
-    const res = (await POST(req)) as any
+    const res = (await POST(req, routeContext('so-uuid-123'))) as any
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
     expect(mockCallRpc).toHaveBeenCalledWith(
@@ -61,7 +65,7 @@ describe('POST /api/sales-orders/[id]/cancel-shipment', () => {
     const { POST } = await import('@/app/api/sales-orders/[id]/cancel-shipment/route')
     const req = fakeRequest('http://localhost/api/sales-orders/so-uuid-456/cancel-shipment')
 
-    await POST(req)
+    await POST(req, routeContext('so-uuid-456'))
     expect(mockCallRpc).toHaveBeenCalledWith(
       'SELECT cancel_shipment($1::uuid, $2::uuid, $3::text) AS result',
       ['so-uuid-456', 'comp-1', null],
@@ -72,7 +76,10 @@ describe('POST /api/sales-orders/[id]/cancel-shipment', () => {
     mockCallRpc.mockRejectedValue(new ApiError(409, '재고 부족: 사과 (필요 10, 가용 5)', 'INSUFFICIENT_STOCK'))
 
     const { POST } = await import('@/app/api/sales-orders/[id]/cancel-shipment/route')
-    const res = (await POST(fakeRequest('http://localhost/api/sales-orders/so-uuid-789/cancel-shipment'))) as any
+    const res = (await POST(
+      fakeRequest('http://localhost/api/sales-orders/so-uuid-789/cancel-shipment'),
+      routeContext('so-uuid-789'),
+    )) as any
 
     expect(res.status).toBe(409)
     expect(res.body.error.code).toBe('INSUFFICIENT_STOCK')
@@ -82,7 +89,10 @@ describe('POST /api/sales-orders/[id]/cancel-shipment', () => {
     mockGetSessionProfile.mockRejectedValue(new ApiError(401, '인증이 필요합니다', 'UNAUTHORIZED'))
 
     const { POST } = await import('@/app/api/sales-orders/[id]/cancel-shipment/route')
-    const res = (await POST(fakeRequest('http://localhost/api/sales-orders/so-uuid-000/cancel-shipment'))) as any
+    const res = (await POST(
+      fakeRequest('http://localhost/api/sales-orders/so-uuid-000/cancel-shipment'),
+      routeContext('so-uuid-000'),
+    )) as any
 
     expect(res.status).toBe(401)
     expect(res.body.error.code).toBe('UNAUTHORIZED')
@@ -94,7 +104,7 @@ describe('POST /api/goods-receipts/[id]/cancel', () => {
     const { POST } = await import('@/app/api/goods-receipts/[id]/cancel/route')
     const req = fakeRequest('http://localhost/api/goods-receipts/gr-uuid-123/cancel', { reason: '입고 오류' })
 
-    const res = (await POST(req)) as any
+    const res = (await POST(req, routeContext('gr-uuid-123'))) as any
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
     expect(mockCallRpc).toHaveBeenCalledWith(
@@ -107,7 +117,10 @@ describe('POST /api/goods-receipts/[id]/cancel', () => {
     mockCallRpc.mockRejectedValue(new ApiError(409, '재고 부족: 볼트 (필요 100, 가용 30)', 'INSUFFICIENT_STOCK'))
 
     const { POST } = await import('@/app/api/goods-receipts/[id]/cancel/route')
-    const res = (await POST(fakeRequest('http://localhost/api/goods-receipts/gr-uuid-456/cancel'))) as any
+    const res = (await POST(
+      fakeRequest('http://localhost/api/goods-receipts/gr-uuid-456/cancel'),
+      routeContext('gr-uuid-456'),
+    )) as any
 
     expect(res.status).toBe(409)
     expect(res.body.error.code).toBe('INSUFFICIENT_STOCK')
@@ -119,7 +132,7 @@ describe('POST /api/warehouse-transfers/[id]/cancel', () => {
     const { POST } = await import('@/app/api/warehouse-transfers/[id]/cancel/route')
     const req = fakeRequest('http://localhost/api/warehouse-transfers/wt-uuid-123/cancel', { reason: '이동 오류' })
 
-    const res = (await POST(req)) as any
+    const res = (await POST(req, routeContext('wt-uuid-123'))) as any
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
     expect(mockCallRpc).toHaveBeenCalledWith(
@@ -131,7 +144,10 @@ describe('POST /api/warehouse-transfers/[id]/cancel', () => {
   it('사유 없이 호출 시 reason은 null', async () => {
     const { POST } = await import('@/app/api/warehouse-transfers/[id]/cancel/route')
 
-    await POST(fakeRequest('http://localhost/api/warehouse-transfers/wt-uuid-456/cancel'))
+    await POST(
+      fakeRequest('http://localhost/api/warehouse-transfers/wt-uuid-456/cancel'),
+      routeContext('wt-uuid-456'),
+    )
     expect(mockCallRpc).toHaveBeenCalledWith(
       'SELECT cancel_transfer($1::uuid, $2::uuid, $3::text) AS result',
       ['wt-uuid-456', 'comp-1', null],
@@ -144,7 +160,7 @@ describe('POST /api/assembly-orders/[id]/cancel', () => {
     const { POST } = await import('@/app/api/assembly-orders/[id]/cancel/route')
     const req = fakeRequest('http://localhost/api/assembly-orders/asm-uuid-123/cancel', { reason: '조립 실패' })
 
-    const res = (await POST(req)) as any
+    const res = (await POST(req, routeContext('asm-uuid-123'))) as any
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
     expect(mockCallRpc).toHaveBeenCalledWith(
@@ -157,7 +173,10 @@ describe('POST /api/assembly-orders/[id]/cancel', () => {
     mockGetSessionProfile.mockRejectedValue(new ApiError(403, '프로필을 찾을 수 없습니다', 'FORBIDDEN'))
 
     const { POST } = await import('@/app/api/assembly-orders/[id]/cancel/route')
-    const res = (await POST(fakeRequest('http://localhost/api/assembly-orders/asm-uuid-456/cancel'))) as any
+    const res = (await POST(
+      fakeRequest('http://localhost/api/assembly-orders/asm-uuid-456/cancel'),
+      routeContext('asm-uuid-456'),
+    )) as any
 
     expect(res.status).toBe(403)
     expect(res.body.error.code).toBe('FORBIDDEN')
@@ -167,7 +186,10 @@ describe('POST /api/assembly-orders/[id]/cancel', () => {
     mockCallRpc.mockRejectedValue(new Error('unexpected database error'))
 
     const { POST } = await import('@/app/api/assembly-orders/[id]/cancel/route')
-    const res = (await POST(fakeRequest('http://localhost/api/assembly-orders/asm-uuid-789/cancel'))) as any
+    const res = (await POST(
+      fakeRequest('http://localhost/api/assembly-orders/asm-uuid-789/cancel'),
+      routeContext('asm-uuid-789'),
+    )) as any
 
     expect(res.status).toBe(500)
     expect(res.body.error.code).toBe('INTERNAL_ERROR')
