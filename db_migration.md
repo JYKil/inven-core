@@ -1,7 +1,7 @@
 # inven-core 마이그레이션 체크리스트
 > Vercel + Supabase → 리눅스 미니PC (PostgreSQL + Better Auth 이메일/비밀번호)
 
-> 업데이트: 2026-05-12 Phase 4 API 동적 라우트 params 전환 및 검증 반영
+> 업데이트: 2026-05-12 Phase 4 구현 완료, 운영 런타임 검증은 배포 후 Phase 7로 이관
 
 ---
 
@@ -13,18 +13,18 @@
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
 | **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
-| **Supabase Query 제거** | Phase 4 추가 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, 동적 API route는 Next params 기반으로 전환, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
+| **Supabase Query 제거** | Phase 4 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, 동적 API route는 Next params 기반으로 전환, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 통과 | 2026-05-12 Phase 4 동적 API route params 전환 후 `npm run build`, `npm test -- test/cancel-routes.test.ts test/api-handler.test.ts` 통과 |
-| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup, `61251be` fluent client 제거, 이번 커밋에 동적 API route params 전환 반영 |
+| **검증 상태** | 통과 | 2026-05-12 Phase 4 구현 검증 완료. 운영 화면 런타임 검증은 Docker 배포 후 Phase 7에서 수행 |
+| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup, `61251be` fluent client 제거, 동적 API route params 전환 및 문서 정리 반영 |
 
 ## 다음 우선순위
 
 ```
-1. API-backed 쿼리 라우트의 주요 화면 런타임 검증
-2. Supabase 자동생성 타입(`src/types/database.ts`)을 Drizzle 기반 타입으로 교체
-3. Dockerfile/docker-compose 배포 파일 작성
+1. Supabase 자동생성 타입(`src/types/database.ts`)을 Drizzle 기반 타입으로 교체
+2. Dockerfile/docker-compose 배포 파일 작성
+3. 배포 후 API-backed 주요 화면 런타임 검증
 ```
 
 ## 2026-05-12 Phase 3 작업 결과
@@ -259,7 +259,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     → 2026-05-12 `20260512000001_disable_rls_app_permissions.sql` 추가: 기존 RLS 정책 DROP + RLS 비활성화
     → Drizzle 스키마의 `pgPolicy` 선언 제거
 
-[~] src/app/api/ 의 서버 엔드포인트 순차 교체
+[x] src/app/api/ 의 서버 엔드포인트 순차 교체
     - supabase.from('table').select() → db.select().from(table)
     - supabase.rpc('function') → 직접 SQL 또는 Drizzle 쿼리
     - 우선순위: 핵심 기능(입고/출고/재고) → 보조 기능(보고서/설정) 순
@@ -267,11 +267,11 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - `admin/settings invite-user`는 Better Auth user/account + profiles 생성 플로우로 교체 완료
     - 동적 route 5개는 URL pathname 직접 파싱 제거, Next.js `context.params.id` 기반으로 전환 완료
 
-[~] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
+[x] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재사용
     - supabase/ 폴더의 기존 마이그레이션 SQL 재활용 가능
     → 이번 단계에서는 기존 PostgreSQL 함수 직접 호출로 재사용
 
-[~] 클라이언트 hooks의 Supabase 호출 제거
+[x] 클라이언트 hooks의 Supabase 호출 제거
     - use-items, use-warehouses, use-vendors, use-customers
     - use-purchase-orders, use-goods-receipts, use-sales-orders
     - use-assembly-orders, use-warehouse-transfers, use-inventory
@@ -349,6 +349,9 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [!] `npm run lint`는 기존 repo lint debt로 실패
     - `.claude/skills/gstack.bak` 및 기존 `any` 사용 다수
     - 이번 동적 API route 변경과 무관
+[i] API-backed 주요 화면 런타임 검증은 배포 후 Phase 7에서 수행
+    - 로컬 개발 서버가 아닌 미니PC Docker/production env 기준으로 검증
+    - 쿠키 도메인, `BETTER_AUTH_URL`, DB 네트워크, reverse proxy까지 포함
 [!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
 ```
 
@@ -421,6 +424,10 @@ RESEND_API_KEY=...
 [ ] 이메일/비밀번호 로그인 흐름 전체 테스트
 [ ] 관리자 승인 플로우 테스트
 [ ] CSV 내보내기 기능 테스트
+[ ] API-backed 주요 화면 런타임 검증
+    - `/api/db-query` 기반 목록/상세/생성/수정/삭제 화면 확인
+    - settings/admin 화면 확인
+    - production 쿠키/세션/권한 필터 확인
 [ ] Vercel 병행 운영 후 이상 없으면 컷오버
 [ ] DNS 전환 (Vercel → 미니PC 도메인)
 [ ] Supabase 클라우드 플랜 해지
