@@ -1,29 +1,30 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { withApiHandler } from '@/lib/api/handler'
-import { getAuthenticatedUser } from '@/lib/api/auth'
-import { apiSuccess, mapSupabaseError } from '@/lib/api/error'
+import { apiSuccess } from '@/lib/api/error'
+import { getSessionProfile, getSessionUser } from '@/lib/api/session'
+import { callRpc } from '@/lib/db/rpc'
 import { assemblyOrderCreateSchema } from '@/lib/validations/assembly'
 
 export const POST = withApiHandler(async (request: Request) => {
-  const supabase = await createServerSupabaseClient()
-  const { user, profile } = await getAuthenticatedUser(supabase)
+  const user = await getSessionUser()
+  const profile = await getSessionProfile()
 
   const body = await request.json()
   const input = assemblyOrderCreateSchema.parse(body)
 
-  const { data, error } = await supabase.rpc('execute_assembly', {
-    p_company_id: profile.company_id,
-    p_order_number: input.order_number,
-    p_bom_header_id: input.bom_header_id,
-    p_product_item_id: input.product_item_id,
-    p_warehouse_id: input.warehouse_id,
-    p_quantity: input.quantity,
-    p_assembly_date: input.assembly_date,
-    p_created_by: user.id,
-  })
-
-  if (error) throw mapSupabaseError(error)
+  const data = await callRpc<string>(
+    'SELECT execute_assembly($1::uuid, $2::text, $3::uuid, $4::uuid, $5::uuid, $6::numeric, $7::date, $8::uuid) AS result',
+    [
+      profile.company_id,
+      input.order_number,
+      input.bom_header_id,
+      input.product_item_id,
+      input.warehouse_id,
+      input.quantity,
+      input.assembly_date,
+      user.id,
+    ],
+  )
 
   return NextResponse.json(apiSuccess({ order_id: data }), { status: 201 })
 })

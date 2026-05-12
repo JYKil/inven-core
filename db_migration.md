@@ -13,18 +13,18 @@
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
 | **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
-| **Supabase Query 제거** | 미완료 | `src/hooks/*`, 거래/마스터 API, settings 화면에 Supabase client/RPC 호출 잔존 |
-| **Drizzle 도입** | 미시작 | `package.json`에 Drizzle 의존성/설정 파일 없음 |
+| **Supabase Query 제거** | 진행 중 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출로 교체, hooks/settings/admin 화면의 Supabase 스타일 호출은 잔존 |
+| **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 부분 통과 | Phase 3 변경 파일 기준 검증 통과, 전체 `tsc`는 Phase 4/5 잔여 Supabase 코드로 실패 |
+| **검증 상태** | 통과 | 2026-05-12 Phase 4 부분 전환 후 `npx tsc --noEmit` 통과 |
 
 ## 다음 우선순위
 
 ```
-1. Drizzle 패키지와 schema/index/config 추가
-2. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
-3. hooks/settings의 Supabase 세션 조회 제거
-4. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+1. hooks/settings/admin 화면의 Supabase 스타일 호출을 전용 API + Drizzle 쿼리로 교체
+2. invite-user API를 Better Auth 사용자 생성 플로우로 교체
+3. Supabase 호환 임시 어댑터(`src/lib/supabase/*`) 제거
+4. Supabase 자동생성 타입 제거 후 TypeScript 빌드 확인
 5. Dockerfile/docker-compose 배포 파일 작성
 ```
 
@@ -90,9 +90,9 @@ node --check scripts/migrate-better-auth.mjs
       src/app/(auth) src/app/(dashboard)/layout.tsx src/app/(dashboard)/admin/layout.tsx \
       src/components/layout src/app/api/auth src/proxy.ts src/lib/email/resend.ts
     → 결과 없음
-[ ] 전체 TypeScript 빌드
+[x] 전체 TypeScript 빌드
     npx tsc --noEmit
-    → 실패: Phase 4/5 잔여 Supabase helper import 및 기존 hooks 타입 오류
+    → 2026-05-12 Phase 4 부분 전환 후 통과
 ```
 
 ---
@@ -238,38 +238,61 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 **Supabase Client → Drizzle ORM (PostgreSQL 특화, 타입 안전)**
 
 ```
-[ ] 패키지 설치
+[x] 패키지 설치
     npm install drizzle-orm pg
     npm install -D drizzle-kit @types/pg
-    → 현재 package.json 기준 drizzle-orm/drizzle-kit 없음
+    → 2026-05-12 `drizzle-orm`, `drizzle-kit` 추가
 
-[ ] drizzle.config.ts 생성
+[x] drizzle.config.ts 생성
 
-[ ] src/db/schema.ts 생성
+[x] src/db/schema.ts 생성
     - 기존 24개 테이블을 Drizzle 스키마로 작성
     - src/types/ Supabase 자동생성 타입 참고
+    → 로컬 PostgreSQL introspect 결과 28개 테이블/274개 컬럼 기준 생성
 
-[ ] src/db/index.ts — DB 커넥션 풀 설정
+[x] src/db/index.ts — DB 커넥션 풀 설정
 
-[ ] RLS 정책 → 앱 레이어 권한 체크로 교체
+[~] RLS 정책 → 앱 레이어 권한 체크로 교체
     - 기존: Supabase RLS가 company_id 기반 자동 격리
     - 변경: 모든 쿼리에 .where(eq(table.companyId, session.companyId)) 추가
     - ⚠️ 누락 시 타사 데이터 노출 위험 — 전수 검토 필수
 
-[ ] src/app/api/ 의 서버 엔드포인트 순차 교체
+[~] src/app/api/ 의 서버 엔드포인트 순차 교체
     - supabase.from('table').select() → db.select().from(table)
     - supabase.rpc('function') → 직접 SQL 또는 Drizzle 쿼리
     - 우선순위: 핵심 기능(입고/출고/재고) → 보조 기능(보고서/설정) 순
-    - 현재 코드 기준 `src/app/api` 파일 16개 중 Better Auth 라우트 1개 제외, 15개가 Supabase 의존
+    - 핵심 거래 API 12개는 Better Auth 세션 + PostgreSQL 함수 직접 호출로 교체 완료
+    - `admin/settings invite-user`는 Better Auth 초대 플로우 교체 필요
 
-[ ] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
+[~] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
     - supabase/ 폴더의 기존 마이그레이션 SQL 재활용 가능
+    → 이번 단계에서는 기존 PostgreSQL 함수 직접 호출로 재사용
 
 [ ] 클라이언트 hooks의 Supabase 호출 제거
     - use-items, use-warehouses, use-vendors, use-customers
     - use-purchase-orders, use-goods-receipts, use-sales-orders
     - use-assembly-orders, use-warehouse-transfers, use-inventory
     - use-bom, use-dashboard, use-reports, use-reference-codes, use-po-payments
+    → 외부 `@supabase/*` 의존은 제거했지만 hooks 호출부는 아직 전용 API로 전환 필요
+
+### 2026-05-12 Phase 4 진행 메모
+
+```
+[x] drizzle-orm / drizzle-kit 설치
+[x] drizzle.config.ts 추가
+[x] 로컬 PostgreSQL introspect로 drizzle/schema.ts 및 relations 생성
+[x] src/db/schema.ts, src/db/relations.ts, src/db/index.ts 추가
+[x] 핵심 거래 API의 Supabase RPC 호출 제거
+    - assembly-orders create/cancel
+    - bom create/version
+    - goods-receipts create/cancel
+    - po-payments create
+    - purchase-orders create
+    - sales-orders ship/cancel-shipment
+    - warehouse-transfers create/cancel
+[x] `npx tsc --noEmit` 통과
+[!] hooks/settings/admin 화면은 아직 전용 Drizzle API로 완전 교체 필요
+[!] `src/lib/supabase/*`는 외부 패키지 의존을 끊은 임시 호환 어댑터 상태
 ```
 
 ---

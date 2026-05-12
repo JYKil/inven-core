@@ -54,6 +54,8 @@ export function mapSupabaseError(error: { code?: string; message: string }): Api
   return new ApiError(500, error.message || '서버 오류', 'INTERNAL_ERROR')
 }
 
+export const mapDbError = mapSupabaseError
+
 // 클라이언트 catch 블록에서 사용 — Supabase PostgrestError 포함 모든 에러 처리
 export function extractErrorMessage(err: unknown, fallback = '오류가 발생했습니다'): string {
   if (err instanceof Error) return err.message

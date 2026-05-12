@@ -94,7 +94,7 @@ export function useMaterialAvailability(
       if (bomErr) throw bomErr
 
       // 각 재료의 현재고 조회
-      const materialIds = (bomLines ?? []).map((l) => l.material_item_id)
+      const materialIds = (bomLines ?? []).map((l: any) => l.material_item_id)
       const { data: stockData, error: stockErr } = await supabase
         .from('inventory_summary')
         .select('item_id, total_qty')
@@ -103,7 +103,7 @@ export function useMaterialAvailability(
       if (stockErr) throw stockErr
 
       const stockMap = new Map(
-        (stockData ?? []).map((s) => [s.item_id, Number(s.total_qty)])
+        (stockData ?? []).map((s: any) => [s.item_id, Number(s.total_qty)])
       )
 
       // FIFO 순 로트 단가 조회 (예상 원가 미리보기용)
@@ -139,9 +139,9 @@ export function useMaterialAvailability(
       }
 
       let estimatedTotalCost = 0
-      const materials = (bomLines ?? []).map((line) => {
+      const materials = (bomLines ?? []).map((line: any) => {
         const requiredQty = Number(line.quantity) * quantity
-        const currentStock = stockMap.get(line.material_item_id) ?? 0
+        const currentStock = Number(stockMap.get(line.material_item_id) ?? 0)
         const shortage = Math.max(0, requiredQty - currentStock)
         const estimatedCost = calcFifoCost(line.material_item_id, requiredQty)
         estimatedTotalCost += estimatedCost

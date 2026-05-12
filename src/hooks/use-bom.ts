@@ -98,7 +98,7 @@ export function useBomByItem(itemId: string) {
         .order('version', { ascending: false })
       if (error) throw error
       // bom_lines sort_order 정렬
-      return (data ?? []).map((bom) => ({
+      return (data ?? []).map((bom: any) => ({
         ...bom,
         bom_lines: [...(bom.bom_lines ?? [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
       }))

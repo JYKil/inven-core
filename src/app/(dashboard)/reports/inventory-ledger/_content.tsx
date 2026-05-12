@@ -58,7 +58,7 @@ export default function InventoryLedgerContent() {
   const items = itemsData?.data ?? []
   const itemsMap = useMemo(() => {
     const map: Record<string, string> = { all: '전체 품목' }
-    items.forEach((i) => { map[i.id] = `${i.code} — ${i.name}` })
+    items.forEach((i: any) => { map[i.id] = `${i.code} — ${i.name}` })
     return map
   }, [items])
 
@@ -125,7 +125,7 @@ export default function InventoryLedgerContent() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체 품목</SelectItem>
-              {items.map((i) => (
+              {items.map((i: any) => (
                 <SelectItem key={i.id} value={i.id}>{i.code} — {i.name}</SelectItem>
               ))}
             </SelectContent>

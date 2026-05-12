@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { withApiHandler } from '@/lib/api/handler'
-import { getAuthenticatedUser } from '@/lib/api/auth'
-import { apiSuccess, mapSupabaseError } from '@/lib/api/error'
+import { apiSuccess } from '@/lib/api/error'
+import { getSessionProfile } from '@/lib/api/session'
+import { callRpc } from '@/lib/db/rpc'
 import { z } from 'zod'
 
 const bomVersionCreateSchema = z.object({
@@ -11,19 +11,15 @@ const bomVersionCreateSchema = z.object({
 })
 
 export const POST = withApiHandler(async (request: Request) => {
-  const supabase = await createServerSupabaseClient()
-  const { profile } = await getAuthenticatedUser(supabase)
+  const profile = await getSessionProfile()
 
   const body = await request.json()
   const input = bomVersionCreateSchema.parse(body)
 
-  const { data, error } = await supabase.rpc('create_bom_version', {
-    p_company_id: profile.company_id,
-    p_source_bom_id: input.source_bom_id,
-    p_product_item_id: input.product_item_id,
-  })
-
-  if (error) throw mapSupabaseError(error)
+  const data = await callRpc<string>(
+    'SELECT create_bom_version($1::uuid, $2::uuid, $3::uuid) AS result',
+    [profile.company_id, input.source_bom_id, input.product_item_id],
+  )
 
   return NextResponse.json(apiSuccess({ bom_id: data }), { status: 201 })
 })

@@ -115,7 +115,7 @@ export default function ReferenceCodesContent() {
           onValueChange={(v) => setFilters((prev) => ({ ...prev, codeType: !v || v === 'all' ? undefined : v, page: 1 }))}
           items={{
             all: '전체 타입',
-            ...(types ?? []).reduce((acc, t) => ({ ...acc, [t]: t }), {} as Record<string, string>),
+            ...(types ?? []).reduce((acc: any, t: any) => ({ ...acc, [t]: t }), {} as Record<string, string>),
           }}
         >
           <SelectTrigger className="w-[180px] h-9">
@@ -123,7 +123,7 @@ export default function ReferenceCodesContent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">전체 타입</SelectItem>
-            {(types ?? []).map((t) => (
+            {(types ?? []).map((t: any) => (
               <SelectItem key={t} value={t}>{t}</SelectItem>
             ))}
           </SelectContent>

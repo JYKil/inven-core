@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { withApiHandler } from '@/lib/api/handler'
-import { getAuthenticatedUser } from '@/lib/api/auth'
-import { apiSuccess, mapSupabaseError } from '@/lib/api/error'
+import { apiSuccess } from '@/lib/api/error'
+import { getSessionProfile } from '@/lib/api/session'
+import { callRpc } from '@/lib/db/rpc'
 
 export const POST = withApiHandler(async (request: Request) => {
-  const supabase = await createServerSupabaseClient()
-  const { profile } = await getAuthenticatedUser(supabase)
+  const profile = await getSessionProfile()
 
   // URL에서 id 추출
   const url = new URL(request.url)
@@ -17,13 +16,10 @@ export const POST = withApiHandler(async (request: Request) => {
   const body = await request.json().catch(() => ({}))
   const reason = body.reason || null
 
-  const { data, error } = await supabase.rpc('cancel_goods_receipt' as never, {
-    p_goods_receipt_id: goodsReceiptId,
-    p_company_id: profile.company_id,
-    p_reason: reason,
-  } as never)
-
-  if (error) throw mapSupabaseError(error)
+  const data = await callRpc(
+    'SELECT cancel_goods_receipt($1::uuid, $2::uuid, $3::text) AS result',
+    [goodsReceiptId, profile.company_id, reason],
+  )
 
   return NextResponse.json(apiSuccess(data), { status: 200 })
 })

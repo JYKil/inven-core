@@ -36,7 +36,7 @@ export default function NewBomPage() {
   const { data: productResults } = useItemSearch(productSearch)
   // 조립 유형 품목만 필터
   const assemblyItems = useMemo(
-    () => (productResults ?? []).filter((i) => i.item_type === 'assembly'),
+    () => (productResults ?? []).filter((i: any) => i.item_type === 'assembly'),
     [productResults],
   )
 
@@ -86,7 +86,7 @@ export default function NewBomPage() {
     const num = parseFloat(value)
     const invalid = isNaN(num) || num <= 0
     setQtyErrors((prev) => ({ ...prev, [materialId]: invalid }))
-    setLines((prev) => prev.map((l) => l.material_item_id === materialId ? { ...l, quantity: invalid ? 0 : num } : l))
+    setLines((prev) => prev.map((l: any) => l.material_item_id === materialId ? { ...l, quantity: invalid ? 0 : num } : l))
   }
 
   const hasQtyError = Object.values(qtyErrors).some(Boolean) || lines.some((l) => l.quantity <= 0)
@@ -157,7 +157,7 @@ export default function NewBomPage() {
                 </div>
                 {productSearch && assemblyItems.length > 0 && (
                   <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-md shadow-md max-h-48 overflow-auto">
-                    {assemblyItems.map((item) => (
+                    {assemblyItems.map((item: any) => (
                       <button
                         key={item.id}
                         type="button"
@@ -204,7 +204,7 @@ export default function NewBomPage() {
                 </div>
                 {materialSearch && materialResults && materialResults.length > 0 && (
                   <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-md shadow-md max-h-48 overflow-auto">
-                    {materialResults.map((mat) => (
+                    {materialResults.map((mat: any) => (
                       <button
                         key={mat.id}
                         type="button"
@@ -233,7 +233,7 @@ export default function NewBomPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {lines.map((line) => (
+                      {lines.map((line: any) => (
                         <TableRow key={line.material_item_id}>
                           <TableCell className="font-data">{line.code}</TableCell>
                           <TableCell>{line.name}</TableCell>

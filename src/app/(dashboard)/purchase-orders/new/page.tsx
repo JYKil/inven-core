@@ -133,7 +133,7 @@ export default function NewPurchaseOrderPage() {
         order_date: data.order_date,
         expected_date: data.expected_date || undefined,
         notes: data.notes || undefined,
-        lines: data.lines.map((l) => ({
+        lines: data.lines.map((l: any) => ({
           line_type: l.line_type,
           item_id: l.line_type === 'inventory' ? l.item_id : undefined,
           description: l.line_type === 'expense' ? l.description : undefined,
@@ -209,7 +209,7 @@ export default function NewPurchaseOrderPage() {
                 />
                 {itemSearch && itemResults && itemResults.length > 0 && (
                   <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-md shadow-md max-h-48 overflow-auto">
-                    {itemResults.map((item) => (
+                    {itemResults.map((item: any) => (
                       <button
                         key={item.id}
                         type="button"

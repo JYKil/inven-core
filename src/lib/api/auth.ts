@@ -1,8 +1,7 @@
 // 인증 / 세션 헬퍼
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { ApiError } from './error'
 
-export async function getAuthenticatedUser(supabase: SupabaseClient) {
+export async function getAuthenticatedUser(supabase: any) {
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) throw new ApiError(401, '인증이 필요합니다', 'UNAUTHORIZED')
 

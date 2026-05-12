@@ -259,7 +259,7 @@ function BomTab({ itemId }: { itemId: string }) {
     try {
       await createBom.mutateAsync({
         product_item_id: itemId,
-        lines: newLines.map((l) => ({
+        lines: newLines.map((l: any) => ({
           material_item_id: l.material_item_id,
           quantity: l.quantity,
           sort_order: 0,
@@ -299,7 +299,7 @@ function BomTab({ itemId }: { itemId: string }) {
               />
               {materialSearch && searchResults && searchResults.length > 0 && (
                 <div className="absolute z-10 top-full mt-1 w-full bg-popover border border-border rounded-md shadow-md max-h-48 overflow-auto">
-                  {searchResults.map((mat) => (
+                  {searchResults.map((mat: any) => (
                     <button
                       key={mat.id}
                       type="button"

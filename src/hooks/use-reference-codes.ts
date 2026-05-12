@@ -53,7 +53,7 @@ export function useReferenceCodeTypes() {
       // DB에서 DISTINCT 처리 (1000행 제한 회피)
       const { data, error } = await supabase.rpc('get_reference_code_types')
       if (error) throw error
-      return (data ?? []).map((r) => r.code_type)
+      return (data ?? []).map((r: any) => r.code_type)
     },
   })
 }

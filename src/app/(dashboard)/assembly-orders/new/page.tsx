@@ -108,7 +108,7 @@ function NewAssemblyContent() {
   const estimatedTotalCost = availabilityData?.estimatedTotalCost ?? 0
   const estimatedUnitCost = availabilityData?.estimatedUnitCost ?? 0
 
-  const allAvailable = availability?.every((m) => m.isAvailable) ?? false
+  const allAvailable = availability?.every((m: any) => m.isAvailable) ?? false
   const canExecute = allAvailable && !!selectedBomId && !!watchWarehouseId && watchQuantity > 0
 
   // 품목 선택 시
@@ -262,7 +262,7 @@ function NewAssemblyContent() {
                           </TableRow>
                         ))
                       ) : (
-                        availability?.map((m) => (
+                        availability?.map((m: any) => (
                           <TableRow
                             key={m.materialItemId}
                             className={m.isAvailable ? '' : 'bg-destructive/5'}
