@@ -1,6 +1,33 @@
 # inven-core 마이그레이션 체크리스트
 > Vercel + Supabase → 리눅스 미니PC (PostgreSQL + Better Auth 이메일/비밀번호)
 
+> 업데이트: 2026-05-12 코드 기준 현황 반영
+
+---
+
+## 현재 상태 요약
+
+| 영역 | 상태 | 메모 |
+|------|------|------|
+| **DB 인프라** | 완료 | 미니PC PostgreSQL 접속 정보는 `.env.local`에 반영됨 |
+| **Better Auth 기본 배선** | 진행 중 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
+| **Supabase Auth 제거** | 미완료 | 로그인/회원가입/승인 대기/온보딩/대시보드 레이아웃 등에서 Supabase Auth 호출 잔존 |
+| **Google OAuth 제거** | 미완료 | `src/app/(auth)/login/page.tsx`, `src/app/(auth)/signup/page.tsx`에 Google 버튼 및 OAuth 호출 잔존 |
+| **Supabase Query 제거** | 미완료 | `src/hooks/*`, `src/app/api/*`, layout/settings/admin 화면에 Supabase client/RPC 호출 잔존 |
+| **Drizzle 도입** | 미시작 | `package.json`에 Drizzle 의존성/설정 파일 없음 |
+| **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
+
+## 다음 우선순위
+
+```
+1. 로그인/회원가입/로그아웃/세션 조회를 Better Auth 클라이언트로 완전 전환
+2. Google OAuth 버튼과 `/auth/callback` Supabase 콜백 제거
+3. pending/onboarding/dashboard/admin 레이아웃의 Supabase Auth 의존 제거
+4. Drizzle 패키지와 schema/index/config 추가
+5. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
+6. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+```
+
 ---
 
 ## 변경 범위 요약
@@ -88,9 +115,12 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 **Better Auth 선택 (Next.js 15 + TypeScript에 최적)**
 
 ```
-[x] 패키지 교체
-    npm install better-auth pg @types/pg
-    npm uninstall @supabase/supabase-js @supabase/ssr (Phase 4에서 제거 예정)
+[x] Better Auth 패키지 추가
+    better-auth, pg, @types/pg 설치 확인
+
+[ ] Supabase Auth 패키지/코드 제거
+    - package.json에는 @supabase/* 의존성이 없지만 코드 import는 잔존
+    - src/lib/supabase/*, src/types/database.ts 제거는 Phase 4/5 이후 진행
 
 [x] better-auth DB 스키마 마이그레이션 실행
     node scripts/migrate-better-auth.mjs
@@ -120,6 +150,11 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - 역할 (super_admin / company_admin / normal) 이전
 
 [ ] 로그인/회원가입 페이지에서 Google OAuth 버튼 제거
+[ ] 로그인 페이지를 authClient.signIn.email 기반으로 교체
+[ ] 회원가입 페이지를 authClient.signUp.email 기반으로 교체
+[ ] 로그아웃 버튼을 authClient.signOut 기반으로 교체
+[ ] `/auth/callback` Supabase OAuth 콜백 라우트 제거
+[ ] pending/onboarding 페이지의 Supabase 세션 확인 로직 제거
 [ ] 관리자 승인 플로우 동작 확인
 ```
 
@@ -133,6 +168,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [ ] 패키지 설치
     npm install drizzle-orm pg
     npm install -D drizzle-kit @types/pg
+    → 현재 package.json 기준 drizzle-orm/drizzle-kit 없음
 
 [ ] drizzle.config.ts 생성
 
@@ -147,13 +183,20 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - 변경: 모든 쿼리에 .where(eq(table.companyId, session.companyId)) 추가
     - ⚠️ 누락 시 타사 데이터 노출 위험 — 전수 검토 필수
 
-[ ] src/app/api/ 의 65개 엔드포인트 순차 교체
+[ ] src/app/api/ 의 서버 엔드포인트 순차 교체
     - supabase.from('table').select() → db.select().from(table)
     - supabase.rpc('function') → 직접 SQL 또는 Drizzle 쿼리
     - 우선순위: 핵심 기능(입고/출고/재고) → 보조 기능(보고서/설정) 순
+    - 현재 코드 기준 `src/app/api` 파일 16개 중 Better Auth 라우트 1개 제외, 15개가 Supabase 의존
 
 [ ] FIFO 로트 추적 RPC 함수 (취소 4종 포함) 재작성
     - supabase/ 폴더의 기존 마이그레이션 SQL 재활용 가능
+
+[ ] 클라이언트 hooks의 Supabase 호출 제거
+    - use-items, use-warehouses, use-vendors, use-customers
+    - use-purchase-orders, use-goods-receipts, use-sales-orders
+    - use-assembly-orders, use-warehouse-transfers, use-inventory
+    - use-bom, use-dashboard, use-reports, use-reference-codes, use-po-payments
 ```
 
 ---
@@ -162,6 +205,12 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 
 ```
 [ ] src/types/ 의 Supabase 자동생성 타입 파일 제거
+    - src/types/database.ts
+    - src/lib/supabase/database.types.ts
+
+[ ] src/lib/supabase/* 제거
+    - admin.ts, client.ts, middleware.ts, server.ts
+
 [ ] Drizzle InferSelectModel / InferInsertModel 으로 타입 재생성
 [ ] TypeScript 빌드 에러 전체 해소
     npx tsc --noEmit
@@ -174,6 +223,8 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 ```
 [ ] Dockerfile 작성 (Next.js standalone 빌드)
 [ ] docker-compose.yml 에 app + postgres 묶기
+    - 현재 repo 루트에 Dockerfile/docker-compose.yml 없음
+
 [ ] .env.production 작성
 [ ] docker compose up -d 로 전체 기동
 [ ] Nginx 리버스 프록시 설정 (3000 → 80/443)
