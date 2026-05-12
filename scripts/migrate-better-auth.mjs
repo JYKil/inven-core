@@ -2,11 +2,39 @@
 // 실행: node scripts/migrate-better-auth.mjs
 
 import { betterAuth } from 'better-auth'
+import { existsSync } from 'node:fs'
 import { Pool } from 'pg'
 
-process.env.DATABASE_URL = 'postgresql://inven:2401@192.168.75.205:5432/inven_db'
-process.env.BETTER_AUTH_SECRET = '331baaf4c2f0735da81fc12ed9fb6ad4dde58bff9ae60e62e882919a948ffa74'
-process.env.BETTER_AUTH_URL = 'http://localhost:3000'
+async function loadLocalEnv() {
+  if (!existsSync('.env.local')) return
+
+  const { readFile } = await import('node:fs/promises')
+  const content = await readFile('.env.local', 'utf8')
+
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+
+    const separatorIndex = trimmed.indexOf('=')
+    if (separatorIndex === -1) continue
+
+    const key = trimmed.slice(0, separatorIndex)
+    const value = trimmed.slice(separatorIndex + 1)
+    process.env[key] ??= value
+  }
+}
+
+await loadLocalEnv()
+
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL 환경변수가 필요합니다')
+  process.exit(1)
+}
+
+if (!process.env.BETTER_AUTH_SECRET) {
+  console.error('BETTER_AUTH_SECRET 환경변수가 필요합니다')
+  process.exit(1)
+}
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 

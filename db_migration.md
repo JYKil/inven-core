@@ -11,21 +11,21 @@
 |------|------|------|
 | **DB 인프라** | 완료 | 미니PC PostgreSQL 접속 정보는 `.env.local`에 반영됨 |
 | **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
-| **Supabase Auth 제거** | 진행 중 | 인증 화면/레이아웃/승인 대기/온보딩은 전환 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 필요 |
+| **Supabase Auth 제거** | Phase 3 완료 | 인증 화면/레이아웃/승인 대기/온보딩/기존 사용자 이전 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 |
 | **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
 | **Supabase Query 제거** | 미완료 | `src/hooks/*`, 거래/마스터 API, settings 화면에 Supabase client/RPC 호출 잔존 |
 | **Drizzle 도입** | 미시작 | `package.json`에 Drizzle 의존성/설정 파일 없음 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 부분 통과 | Phase 3 변경 파일 기준 타입 오류 없음, 전체 `tsc`는 Phase 4/5 잔여 Supabase 코드로 실패 |
+| **검증 상태** | 부분 통과 | Phase 3 변경 파일 기준 검증 통과, 전체 `tsc`는 Phase 4/5 잔여 Supabase 코드로 실패 |
 
 ## 다음 우선순위
 
 ```
-1. 기존 Supabase Auth users 데이터 이전 전략 확정 및 실행
-2. Drizzle 패키지와 schema/index/config 추가
-3. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
-4. hooks/settings의 Supabase 세션 조회 제거
-5. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+1. Drizzle 패키지와 schema/index/config 추가
+2. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
+3. hooks/settings의 Supabase 세션 조회 제거
+4. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+5. Dockerfile/docker-compose 배포 파일 작성
 ```
 
 ## 2026-05-12 Phase 3 작업 결과
@@ -44,6 +44,9 @@
 [x] 기존 profiles 기반 Better Auth 사용자 이전 스크립트 추가
     - `scripts/migrate-auth-users-from-profiles.mjs`
 [x] Better Auth user/account ID를 UUID로 생성하도록 설정
+[x] 기존 profiles 사용자 3명을 Better Auth user/account로 실제 이전
+[x] 임시 비밀번호 CSV 생성
+    - `better-auth-temporary-passwords.csv` (`0600`, `.gitignore` 등록)
 ```
 
 ### 추가/변경된 주요 파일
@@ -76,6 +79,12 @@ node --check scripts/migrate-better-auth.mjs
 
 ```
 [x] 신규/수정 migration script 문법 확인
+[x] 기존 profiles 사용자 이전 실행 확인
+    node scripts/migrate-auth-users-from-profiles.mjs
+    → 이전 완료: 3명
+[x] 이전 후 dry-run 재확인
+    node scripts/migrate-auth-users-from-profiles.mjs --dry-run
+    → 이전 대상: 0명, 이미 이전됨: 3명
 [x] 인증 화면/레이아웃/API 범위에서 Supabase Auth 호출 제거 확인
     rg "createClient\(|supabase\.auth|signInWithOAuth|auth/callback|refreshSession|createServerSupabaseClient" \
       src/app/(auth) src/app/(dashboard)/layout.tsx src/app/(dashboard)/admin/layout.tsx \
@@ -176,9 +185,9 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] Better Auth 패키지 추가
     better-auth, pg, @types/pg 설치 확인
 
-[ ] Supabase Auth 패키지/코드 제거
-    - package.json에는 @supabase/* 의존성이 없지만 코드 import는 잔존
-    - src/lib/supabase/*, src/types/database.ts 제거는 Phase 4/5 이후 진행
+[x] Supabase Auth 화면/라우팅/레이아웃 코드 제거
+    - package.json에는 @supabase/* 의존성 없음
+    - src/lib/supabase/*, src/types/database.ts 제거는 Phase 4/5 쿼리 교체 이후 진행
 
 [x] better-auth DB 스키마 마이그레이션 실행
     node scripts/migrate-better-auth.mjs
@@ -202,12 +211,13 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - supabaseMiddleware → better-auth session 체크로 교체
     - 미승인 유저 리다이렉트 로직 유지
 
-[ ] 기존 Supabase Auth users 데이터 이전
+[x] 기존 Supabase Auth users 데이터 이전
     - Google OAuth 유저는 임시 비밀번호 발급 or 재가입 안내
     - 관리자 승인 status 필드 이전
     - 역할 (super_admin / company_admin / normal) 이전
-    - `scripts/migrate-auth-users-from-profiles.mjs` 추가 완료
-    - 실제 실행 전 임시 비밀번호 전달/공지 방식 확정 필요
+    - `scripts/migrate-auth-users-from-profiles.mjs` 추가 및 실행 완료
+    - 이전 완료: 3명
+    - `better-auth-temporary-passwords.csv` 생성 완료
 
 [x] 로그인/회원가입 페이지에서 Google OAuth 버튼 제거
 [x] 로그인 페이지를 authClient.signIn.email 기반으로 교체
