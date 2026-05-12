@@ -11,6 +11,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  advanced: {
+    database: {
+      generateId: 'uuid',
+    },
+  },
   user: {
     additionalFields: {
       // 역할: pending(승인 대기) → normal / company_admin / super_admin

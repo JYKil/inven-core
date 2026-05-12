@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { TopBar } from '@/components/layout/top-bar'
@@ -11,9 +12,10 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   // Defence in depth: 미들웨어 실패 시에도 인증 보장
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (!session) redirect('/login')
 
   // 사이드바 쿠키 읽어서 SSR/CSR 상태 일치 (hydration mismatch 방지)
   const cookieStore = await cookies()

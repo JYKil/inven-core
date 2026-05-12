@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/popover'
 import { User, LogOut, Sun, Moon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { createClient } from '@/lib/supabase/client'
+import { signOut } from '@/lib/auth-client'
 
 const roleLabels: Record<string, string> = {
   super_admin: '최고 관리자',
@@ -23,7 +23,6 @@ const roleLabels: Record<string, string> = {
 export function TopBar() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const supabase = createClient()
 
   const { theme, setTheme } = useTheme()
   const { state, isMobile } = useSidebar()
@@ -33,19 +32,16 @@ export function TopBar() {
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const res = await fetch('/api/auth/me')
+      if (res.status === 401) return null
+      if (!res.ok) throw new Error('프로필을 불러오지 못했습니다')
+      const { user } = await res.json()
       if (!user) return null
-      const { data } = await supabase
-        .from('profiles')
-        .select('display_name, email, role, company_id')
-        .eq('id', user.id)
-        .single()
-      if (!data) return null
       return {
-        displayName: data.display_name || data.email,
-        email: data.email,
-        role: data.role,
-        company_id: data.company_id,
+        displayName: user.name || user.email,
+        email: user.email,
+        role: user.role,
+        company_id: user.companyId,
       }
     },
     staleTime: 5 * 60 * 1000, // 5분 캐시
@@ -53,7 +49,7 @@ export function TopBar() {
 
   const handleLogout = async () => {
     queryClient.clear() // 캐시 초기화 — 다음 로그인 시 이전 사용자 데이터 방지
-    await supabase.auth.signOut()
+    await signOut()
     router.push('/login')
   }
 

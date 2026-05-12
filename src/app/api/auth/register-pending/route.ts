@@ -1,16 +1,19 @@
 // 회원가입 후 pending 프로필 생성 + super_admin 알림 메일 발송
+import { auth } from '@/lib/auth'
+import { authDbPool } from '@/lib/db/auth-admin'
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { createAdminSupabaseClient } from '@/lib/supabase/admin'
+import { headers } from 'next/headers'
 import { sendNewUserNotification } from '@/lib/email/resend'
 
 export async function POST() {
   try {
     // 현재 로그인된 사용자 확인
-    const supabase = await createServerSupabaseClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+    const user = session?.user
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
         { error: '인증이 필요합니다' },
         { status: 401 }
@@ -18,55 +21,75 @@ export async function POST() {
     }
 
     // 이미 프로필이 있는지 확인
-    const adminClient = createAdminSupabaseClient()
-    const { data: existing } = await adminClient
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle()
+    const existing = await authDbPool.query<{ role: string; company_id: string | null }>(
+      'SELECT role, company_id::text FROM profiles WHERE id = $1::uuid',
+      [user.id],
+    )
 
-    if (existing) {
+    if (existing.rowCount && existing.rows[0]) {
+      const profile = existing.rows[0]
+      await authDbPool.query(
+        `
+          UPDATE "user"
+          SET role = $2, "companyId" = $3, "updatedAt" = now()
+          WHERE id = $1
+        `,
+        [user.id, profile.role, profile.company_id],
+      )
+      return NextResponse.json({ success: true, role: profile.role })
+    }
+
+    const displayName = user.name || user.email?.split('@')[0] || ''
+    const email = user.email
+    if (!email) {
       return NextResponse.json(
-        { error: '이미 등록된 사용자입니다' },
-        { status: 409 }
+        { error: '이메일 정보가 없습니다' },
+        { status: 400 },
       )
     }
 
-    const displayName = user.user_metadata?.display_name
-      || user.email?.split('@')[0]
-      || ''
-    const email = user.email ?? ''
-
     // 첫 번째 사용자 → super_admin으로 자동 승격
-    const { count } = await adminClient
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-    const isFirstUser = (count ?? 0) === 0
+    const { rows: [{ count }] } = await authDbPool.query<{ count: string }>(
+      'SELECT COUNT(*)::int AS count FROM profiles',
+    )
+    const isFirstUser = Number(count) === 0
     const role = isFirstUser ? 'super_admin' : 'pending'
+    const companyId = null
 
-    const { error: insertError } = await adminClient
-      .from('profiles')
-      .insert({
-        id: user.id,
-        company_id: null,
-        role,
-        display_name: displayName,
-        email,
-      })
-
-    if (insertError) {
-      // PK 중복 (동시 요청) → 이미 등록된 것으로 처리
-      if (insertError.code === '23505') {
+    const client = await authDbPool.connect()
+    try {
+      await client.query('BEGIN')
+      await client.query(
+        `
+          INSERT INTO profiles (id, company_id, role, display_name, email)
+          VALUES ($1::uuid, $2::uuid, $3, $4, $5)
+        `,
+        [user.id, companyId, role, displayName, email],
+      )
+      await client.query(
+        `
+          UPDATE "user"
+          SET role = $2, "companyId" = $3, "updatedAt" = now()
+          WHERE id = $1
+        `,
+        [user.id, role, companyId],
+      )
+      await client.query('COMMIT')
+    } catch (error) {
+      await client.query('ROLLBACK')
+      if ((error as { code?: string }).code === '23505') {
         return NextResponse.json(
           { error: '이미 등록된 사용자입니다' },
-          { status: 409 }
+          { status: 409 },
         )
       }
-      console.error('[register-pending] 프로필 생성 실패:', insertError)
+      console.error('[register-pending] 프로필 생성 실패:', error)
       return NextResponse.json(
         { error: '프로필 생성에 실패했습니다' },
-        { status: 500 }
+        { status: 500 },
       )
+    } finally {
+      client.release()
     }
 
     // 첫 번째 사용자(super_admin)는 알림 불필요

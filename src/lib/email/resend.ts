@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { createAdminSupabaseClient } from '@/lib/supabase/admin'
+import { authDbPool } from '@/lib/db/auth-admin'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -10,14 +10,14 @@ function escapeHtml(str: string): string {
 
 // super_admin 이메일 조회
 async function getSuperAdminEmails(): Promise<string[]> {
-  const admin = createAdminSupabaseClient()
-  const { data } = await admin
-    .from('profiles')
-    .select('email')
-    .eq('role', 'super_admin')
-    .eq('is_active', true)
+  const { rows } = await authDbPool.query<{ email: string }>(`
+    SELECT email
+    FROM profiles
+    WHERE role = 'super_admin'
+      AND is_active = true
+  `)
 
-  return data?.map((p) => p.email) ?? []
+  return rows.map((p) => p.email)
 }
 
 // 새 가입자 알림 메일을 super_admin에게 발송

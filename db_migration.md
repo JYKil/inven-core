@@ -10,22 +10,80 @@
 | 영역 | 상태 | 메모 |
 |------|------|------|
 | **DB 인프라** | 완료 | 미니PC PostgreSQL 접속 정보는 `.env.local`에 반영됨 |
-| **Better Auth 기본 배선** | 진행 중 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
-| **Supabase Auth 제거** | 미완료 | 로그인/회원가입/승인 대기/온보딩/대시보드 레이아웃 등에서 Supabase Auth 호출 잔존 |
-| **Google OAuth 제거** | 미완료 | `src/app/(auth)/login/page.tsx`, `src/app/(auth)/signup/page.tsx`에 Google 버튼 및 OAuth 호출 잔존 |
-| **Supabase Query 제거** | 미완료 | `src/hooks/*`, `src/app/api/*`, layout/settings/admin 화면에 Supabase client/RPC 호출 잔존 |
+| **Better Auth 기본 배선** | 완료 | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/app/api/auth/[...all]/route.ts`, `src/proxy.ts` 생성/교체 완료 |
+| **Supabase Auth 제거** | 진행 중 | 인증 화면/레이아웃/승인 대기/온보딩은 전환 완료, hooks/settings의 Supabase 세션 조회는 Phase 4 쿼리 교체와 함께 제거 필요 |
+| **Google OAuth 제거** | 완료 | Google 버튼 및 `/auth/callback` Supabase 콜백 제거 완료 |
+| **Supabase Query 제거** | 미완료 | `src/hooks/*`, 거래/마스터 API, settings 화면에 Supabase client/RPC 호출 잔존 |
 | **Drizzle 도입** | 미시작 | `package.json`에 Drizzle 의존성/설정 파일 없음 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
+| **검증 상태** | 부분 통과 | Phase 3 변경 파일 기준 타입 오류 없음, 전체 `tsc`는 Phase 4/5 잔여 Supabase 코드로 실패 |
 
 ## 다음 우선순위
 
 ```
-1. 로그인/회원가입/로그아웃/세션 조회를 Better Auth 클라이언트로 완전 전환
-2. Google OAuth 버튼과 `/auth/callback` Supabase 콜백 제거
-3. pending/onboarding/dashboard/admin 레이아웃의 Supabase Auth 의존 제거
-4. Drizzle 패키지와 schema/index/config 추가
-5. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
-6. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+1. 기존 Supabase Auth users 데이터 이전 전략 확정 및 실행
+2. Drizzle 패키지와 schema/index/config 추가
+3. 서버 API 15개 + 클라이언트 hooks 전수 쿼리 교체
+4. hooks/settings의 Supabase 세션 조회 제거
+5. Supabase 패키지/타입/헬퍼 제거 후 TypeScript 빌드 확인
+```
+
+## 2026-05-12 Phase 3 작업 결과
+
+```
+[x] 이메일/비밀번호 로그인/회원가입을 Better Auth 클라이언트로 전환
+[x] Google OAuth 버튼 제거
+[x] `/auth/callback` Supabase OAuth 콜백 라우트 삭제
+[x] pending/onboarding/dashboard/admin layout의 Supabase Auth 세션 조회 제거
+[x] 로그아웃을 Better Auth signOut으로 전환
+[x] 관리자 승인/역할 변경 API 추가
+    - `/api/admin/users`
+    - profiles와 Better Auth user.role/user.companyId 동시 갱신
+[x] 현재 세션 조회 API 추가
+    - `/api/auth/me`
+[x] 기존 profiles 기반 Better Auth 사용자 이전 스크립트 추가
+    - `scripts/migrate-auth-users-from-profiles.mjs`
+[x] Better Auth user/account ID를 UUID로 생성하도록 설정
+```
+
+### 추가/변경된 주요 파일
+
+```
+src/app/(auth)/login/page.tsx
+src/app/(auth)/signup/page.tsx
+src/app/(auth)/pending/page.tsx
+src/app/(auth)/onboarding/page.tsx
+src/app/(dashboard)/layout.tsx
+src/app/(dashboard)/admin/layout.tsx
+src/app/(dashboard)/admin/users/page.tsx
+src/app/api/auth/me/route.ts
+src/app/api/auth/register-pending/route.ts
+src/app/api/admin/users/route.ts
+src/components/layout/top-bar.tsx
+src/components/layout/app-sidebar.tsx
+src/lib/auth.ts
+src/lib/db/auth-admin.ts
+src/lib/email/resend.ts
+scripts/migrate-auth-users-from-profiles.mjs
+```
+
+### 검증 메모
+
+```bash
+node --check scripts/migrate-auth-users-from-profiles.mjs
+node --check scripts/migrate-better-auth.mjs
+```
+
+```
+[x] 신규/수정 migration script 문법 확인
+[x] 인증 화면/레이아웃/API 범위에서 Supabase Auth 호출 제거 확인
+    rg "createClient\(|supabase\.auth|signInWithOAuth|auth/callback|refreshSession|createServerSupabaseClient" \
+      src/app/(auth) src/app/(dashboard)/layout.tsx src/app/(dashboard)/admin/layout.tsx \
+      src/components/layout src/app/api/auth src/proxy.ts src/lib/email/resend.ts
+    → 결과 없음
+[ ] 전체 TypeScript 빌드
+    npx tsc --noEmit
+    → 실패: Phase 4/5 잔여 Supabase helper import 및 기존 hooks 타입 오류
 ```
 
 ---
@@ -148,14 +206,19 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - Google OAuth 유저는 임시 비밀번호 발급 or 재가입 안내
     - 관리자 승인 status 필드 이전
     - 역할 (super_admin / company_admin / normal) 이전
+    - `scripts/migrate-auth-users-from-profiles.mjs` 추가 완료
+    - 실제 실행 전 임시 비밀번호 전달/공지 방식 확정 필요
 
-[ ] 로그인/회원가입 페이지에서 Google OAuth 버튼 제거
-[ ] 로그인 페이지를 authClient.signIn.email 기반으로 교체
-[ ] 회원가입 페이지를 authClient.signUp.email 기반으로 교체
-[ ] 로그아웃 버튼을 authClient.signOut 기반으로 교체
-[ ] `/auth/callback` Supabase OAuth 콜백 라우트 제거
-[ ] pending/onboarding 페이지의 Supabase 세션 확인 로직 제거
-[ ] 관리자 승인 플로우 동작 확인
+[x] 로그인/회원가입 페이지에서 Google OAuth 버튼 제거
+[x] 로그인 페이지를 authClient.signIn.email 기반으로 교체
+[x] 회원가입 페이지를 authClient.signUp.email 기반으로 교체
+[x] 로그아웃 버튼을 authClient.signOut 기반으로 교체
+    - TopBar / pending / onboarding 로그아웃 전환
+[x] `/auth/callback` Supabase OAuth 콜백 라우트 제거
+[x] pending/onboarding 페이지의 Supabase 세션 확인 로직 제거
+[x] 관리자 승인 플로우 동작 확인
+    - `/api/admin/users` 추가: 승인/역할 변경 시 기존 profiles와 Better Auth `user.role`, `user.companyId` 동시 갱신
+    - 대시보드/admin 레이아웃 권한 체크를 Better Auth 세션 기반으로 전환
 ```
 
 ---

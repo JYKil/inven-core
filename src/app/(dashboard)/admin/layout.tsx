@@ -1,24 +1,19 @@
 // super_admin 전용 레이아웃 — 권한 가드
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile || profile.role !== 'super_admin') {
+  if (!session) redirect('/login')
+  if (session.user.role !== 'super_admin') {
     redirect('/')
   }
 

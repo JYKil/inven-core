@@ -26,7 +26,6 @@ import {
   Layers,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
 import {
   Sidebar,
   SidebarContent,
@@ -125,24 +124,20 @@ function SidebarCollapseButton() {
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const supabase = createClient()
 
   const { data: profile } = useQuery({
     queryKey: ['profile', 'me'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const res = await fetch('/api/auth/me')
+      if (res.status === 401) return null
+      if (!res.ok) throw new Error('프로필을 불러오지 못했습니다')
+      const { user } = await res.json()
       if (!user) return null
-      const { data } = await supabase
-        .from('profiles')
-        .select('display_name, email, role, company_id')
-        .eq('id', user.id)
-        .single()
-      if (!data) return null
       return {
-        displayName: data.display_name || data.email,
-        email: data.email,
-        role: data.role,
-        company_id: data.company_id,
+        displayName: user.name || user.email,
+        email: user.email,
+        role: user.role,
+        company_id: user.companyId,
       }
     },
     staleTime: 5 * 60 * 1000, // 5분 캐시

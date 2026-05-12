@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -60,7 +59,6 @@ const roleBadgeStyles: Record<string, string> = {
 }
 
 export default function AdminUsersPage() {
-  const supabase = createClient()
   const qc = useQueryClient()
   const [search, setSearch] = useState('')
   const [filterPending, setFilterPending] = useState(false)
@@ -74,25 +72,20 @@ export default function AdminUsersPage() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['admin', 'users'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*, companies(id, name)')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return data as Profile[]
+      const res = await fetch('/api/admin/users')
+      if (!res.ok) throw new Error('사용자 목록을 불러오지 못했습니다')
+      const data = await res.json()
+      return data.users as Profile[]
     },
   })
 
   const { data: companies = [] } = useQuery({
     queryKey: ['admin', 'companies-list'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('companies')
-        .select('id, name')
-        .eq('is_active', true)
-        .order('name')
-      if (error) throw error
-      return data as Company[]
+      const res = await fetch('/api/admin/users')
+      if (!res.ok) throw new Error('회사 목록을 불러오지 못했습니다')
+      const data = await res.json()
+      return data.companies as Company[]
     },
   })
 
@@ -100,20 +93,19 @@ export default function AdminUsersPage() {
     mutationFn: async () => {
       if (!editingUser) return
 
-      const updates: Record<string, unknown> = { role: editRole }
-
-      // super_admin은 company_id NULL, 나머지는 필수
-      if (editRole === 'super_admin') {
-        updates.company_id = null
-      } else {
-        updates.company_id = editCompanyId
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingUser.id,
+          role: editRole,
+          companyId: editRole === 'super_admin' ? null : editCompanyId,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || '사용자 저장에 실패했습니다')
       }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', editingUser.id)
-      if (error) throw error
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'users'] })
@@ -124,11 +116,19 @@ export default function AdminUsersPage() {
 
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_active: !isActive })
-        .eq('id', id)
-      if (error) throw error
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'active',
+          id,
+          isActive: !isActive,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || '상태 변경에 실패했습니다')
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'users'] })

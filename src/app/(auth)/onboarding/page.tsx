@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signOut } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [error, setError] = useState<string | null>(null)
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await signOut()
     router.replace('/login')
   }
 
@@ -34,9 +33,7 @@ export default function OnboardingPage() {
 
         const data = await res.json()
 
-        // 첫 번째 사용자(super_admin) → JWT 갱신 후 대시보드로
         if (data.role === 'super_admin') {
-          await supabase.auth.refreshSession()
           router.replace('/')
           router.refresh()
           return
@@ -49,7 +46,7 @@ export default function OnboardingPage() {
     }
 
     registerPending()
-  }, [router, supabase.auth])
+  }, [router])
 
   if (error) {
     return (

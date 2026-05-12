@@ -2,36 +2,27 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signOut } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Clock } from 'lucide-react'
 
 export default function PendingPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [checking, setChecking] = useState(false)
 
-  // 승인 여부 확인 (JWT 갱신 후 role 체크)
   const handleCheckApproval = async () => {
     setChecking(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
+      const res = await fetch('/api/auth/me', { cache: 'no-store' })
+      if (res.status === 401) {
         router.replace('/login')
         return
       }
+      if (!res.ok) throw new Error('승인 상태를 확인하지 못했습니다')
 
-      // 프로필 role 확인
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+      const { user } = await res.json()
 
-      if (profile && profile.role !== 'pending') {
-        // 승인됨 → 대시보드로
-        await supabase.auth.refreshSession()
+      if (user.role !== 'pending') {
         router.replace('/')
         router.refresh()
       } else {
@@ -43,7 +34,7 @@ export default function PendingPage() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await signOut()
     router.replace('/login')
   }
 

@@ -3,7 +3,7 @@ import { splitSetCookieHeader } from 'better-auth/cookies'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // 인증 없이 접근 가능한 경로
-const publicPaths = ['/login', '/signup', '/auth/callback', '/api/auth']
+const publicPaths = ['/login', '/signup', '/api/auth']
 const authOnlyPaths = ['/pending']
 
 type AuthUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user']
