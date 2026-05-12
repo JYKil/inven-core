@@ -1,25 +1,25 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys } from '@/lib/queries/keys'
 
 // 재발주 필요 품목
 export function useReorderAlerts() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.dashboard.reorderAlerts(),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase.rpc('dashboard_reorder_alerts', {
+      const { data, error } = await dbClient.rpc('dashboard_reorder_alerts', {
         p_company_id: profile.company_id,
       })
       if (error) throw error
@@ -35,20 +35,20 @@ export function useReorderAlerts() {
 
 // 대시보드 요약
 export function useDashboardSummary() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.dashboard.summary(),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase.rpc('dashboard_summary', {
+      const { data, error } = await dbClient.rpc('dashboard_summary', {
         p_company_id: profile.company_id,
       })
       if (error) throw error

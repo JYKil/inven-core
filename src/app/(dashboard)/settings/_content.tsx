@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '@/components/common/page-header'
 import { Button } from '@/components/ui/button'
@@ -29,16 +29,16 @@ const costingMethodLabels: Record<string, string> = {
 }
 
 export default function SettingsContent() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
 
   // 현재 사용자의 프로필 (역할 + company_id)
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', 'me'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) return null
-      const { data } = await supabase
+      const { data } = await dbClient
         .from('profiles')
         .select('display_name, email, role, company_id')
         .eq('id', user.id)
@@ -61,7 +61,7 @@ export default function SettingsContent() {
     queryKey: ['settings', 'company', profile?.company_id],
     queryFn: async () => {
       if (!profile?.company_id) return null
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('companies')
         .select('*')
         .eq('id', profile.company_id)
@@ -91,7 +91,7 @@ export default function SettingsContent() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!company) return
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('companies')
         .update({
           name,

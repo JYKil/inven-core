@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { AssemblyOrderCreate } from '@/lib/validations/assembly'
 import { escapeFilterValue } from '@/lib/utils'
@@ -12,11 +12,11 @@ export type AssemblyFilters = ListFilters & {
 
 // 조립 지시 목록
 export function useAssemblyOrders(filters: AssemblyFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('assembly_orders')
         .select(`
           *,
@@ -46,11 +46,11 @@ export function useAssemblyOrders(filters: AssemblyFilters = {}) {
 
 // 조립 지시 상세
 export function useAssemblyOrder(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('assembly_orders')
         .select(`
           *,
@@ -77,12 +77,12 @@ export function useMaterialAvailability(
   warehouseId: string,
   quantity: number,
 ) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.materialAvailability(bomHeaderId, warehouseId, quantity),
     queryFn: async () => {
       // BOM 라인 조회
-      const { data: bomLines, error: bomErr } = await supabase
+      const { data: bomLines, error: bomErr } = await dbClient
         .from('bom_lines')
         .select(`
           material_item_id,
@@ -95,7 +95,7 @@ export function useMaterialAvailability(
 
       // 각 재료의 현재고 조회
       const materialIds = (bomLines ?? []).map((l: any) => l.material_item_id)
-      const { data: stockData, error: stockErr } = await supabase
+      const { data: stockData, error: stockErr } = await dbClient
         .from('inventory_summary')
         .select('item_id, total_qty')
         .eq('warehouse_id', warehouseId)
@@ -107,7 +107,7 @@ export function useMaterialAvailability(
       )
 
       // FIFO 순 로트 단가 조회 (예상 원가 미리보기용)
-      const { data: lotsData, error: lotsErr } = await supabase
+      const { data: lotsData, error: lotsErr } = await dbClient
         .from('inventory_lots')
         .select('item_id, remaining_qty, unit_cost')
         .eq('warehouse_id', warehouseId)
@@ -169,11 +169,11 @@ export function useMaterialAvailability(
 
 // 조립 가능 품목 (item_type='assembly' && 활성 BOM 있음)
 export function useAssemblyItems() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.assemblyOrders.items(),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('items')
         .select(`
           id, code, name, unit,
@@ -194,11 +194,11 @@ export function useAssemblyItems() {
 // 조립 실행 — API Route 호출
 // 조립 취소 — API Route 호출 (cancel_assembly RPC)
 export function useCancelAssembly() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch(`/api/assembly-orders/${id}/cancel`, {
@@ -223,11 +223,11 @@ export function useCancelAssembly() {
 }
 
 export function useExecuteAssembly() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: AssemblyOrderCreate) => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch('/api/assembly-orders', {

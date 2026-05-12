@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ApiError, extractErrorMessage, mapSupabaseError, apiSuccess, apiError } from '@/lib/api/error'
+import { ApiError, extractErrorMessage, mapPostgresError, apiSuccess, apiError } from '@/lib/api/error'
 
 describe('ApiError', () => {
   it('statusCode, message, code를 가진다', () => {
@@ -68,33 +68,33 @@ describe('extractErrorMessage', () => {
   })
 })
 
-describe('mapSupabaseError', () => {
+describe('mapPostgresError', () => {
   it('재고 부족 메시지 → INSUFFICIENT_STOCK', () => {
-    const result = mapSupabaseError({ message: '재고 부족: 사과 (필요 100, 가용 50)' })
+    const result = mapPostgresError({ message: '재고 부족: 사과 (필요 100, 가용 50)' })
     expect(result.statusCode).toBe(409)
     expect(result.code).toBe('INSUFFICIENT_STOCK')
   })
 
   it('23505 → DUPLICATE (409)', () => {
-    const result = mapSupabaseError({ code: '23505', message: 'unique violation' })
+    const result = mapPostgresError({ code: '23505', message: 'unique violation' })
     expect(result.statusCode).toBe(409)
     expect(result.code).toBe('DUPLICATE')
   })
 
   it('23503 → REFERENCE_ERROR (400)', () => {
-    const result = mapSupabaseError({ code: '23503', message: 'foreign key violation' })
+    const result = mapPostgresError({ code: '23503', message: 'foreign key violation' })
     expect(result.statusCode).toBe(400)
     expect(result.code).toBe('REFERENCE_ERROR')
   })
 
   it('23514 → VALIDATION_ERROR (400)', () => {
-    const result = mapSupabaseError({ code: '23514', message: 'check constraint' })
+    const result = mapPostgresError({ code: '23514', message: 'check constraint' })
     expect(result.statusCode).toBe(400)
     expect(result.code).toBe('VALIDATION_ERROR')
   })
 
   it('알 수 없는 에러 → INTERNAL_ERROR (500)', () => {
-    const result = mapSupabaseError({ message: 'something went wrong' })
+    const result = mapPostgresError({ message: 'something went wrong' })
     expect(result.statusCode).toBe(500)
     expect(result.code).toBe('INTERNAL_ERROR')
   })

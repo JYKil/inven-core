@@ -68,7 +68,7 @@ class QueryBuilder {
   }
 }
 
-export function createClient() {
+export function createDbClient() {
   return {
     auth: {
       async getUser() {

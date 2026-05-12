@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import { escapeFilterValue } from '@/lib/utils'
 
@@ -10,11 +10,11 @@ export type GrFilters = ListFilters & {
 }
 
 export function useGoodsReceipts(filters: GrFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('goods_receipts')
         .select(`
           *,
@@ -44,11 +44,11 @@ export function useGoodsReceipts(filters: GrFilters = {}) {
 
 // 입고 상세 (라인 포함)
 export function useGoodsReceipt(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('goods_receipts')
         .select(`
           *,
@@ -70,11 +70,11 @@ export function useGoodsReceipt(id: string) {
 
 // PO별 입고 이력
 export function useGoodsReceiptsByPo(poId: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.goodsReceipts.byPo(poId),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('goods_receipts')
         .select(`
           *,
@@ -95,11 +95,11 @@ export function useGoodsReceiptsByPo(poId: string) {
 
 // 입고 취소 — API Route 호출 (cancel_goods_receipt RPC)
 export function useCancelGoodsReceipt() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch(`/api/goods-receipts/${id}/cancel`, {
@@ -126,7 +126,7 @@ export function useCancelGoodsReceipt() {
 
 // 입고 실행 — API Route 호출 (복잡한 트랜잭션)
 export function useExecuteGoodsReceipt() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -138,7 +138,7 @@ export function useExecuteGoodsReceipt() {
       lines: { po_line_id?: string; item_id: string; quantity: number; unit_price: number }[]
     }) => {
       // API Route 대신 RPC 직접 호출
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch('/api/goods-receipts', {

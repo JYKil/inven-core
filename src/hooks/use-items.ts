@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -18,11 +18,11 @@ export type ItemFilters = ListFilters & {
 
 // 품목 + 현재고 조회
 export function useItems(filters: ItemFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.items.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('items')
         .select('*, inventory_summary(total_qty)', { count: 'exact' })
         .order('item_type')
@@ -50,11 +50,11 @@ export function useItems(filters: ItemFilters = {}) {
 }
 
 export function useItem(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.items.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('items')
         .select('*')
         .eq('id', id)
@@ -68,11 +68,11 @@ export function useItem(id: string) {
 
 // 품목 검색 (드롭다운용, 페이지네이션 없이)
 export function useItemSearch(search: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: ['items', 'search', search],
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('items')
         .select('id, code, name, unit, item_type')
         .eq('is_active', true)
@@ -91,20 +91,20 @@ export function useItemSearch(search: string) {
 }
 
 export function useCreateItem() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<ItemInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('items')
         .insert({ ...input, company_id: profile.company_id })
         .select()
@@ -119,11 +119,11 @@ export function useCreateItem() {
 }
 
 export function useUpdateItem() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: ItemUpdate & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('items')
         .update(input)
         .eq('id', id)
@@ -140,11 +140,11 @@ export function useUpdateItem() {
 }
 
 export function useDeleteItem() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('items')
         .update({ is_active: false })
         .eq('id', id)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,11 +15,11 @@ export type ReferenceCodeFilters = ListFilters & {
 }
 
 export function useReferenceCodes(filters: ReferenceCodeFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.referenceCodes.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('reference_codes')
         .select('*', { count: 'exact' })
         .eq('is_active', true)
@@ -46,12 +46,12 @@ export function useReferenceCodes(filters: ReferenceCodeFilters = {}) {
 }
 
 export function useReferenceCodeTypes() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.referenceCodes.types(),
     queryFn: async () => {
       // DB에서 DISTINCT 처리 (1000행 제한 회피)
-      const { data, error } = await supabase.rpc('get_reference_code_types')
+      const { data, error } = await dbClient.rpc('get_reference_code_types')
       if (error) throw error
       return (data ?? []).map((r: any) => r.code_type)
     },
@@ -59,12 +59,12 @@ export function useReferenceCodeTypes() {
 }
 
 export function useCreateReferenceCode() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<ReferenceCodeInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
       // DB RPC로 원자적 생성 (sort_order MAX+1 포함)
-      const { data, error } = await supabase.rpc('create_reference_code', {
+      const { data, error } = await dbClient.rpc('create_reference_code', {
         p_code_type: input.code_type,
         p_code_data1: input.code_data1,
         p_code_data2: input.code_data2 ?? undefined,
@@ -88,12 +88,12 @@ export function useCreateReferenceCode() {
 }
 
 export function useUpdateReferenceCode() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: ReferenceCodeUpdate & { id: string }) => {
       // RPC로 is_active, company_id 등 DB 레벨 보호
-      const { error } = await supabase.rpc('update_reference_code', {
+      const { error } = await dbClient.rpc('update_reference_code', {
         p_id: id,
         p_code_data1: input.code_data1 ?? undefined,
         p_code_data2: input.code_data2 ?? undefined,
@@ -116,12 +116,12 @@ export function useUpdateReferenceCode() {
 }
 
 export function useDeleteReferenceCode() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
       // RPC로 소프트 삭제 (DB 레벨 보호)
-      const { error } = await supabase.rpc('soft_delete_reference_code', { p_id: id })
+      const { error } = await dbClient.rpc('soft_delete_reference_code', { p_id: id })
       if (error) throw error
     },
     retry: 0,

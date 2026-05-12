@@ -27,7 +27,7 @@ export function apiError(code: string, message: string, details?: unknown): ApiR
 }
 
 // PostgreSQL 에러코드 → ApiError 변환
-export function mapSupabaseError(error: { code?: string; message: string }): ApiError {
+export function mapPostgresError(error: { code?: string; message: string }): ApiError {
   // RPC에서 RAISE한 에러 — 메시지 패턴 매칭
   if (error.message.includes('재고 부족')) {
     return new ApiError(409, error.message, 'INSUFFICIENT_STOCK')
@@ -54,9 +54,9 @@ export function mapSupabaseError(error: { code?: string; message: string }): Api
   return new ApiError(500, error.message || '서버 오류', 'INTERNAL_ERROR')
 }
 
-export const mapDbError = mapSupabaseError
+export const mapDbError = mapPostgresError
 
-// 클라이언트 catch 블록에서 사용 — Supabase PostgrestError 포함 모든 에러 처리
+// 클라이언트 catch 블록에서 사용 — API/DB 에러 메시지 처리
 export function extractErrorMessage(err: unknown, fallback = '오류가 발생했습니다'): string {
   if (err instanceof Error) return err.message
   if (err && typeof err === 'object' && 'message' in err) {

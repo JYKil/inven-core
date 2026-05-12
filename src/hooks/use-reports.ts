@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys } from '@/lib/queries/keys'
 
 // 재고 수불부
@@ -12,7 +12,7 @@ export function useInventoryLedger(filters: {
   warehouseId?: string
   enabled?: boolean
 }) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.reports.inventoryLedger({
       startDate: filters.startDate,
@@ -21,16 +21,16 @@ export function useInventoryLedger(filters: {
       warehouseId: filters.warehouseId,
     }),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase.rpc('report_inventory_ledger', {
+      const { data, error } = await dbClient.rpc('report_inventory_ledger', {
         p_company_id: profile.company_id,
         p_start_date: filters.startDate,
         p_end_date: filters.endDate,
@@ -60,21 +60,21 @@ export function useInventoryLedger(filters: {
 
 // 창고별 재고 현황
 export function useWarehouseStockReport(warehouseId?: string, options?: { enabled?: boolean }) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.reports.warehouseStock(warehouseId),
     enabled: options?.enabled !== false,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase.rpc('report_warehouse_stock', {
+      const { data, error } = await dbClient.rpc('report_warehouse_stock', {
         p_company_id: profile.company_id,
         p_warehouse_id: warehouseId || undefined,
       })
@@ -95,7 +95,7 @@ export function useSalesReport(filters: {
   customerId?: string
   enabled?: boolean
 }) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.reports.sales({
       startDate: filters.startDate,
@@ -103,16 +103,16 @@ export function useSalesReport(filters: {
       customerId: filters.customerId,
     }),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase.rpc('report_sales', {
+      const { data, error } = await dbClient.rpc('report_sales', {
         p_company_id: profile.company_id,
         p_start_date: filters.startDate,
         p_end_date: filters.endDate,

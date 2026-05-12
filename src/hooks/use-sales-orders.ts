@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,11 +15,11 @@ export type SoFilters = ListFilters & {
 
 // 판매 주문 목록
 export function useSalesOrders(filters: SoFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.salesOrders.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('sales_orders')
         .select('*, customer:customers!sales_orders_customer_id_fkey(id, name)', { count: 'exact' })
         .order('created_at', { ascending: false })
@@ -45,11 +45,11 @@ export function useSalesOrders(filters: SoFilters = {}) {
 
 // 판매 주문 상세 (라인 포함)
 export function useSalesOrder(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.salesOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('sales_orders')
         .select(`
           *,
@@ -69,9 +69,9 @@ export function useSalesOrder(id: string) {
   })
 }
 
-// 판매 주문 생성 (draft → Supabase 직접)
+// 판매 주문 생성 (draft → DB query API)
 export function useCreateSalesOrder() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
@@ -81,9 +81,9 @@ export function useCreateSalesOrder() {
       notes?: string
       lines: { item_id: string; warehouse_id: string; quantity: number; unit_price: number }[]
     }) => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
@@ -93,7 +93,7 @@ export function useCreateSalesOrder() {
       const totalAmount = input.lines.reduce((sum, l) => sum + l.quantity * l.unit_price, 0)
 
       // SO 헤더 생성
-      const { data: so, error: soErr } = await supabase
+      const { data: so, error: soErr } = await dbClient
         .from('sales_orders')
         .insert({
           company_id: profile.company_id,
@@ -117,7 +117,7 @@ export function useCreateSalesOrder() {
         unit_price: l.unit_price,
         line_amount: l.quantity * l.unit_price,
       }))
-      const { error: linesErr } = await supabase
+      const { error: linesErr } = await dbClient
         .from('sales_order_lines')
         .insert(lines)
       if (linesErr) throw linesErr
@@ -132,11 +132,11 @@ export function useCreateSalesOrder() {
 
 // 판매 주문 상태 변경 (draft → confirmed, confirmed → cancelled 등)
 export function useUpdateSalesOrderStatus() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, status, expectedStatus }: { id: string; status: string; expectedStatus: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('sales_orders')
         .update({ status })
         .eq('id', id)
@@ -155,11 +155,11 @@ export function useUpdateSalesOrderStatus() {
 
 // 출고 취소 — API Route 호출 (cancel_shipment RPC)
 export function useCancelShipment() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch(`/api/sales-orders/${id}/cancel-shipment`, {
@@ -185,11 +185,11 @@ export function useCancelShipment() {
 
 // 출고 실행 — API Route 호출 (execute_shipment RPC)
 export function useExecuteShipment() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (salesOrderId: string) => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await dbClient.auth.getSession()
       if (!session) throw new Error('인증이 필요합니다')
 
       const res = await fetch(`/api/sales-orders/${salesOrderId}/ship`, {

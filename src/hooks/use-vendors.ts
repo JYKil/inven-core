@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -15,11 +15,11 @@ export type VendorFilters = ListFilters & {
 }
 
 export function useVendors(filters: VendorFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.vendors.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('vendors')
         .select('*', { count: 'exact' })
         .order('name')
@@ -44,11 +44,11 @@ export function useVendors(filters: VendorFilters = {}) {
 }
 
 export function useVendor(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.vendors.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('vendors')
         .select('*')
         .eq('id', id)
@@ -61,20 +61,20 @@ export function useVendor(id: string) {
 }
 
 export function useCreateVendor() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Omit<VendorInsert, 'id' | 'company_id' | 'created_at' | 'updated_at'>) => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
         .single()
       if (!profile?.company_id) throw new Error('회사 정보를 찾을 수 없습니다')
 
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('vendors')
         .insert({ ...input, company_id: profile.company_id })
         .select()
@@ -89,12 +89,12 @@ export function useCreateVendor() {
 }
 
 export function useUpdateVendor() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...input }: VendorUpdate & { id: string }) => {
       const { name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes } = input
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('vendors')
         .update({ name, business_number, address, bank_name, bank_code, account_number, account_holder, payment_currency, contact_email, notes })
         .eq('id', id)
@@ -111,11 +111,11 @@ export function useUpdateVendor() {
 }
 
 export function useDeleteVendor() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('vendors')
         .update({ is_active: false })
         .eq('id', id)

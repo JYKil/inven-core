@@ -1,18 +1,18 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 
 type PoPayment = Database['public']['Tables']['po_payments']['Row']
 
 export function usePoPayments(filters: ListFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.poPayments.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('po_payments')
         .select(`
           *,
@@ -39,11 +39,11 @@ export function usePoPayments(filters: ListFilters = {}) {
 
 // PO별 지급 이력
 export function usePoPaymentsByPo(poId: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.poPayments.byPo(poId),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('po_payments')
         .select('*')
         .eq('po_id', poId)

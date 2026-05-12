@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,7 +42,7 @@ type CompanyAdmin = {
 }
 
 export default function AdminCompaniesPage() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<Company | null>(null)
@@ -67,7 +67,7 @@ export default function AdminCompaniesPage() {
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['admin', 'companies'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('companies')
         .select('*')
         .order('created_at', { ascending: false })
@@ -81,7 +81,7 @@ export default function AdminCompaniesPage() {
     queryKey: ['admin', 'company-admins', adminsCompany?.id],
     queryFn: async () => {
       if (!adminsCompany) return []
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('profiles')
         .select('id, email, display_name, role, is_active')
         .eq('company_id', adminsCompany.id)
@@ -95,7 +95,7 @@ export default function AdminCompaniesPage() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.rpc('admin_create_company', {
+      const { error } = await dbClient.rpc('admin_create_company', {
         p_name: name,
         p_business_number: businessNumber || undefined,
         p_address: address || undefined,
@@ -112,7 +112,7 @@ export default function AdminCompaniesPage() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editing) return
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('companies')
         .update({
           name,
@@ -131,7 +131,7 @@ export default function AdminCompaniesPage() {
 
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('companies')
         .update({ is_active: !isActive })
         .eq('id', id)

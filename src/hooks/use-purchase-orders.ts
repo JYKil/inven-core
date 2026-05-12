@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import type { Database } from '@/types/database'
 import { escapeFilterValue } from '@/lib/utils'
@@ -13,11 +13,11 @@ export type PoFilters = ListFilters & {
 }
 
 export function usePurchaseOrders(filters: PoFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.purchaseOrders.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('purchase_orders')
         .select('*, vendor:vendors!purchase_orders_vendor_id_fkey(id, name)', { count: 'exact' })
         .order('created_at', { ascending: false })
@@ -42,11 +42,11 @@ export function usePurchaseOrders(filters: PoFilters = {}) {
 }
 
 export function usePurchaseOrder(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.purchaseOrders.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('purchase_orders')
         .select(`
           *,
@@ -103,11 +103,11 @@ export function useCreatePurchaseOrder() {
 }
 
 export function useUpdatePurchaseOrderStatus() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, status, expectedStatus }: { id: string; status: string; expectedStatus: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('purchase_orders')
         .update({ status })
         .eq('id', id)

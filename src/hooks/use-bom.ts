@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { createDbClient } from '@/lib/api/db-client'
 import { queryKeys, type ListFilters } from '@/lib/queries/keys'
 import { escapeFilterValue } from '@/lib/utils'
 import type { BomLineInput } from '@/lib/validations/bom'
@@ -12,13 +12,13 @@ export type BomFilters = ListFilters & {
 
 // BOM 페이지: 전체 품목 + BOM 여부 조회 (품목 중심 뷰)
 export function useBomItemList(filters: BomFilters = {}) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const { search, page = 1, pageSize = 50, materialType } = filters
 
   return useQuery({
     queryKey: queryKeys.bom.list(filters),
     queryFn: async () => {
-      let query = supabase
+      let query = dbClient
         .from('items')
         .select(`
           id, code, name, unit, item_type, material_type, description, is_active,
@@ -81,11 +81,11 @@ export function useBomItemList(filters: BomFilters = {}) {
 
 // 품목의 BOM 목록 조회
 export function useBomByItem(itemId: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.bom.byItem(itemId),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('bom_headers')
         .select(`
           *,
@@ -108,11 +108,11 @@ export function useBomByItem(itemId: string) {
 }
 
 export function useBomDetail(id: string) {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   return useQuery({
     queryKey: queryKeys.bom.detail(id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await dbClient
         .from('bom_headers')
         .select(`
           *,
@@ -161,13 +161,13 @@ export function useCreateBom() {
 
 // BOM 라인 업데이트 (RPC로 단일 트랜잭션 보장)
 export function useUpdateBomLines() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ bomHeaderId, itemId, lines }: { bomHeaderId: string; itemId: string; lines: BomLineInput[] }) => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await dbClient.auth.getUser()
       if (!user) throw new Error('인증이 필요합니다')
-      const { data: profile } = await supabase
+      const { data: profile } = await dbClient
         .from('profiles')
         .select('company_id')
         .eq('id', user.id)
@@ -180,7 +180,7 @@ export function useUpdateBomLines() {
         sort_order: line.sort_order ?? idx,
       }))
 
-      const { error } = await supabase.rpc('update_bom_lines', {
+      const { error } = await dbClient.rpc('update_bom_lines', {
         p_bom_header_id: bomHeaderId,
         p_company_id: profile.company_id,
         p_lines: JSON.stringify(linesPayload),
@@ -199,11 +199,11 @@ export function useUpdateBomLines() {
 
 // BOM 비활성화 (soft delete)
 export function useDeleteBom() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, productItemId }: { id: string; productItemId: string }) => {
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('bom_headers')
         .update({ is_active: false })
         .eq('id', id)
@@ -220,11 +220,11 @@ export function useDeleteBom() {
 
 // BOM 활성화 복원
 export function useActivateBom() {
-  const supabase = createClient()
+  const dbClient = createDbClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, productItemId }: { id: string; productItemId: string }) => {
-      const { error } = await supabase
+      const { error } = await dbClient
         .from('bom_headers')
         .update({ is_active: true })
         .eq('id', id)
