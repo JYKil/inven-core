@@ -1,7 +1,7 @@
 # inven-core 마이그레이션 체크리스트
 > Vercel + Supabase → 리눅스 미니PC (PostgreSQL + Better Auth 이메일/비밀번호)
 
-> 업데이트: 2026-05-12 코드 기준 현황 반영
+> 업데이트: 2026-05-12 커밋/푸쉬 완료 현황 반영
 
 ---
 
@@ -17,6 +17,7 @@
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
 | **검증 상태** | 통과 | 2026-05-12 Phase 4 부분 전환 후 `npx tsc --noEmit` 통과 |
+| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경 원격 푸쉬 완료 |
 
 ## 다음 우선순위
 
@@ -300,6 +301,9 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] hooks/settings/admin 잔존 호출을 외부 Supabase 런타임 대신 로컬 서버 API-backed 호환 어댑터로 연결
     - `src/app/api/db-query/route.ts`
     - 세션 기반 company_id 필터 및 일부 관리자 권한 체크 포함
+[x] 관련 변경사항 커밋 및 원격 푸쉬 완료
+    - `5e58402` Remove test.txt
+    - `86e464b` Update Supabase invite and db query APIs
 [!] hooks/settings/admin 파일에는 아직 `createClient().from()/rpc()` 스타일 호출이 남아 있음
 [!] `src/lib/supabase/*`는 Phase 5 전 직접 fetch 전환 후 제거 필요
 ```
