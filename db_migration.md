@@ -16,8 +16,8 @@
 | **Supabase Query 제거** | Phase 4 추가 완료 | 핵심 거래 실행/취소 API는 PostgreSQL 함수 직접 호출, hooks/settings/admin 호출은 `/api/db-query` 직접 함수 호출로 전환 |
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
-| **검증 상태** | 통과 | 2026-05-12 Phase 4 fluent 호출 제거 후 `npx tsc --noEmit` 통과 |
-| **Git 반영** | 진행 중 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup 원격 푸쉬 완료. fluent 호출 제거 작업은 커밋 전 |
+| **검증 상태** | 통과 | 2026-05-12 Phase 4 fluent 호출 제거 후 `npx tsc --noEmit`, `npx vitest run` 통과 |
+| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup, `61251be` fluent client 제거 원격 푸쉬 완료 |
 
 ## 다음 우선순위
 
@@ -322,12 +322,13 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
     - `npx vitest run test/api-auth.test.ts test/api-error.test.ts`
 [x] 추가 검증
     - `npx tsc --noEmit`
+    - `npx vitest run`
     - `rg "createDbClient|dbClient\\.from|dbClient\\.rpc|class QueryBuilder|getCurrentSession" src`
 [x] 관련 변경사항 커밋 및 원격 푸쉬 완료
     - `5e58402` Remove test.txt
     - `86e464b` Update Supabase invite and db query APIs
     - `431e2eb` Continue Phase 4 Supabase query cleanup
-[ ] 관련 변경사항 커밋 및 원격 푸쉬
+    - `61251be` Remove db query fluent client usage
 [!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
 ```
 
