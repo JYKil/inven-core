@@ -17,7 +17,7 @@
 | **Drizzle 도입** | 부분 완료 | `drizzle-orm`, `drizzle-kit`, `drizzle.config.ts`, `src/db/schema.ts`, `src/db/index.ts` 추가 |
 | **배포 파일** | 미시작 | `Dockerfile`, `docker-compose.yml` 없음 |
 | **검증 상태** | 통과 | 2026-05-12 Phase 4 잔여 작업 후 `npx tsc --noEmit`, 관련 Vitest 통과 |
-| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, Phase 4 Supabase query cleanup 반영 |
+| **Git 반영** | 완료 | `5e58402` test 파일 제거, `86e464b` Phase 4 API/어댑터 변경, `431e2eb` Phase 4 Supabase query cleanup 원격 푸쉬 완료 |
 
 ## 다음 우선순위
 
@@ -320,7 +320,7 @@ psql "postgresql://inven:yourpassword@localhost:5432/inven_db" \
 [x] 관련 변경사항 커밋 및 원격 푸쉬 완료
     - `5e58402` Remove test.txt
     - `86e464b` Update Supabase invite and db query APIs
-    - Continue Phase 4 Supabase query cleanup
+    - `431e2eb` Continue Phase 4 Supabase query cleanup
 [!] hooks/settings/admin 파일에는 아직 `dbClient.from()/rpc()` fluent 호출이 남아 있음
 [!] `src/types/database.ts`는 Phase 5에서 Drizzle 기반 타입으로 교체 필요
 ```
