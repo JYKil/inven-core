@@ -1,0 +1,30 @@
+# Supabase 무료 플랜은 7일간 DB 활동이 없으면 프로젝트를 자동 pause 시킨다.
+# 이 워크플로우는 배포된 /api/health 엔드포인트를 호출해 실제 DB 조회를 발생시켜 pause를 방지한다.
+#
+# 사전 준비: GitHub repository secret `HEALTH_URL` 등록 필요
+#   Settings > Secrets and variables > Actions > New repository secret
+#   Name: HEALTH_URL
+#   Value: https://inven-core.vercel.app/api/health (배포된 실제 도메인으로 설정)
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # 매주 월요일, 목요일 20:00 UTC = KST(UTC+9) 05:00 (화요일/금요일)
+    # 최대 간격 4일 — 월경계 등 날짜 기준 간격 변동 없이 항상 안정적
+    - cron: '0 20 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call health endpoint
+        run: |
+          response=$(curl -fsS "$HEALTH_URL")
+          echo "Response: $response"
+          if ! echo "$response" | grep -q '"ok":true'; then
+            echo "Health check did not return ok:true"
+            exit 1
+          fi
+        env:
+          HEALTH_URL: ${{ secrets.HEALTH_URL }}
