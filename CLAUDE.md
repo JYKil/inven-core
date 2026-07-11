@@ -5,15 +5,14 @@ inven-core
 재고수불시스템을 만드려고 함. 개요 이미지는 .doc/overview.jpeg 와 같음. 현재까지 정의된 내용은 .doc/memo1.md파일을 참고해줘.
 
 ## 기술 스택
-- 프론트엔드: Next.js 15 + TypeScript
+- 앱 프레임워크: Next.js 16 (App Router) + React 19 + TypeScript
 - 스타일링: Tailwind CSS + shadcn/ui
-- 백엔드: Supabase (PostgreSQL + Auth + Storage + Realtime)
-- 클라이언트 상태관리: Zustand (UI 전역 상태)
+- 백엔드: Supabase (PostgreSQL + Auth + RLS)
 - 서버 상태관리: TanStack Query (서버 데이터 캐싱/자동 갱신)
 - 폼 관리: React Hook Form + Zod
-- API: Supabase Client + Next.js API Routes + Supabase rpc() (복잡한 비즈니스 로직)
-- 파일 처리: Supabase Storage
+- API: Route Handlers (BFF 패턴, src/app/api) + Supabase Client + Supabase rpc() (복잡한 비즈니스 로직)
 - 타입 생성: supabase gen types (DB 스키마 → TypeScript 자동 생성)
+- 미사용: Supabase Storage / Realtime, Zustand (필요해지면 그때 도입)
 
 ## gstack
 - 웹 브라우징은 항상 `/browse` 스킬을 사용할 것

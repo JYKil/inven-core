@@ -5,9 +5,13 @@
 
 ## 기술 스택
 
-- **프론트엔드**: Next.js 15 + TypeScript + Tailwind CSS + shadcn/ui
-- **백엔드**: Supabase (PostgreSQL + Auth + Storage + Realtime)
-- **상태관리**: Zustand (클라이언트) + TanStack Query (서버)
+- **앱 프레임워크**: Next.js 16 (App Router) + React 19 + TypeScript
+  - UI: Tailwind CSS + shadcn/ui
+  - API 레이어: Route Handlers (BFF 패턴, `src/app/api`)
+- **백엔드(BaaS)**: Supabase (PostgreSQL + Auth + RLS)
+  - 복잡한 비즈니스 로직(FIFO 출고, 조립, 취소 등)은 Postgres RPC로 처리
+  - DB 스키마 → TypeScript 타입 자동생성 (`supabase gen types`)
+- **서버 상태**: TanStack Query
 - **폼**: React Hook Form + Zod
 
 ## 서비스 URL
@@ -39,7 +43,6 @@ inven-core/
 │   ├── components/     # 공통 UI 컴포넌트
 │   ├── hooks/          # TanStack Query 커스텀 훅
 │   ├── lib/            # 유틸리티 (포맷, CSV, API 핸들러)
-│   ├── stores/         # Zustand 스토어
 │   ├── types/          # TypeScript 타입 (Supabase 자동생성 포함)
 │   └── proxy.ts        # 인증 미들웨어
 ├── test/               # 단위 테스트 (170개)
