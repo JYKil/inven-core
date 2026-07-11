@@ -16,7 +16,6 @@ https://inven-core.vercel.app/
 
 > 회원가입 후 관리자 승인이 완료되어야 서비스를 이용할 수 있습니다.
 > Google OAuth는 현재 테스트 기간으로, 관리자가 추가한 계정만 로그인이 가능합니다.
-> 테스트 계정 : kilga2401@naver.com / 24012401
 > 테스트 계정(공용) : test@test.com / testtest
 
 ## 주요 기능
