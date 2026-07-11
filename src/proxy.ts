@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 // 인증 없이 접근 가능한 경로
-const publicPaths = ['/login', '/signup', '/auth/callback']
+const publicPaths = ['/login', '/signup', '/auth/callback', '/api/health']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
